@@ -1,0 +1,54 @@
+/* --- Grundstil für die Navbar --- */
+.nav-tabs {
+    background: white; /* Beibehaltung der weißen Grundfarbe */
+    border-right: 2px solid #ccc; /* Dezente Trennlinie */
+    border-radius: 10px; /* Leichte Abrundung */
+    padding: 10px 0;
+    height: 100%;
+}
+
+/* --- Standard-Links in der Navbar --- */
+.nav-tabs .nav-link {
+    color: black !important; /* Standardfarbe */
+    background-color: transparent;
+    padding: 12px;
+    transition: all 0.2s ease-in-out;
+    border-radius: 8px; /* Leicht abgerundet */
+}
+
+/* --- Hover-Effekt für Icons --- */
+.nav-tabs .nav-link:hover {
+    background: rgba(0, 51, 102, 0.1); /* Leichtes Blau */
+    transform: scale(1.05); /* Minimale Vergrößerung */
+}
+
+/* --- Aktiver Tab (aktuelle Seite) --- */
+.nav-tabs .nav-link.active {
+    color: #cce0ff !important; /* Dein Hellblau */
+    background: rgba(0, 51, 102, 0.3); /* Dunkles Blau mit Transparenz */
+    box-shadow: 0px 0px 12px #003366; /* Subtiler Glow */
+    border-radius: 8px;
+}
+
+/* --- Abstände zwischen den Icons --- */
+.nav-tabs .nav-item {
+    margin-bottom: 15px;
+}
+
+/* --- User-Icon unten in der Navbar optisch absetzen --- */
+.nav-tabs .nav-item:last-child {
+    margin-top: auto; /* Automatische Ausrichtung ans Ende */
+    padding-bottom: 20px;
+}
+
+/* --- Bilder in der Navbar optimieren --- */
+.nav-tabs img {
+    width: 45px;
+    height: 45px;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* --- Leichte Vergrößerung beim Hover --- */
+.nav-tabs .nav-link:hover img {
+    transform: scale(1.1);
+}

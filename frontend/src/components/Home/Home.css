@@ -1,0 +1,172 @@
+.home .home-blue_color{
+    animation: pulse 1.5s infinite alternate;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-weight: bold;
+    color: #cce0ff;
+    text-shadow: 2px 2px 4px black, 0 0 8px #003366;
+}
+
+.home .home-next-match-text {
+    animation: pulse 1.5s infinite alternate;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-weight: bold;
+    color: #cce0ff;
+    text-shadow: 2px 2px 4px black, 0 0 8px #003366;
+}
+
+.home .home-next-match-vs {
+    animation: pulse 1.5s infinite;
+    font-weight: bold;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: #cce0ff;
+    text-shadow: 3px 3px 8px black, 0 0 12px #003366;
+}
+
+.home .home-next-match-date {
+    animation: pulse 1.5s infinite alternate;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    font-weight: bold;
+    color: #cce0ff;
+    text-shadow: 2px 2px 4px black, 0 0 8px #003366;
+}
+
+/* Tabellen-Styling */
+.home thead {
+    background-color: black !important;
+}
+
+.home thead th {
+    color: white !important;
+    background-color: lightgrey !important;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Tabellenplätze einfärben */
+.home tbody tr:nth-child(1) td,
+.home tbody tr:nth-child(2) td,
+.home tbody tr:nth-child(3) td {
+    background-color: #90EE90 !important;
+}
+
+.home tbody tr:nth-child(4) td {
+    background-color: #228B22 !important;
+    color: white !important;
+}
+
+.home tbody tr:nth-child(5) td,
+.home tbody tr:nth-child(6) td {
+    background-color: #4682B4 !important;
+    color: white !important;
+}
+
+.home tbody tr:nth-last-child(1) td,
+.home tbody tr:nth-last-child(2) td,
+.home tbody tr:nth-last-child(3) td {
+    background-color: #FF6347 !important;
+    color: white !important;
+}
+
+/* Carousel Styling */
+.home .home-carousel {
+    max-width: 500px;
+    margin: auto;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.home .home-carousel img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 15px;
+}
+
+.home .home-carousel-caption {
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px;
+    border-radius: 10px;
+    bottom: 20px;
+    text-align: center;
+}
+
+.home .home-carousel-caption h3 {
+    font-size: 20px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+.home .home-carousel-caption p {
+    font-size: 16px;
+    color: white;
+}
+
+.home .home-carousel-indicators .active {
+    background-color: #FFD700 !important;
+    opacity: 1;
+}
+
+/* Trainer-Karte */
+.home .home-trainer-card {
+    width: 100%;
+    max-width: 300px;
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    color: #333;
+    text-align: center;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.home .home-trainer-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.15);
+}
+
+.home .home-trainer-card img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    object-fit: cover;
+}
+
+.home .home-trainer-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.home .home-trainer-card p {
+    font-size: 14px;
+    opacity: 0.8;
+    margin: 5px 0 15px;
+}
+
+.home .home-trainer-card .list-group-item {
+    background: #fff;
+    border: none;
+    color: #555;
+    font-weight: 500;
+    padding: 8px 0;
+}
+
+.home .home-trainer-card .card-body {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.home .home-trainer-card .card-link {
+    color: #0066cc;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+}
+
+.home .home-trainer-card .card-link:hover {
+    color: #004b99;
+    text-decoration: underline;
+}
