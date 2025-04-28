@@ -1,0 +1,1470 @@
+[
+    {
+        "clubName": "Real Madrid",
+        "foundingYear": 1902,
+        "trainer": {
+            "firstname": "Carlo",
+            "lastname": "Ancelotti"
+        },
+        "players": [
+            {
+                "firstname": "Thibaut",
+                "lastname": "Courtois",
+                "position": "TW",
+                "value": 25000000.0,
+                "rating": 9,
+                "startAge": 33
+            },
+            {
+                "firstname": "Dani",
+                "lastname": "Carvajal",
+                "position": "RV",
+                "value": 15000000.0,
+                "rating": 7,
+                "startAge": 33
+            },
+            {
+                "firstname": "David",
+                "lastname": "Alaba",
+                "position": "IV",
+                "value": 18000000.0,
+                "rating": 6,
+                "startAge": 33
+            },
+            {
+                "firstname": "Eder",
+                "lastname": "Militao",
+                "position": "IV",
+                "value": 40000000.0,
+                "rating": 7,
+                "startAge": 27
+            },
+            {
+                "firstname": "Ferland",
+                "lastname": "Mendy",
+                "position": "LV",
+                "value": 20000000.0,
+                "rating": 5,
+                "startAge": 30
+            },
+            {
+                "firstname": "Luka",
+                "lastname": "Modric",
+                "position": "ZM",
+                "value": 10000000.0,
+                "rating": 9,
+                "startAge": 39
+            },
+            {
+                "firstname": "Toni",
+                "lastname": "Kroos",
+                "position": "ZM",
+                "value": 12000000.0,
+                "rating": 9,
+                "startAge": 35
+            },
+            {
+                "firstname": "Federico",
+                "lastname": "Valverde",
+                "position": "ZDM",
+                "value": 70000000.0,
+                "rating": 8,
+                "startAge": 27
+            },
+            {
+                "firstname": "Vinicius",
+                "lastname": "Junior",
+                "position": "LF",
+                "value": 200000000.0,
+                "rating": 9,
+                "startAge": 25
+            },
+            {
+                "firstname": "Jude",
+                "lastname": "Bellingham",
+                "position": "ZM",
+                "value": 120000000.0,
+                "rating": 9,
+                "startAge": 22
+            },
+            {
+                "firstname": "Rodrygo",
+                "lastname": "Goes",
+                "position": "RF",
+                "value": 100000000.0,
+                "rating": 7,
+                "startAge": 24
+            },
+            {
+                "firstname": "Andriy",
+                "lastname": "Lunin",
+                "position": "TW",
+                "value": 20000000.0,
+                "rating": 5,
+                "startAge": 26
+            },
+            {
+                "firstname": "Lucas",
+                "lastname": "Vazquez",
+                "position": "RV",
+                "value": 8000000.0,
+                "rating": 4,
+                "startAge": 34
+            },
+            {
+                "firstname": "Nacho",
+                "lastname": "Fernandez",
+                "position": "IV",
+                "value": 5000000.0,
+                "rating": 6,
+                "startAge": 35
+            },
+            {
+                "firstname": "Eduardo",
+                "lastname": "Camavinga",
+                "position": "ZDM",
+                "value": 60000000.0,
+                "rating": 7,
+                "startAge": 22
+            },
+            {
+                "firstname": "Brahim",
+                "lastname": "Diaz",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 6,
+                "startAge": 26
+            },
+            {
+                "firstname": "Joselu",
+                "lastname": "Mato",
+                "position": "ST",
+                "value": 3000000.0,
+                "rating": 4,
+                "startAge": 35
+            },
+            {
+                "firstname": "Zebastian",
+                "lastname": "Hoermann",
+                "position": "ST",
+                "value": 1000000.0,
+                "rating": 4,
+                "startAge": 18
+            }
+        ]
+    },
+    {
+        "clubName": "Manchester City",
+        "foundingYear": 1880,
+        "trainer": {
+            "firstname": "Pep",
+            "lastname": "Guardiola"
+        },
+        "players": [
+            {
+                "firstname": "Ederson",
+                "lastname": "Moraes",
+                "position": "TW",
+                "value": 45000000.0,
+                "rating": 9,
+                "startAge": 32
+            },
+            {
+                "firstname": "Kyle",
+                "lastname": "Walker",
+                "position": "RV",
+                "value": 15000000.0,
+                "rating": 8,
+                "startAge": 35
+            },
+            {
+                "firstname": "Ruben",
+                "lastname": "Dias",
+                "position": "IV",
+                "value": 75000000.0,
+                "rating": 9,
+                "startAge": 28
+            },
+            {
+                "firstname": "Manuel",
+                "lastname": "Akanji",
+                "position": "IV",
+                "value": 38000000.0,
+                "rating": 7,
+                "startAge": 30
+            },
+            {
+                "firstname": "Josko",
+                "lastname": "Gvardiol",
+                "position": "LV",
+                "value": 80000000.0,
+                "rating": 8,
+                "startAge": 23
+            },
+            {
+                "firstname": "Rodri",
+                "lastname": "Hernandez",
+                "position": "ZDM",
+                "value": 100000000.0,
+                "rating": 9,
+                "startAge": 28
+            },
+            {
+                "firstname": "Kevin",
+                "lastname": "De Bruyne",
+                "position": "ZM",
+                "value": 40000000.0,
+                "rating": 9,
+                "startAge": 34
+            },
+            {
+                "firstname": "Bernardo",
+                "lastname": "Silva",
+                "position": "ZM",
+                "value": 50000000.0,
+                "rating": 7,
+                "startAge": 31
+            },
+            {
+                "firstname": "Phil",
+                "lastname": "Foden",
+                "position": "LF",
+                "value": 110000000.0,
+                "rating": 8,
+                "startAge": 25
+            },
+            {
+                "firstname": "Jeremy",
+                "lastname": "Doku",
+                "position": "RF",
+                "value": 60000000.0,
+                "rating": 7,
+                "startAge": 23
+            },
+            {
+                "firstname": "Erling",
+                "lastname": "Haaland",
+                "position": "ST",
+                "value": 180000000.0,
+                "rating": 10,
+                "startAge": 24
+            },
+            {
+                "firstname": "Stefan",
+                "lastname": "Ortega",
+                "position": "TW",
+                "value": 6000000.0,
+                "rating": 6,
+                "startAge": 32
+            },
+            {
+                "firstname": "John",
+                "lastname": "Stones",
+                "position": "IV",
+                "value": 35000000.0,
+                "rating": 5,
+                "startAge": 31
+            },
+            {
+                "firstname": "Mateo",
+                "lastname": "Kovacic",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 31
+            },
+            {
+                "firstname": "Jack",
+                "lastname": "Grealish",
+                "position": "LF",
+                "value": 55000000.0,
+                "rating": 4,
+                "startAge": 29
+            },
+            {
+                "firstname": "Julian",
+                "lastname": "Alvarez",
+                "position": "ST",
+                "value": 90000000.0,
+                "rating": 7,
+                "startAge": 25
+            },
+            {
+                "firstname": "Oscar",
+                "lastname": "Bobb",
+                "position": "RF",
+                "value": 35000000.0,
+                "rating": 5,
+                "startAge": 22
+            }
+        ]
+    },
+    {
+        "clubName": "Bayern München",
+        "foundingYear": 1900,
+        "trainer": {
+            "firstname": "Vincent",
+            "lastname": "Kompany"
+        },
+        "players": [
+            {
+                "firstname": "Manuel",
+                "lastname": "Neuer",
+                "position": "TW",
+                "value": 5000000.0,
+                "rating": 8,
+                "startAge": 39
+            },
+            {
+                "firstname": "Joshua",
+                "lastname": "Kimmich",
+                "position": "RV",
+                "value": 50000000.0,
+                "rating": 7,
+                "startAge": 30
+            },
+            {
+                "firstname": "Matthijs",
+                "lastname": "de Ligt",
+                "position": "IV",
+                "value": 60000000.0,
+                "rating": 7,
+                "startAge": 25
+            },
+            {
+                "firstname": "Eric",
+                "lastname": "Dier",
+                "position": "IV",
+                "value": 12000000.0,
+                "rating": 6,
+                "startAge": 31
+            },
+            {
+                "firstname": "Alphonso",
+                "lastname": "Davies",
+                "position": "LV",
+                "value": 70000000.0,
+                "rating": 7,
+                "startAge": 24
+            },
+            {
+                "firstname": "Leon",
+                "lastname": "Goretzka",
+                "position": "ZM",
+                "value": 35000000.0,
+                "rating": 6,
+                "startAge": 30
+            },
+            {
+                "firstname": "Aleksandar",
+                "lastname": "Pavlovic",
+                "position": "ZM",
+                "value": 40000000.0,
+                "rating": 4,
+                "startAge": 21
+            },
+            {
+                "firstname": "Jamal",
+                "lastname": "Musiala",
+                "position": "LF",
+                "value": 120000000.0,
+                "rating": 9,
+                "startAge": 22
+            },
+            {
+                "firstname": "Serge",
+                "lastname": "Gnabry",
+                "position": "RF",
+                "value": 40000000.0,
+                "rating": 6,
+                "startAge": 29
+            },
+            {
+                "firstname": "Harry",
+                "lastname": "Kane",
+                "position": "ST",
+                "value": 90000000.0,
+                "rating": 9,
+                "startAge": 31
+            },
+            {
+                "firstname": "Leroy",
+                "lastname": "Sane",
+                "position": "LF",
+                "value": 70000000.0,
+                "rating": 7,
+                "startAge": 29
+            },
+            {
+                "firstname": "Daniel",
+                "lastname": "Peretz",
+                "position": "TW",
+                "value": 5000000.0,
+                "rating": 3,
+                "startAge": 24
+            },
+            {
+                "firstname": "Dayot",
+                "lastname": "Upamecano",
+                "position": "IV",
+                "value": 40000000.0,
+                "rating": 4,
+                "startAge": 26
+            },
+            {
+                "firstname": "Kim",
+                "lastname": "Min-jae",
+                "position": "IV",
+                "value": 50000000.0,
+                "rating": 5,
+                "startAge": 28
+            },
+            {
+                "firstname": "Raphael",
+                "lastname": "Guerreiro",
+                "position": "LV",
+                "value": 20000000.0,
+                "rating": 5,
+                "startAge": 31
+            },
+            {
+                "firstname": "Konrad",
+                "lastname": "Laimer",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 28
+            },
+            {
+                "firstname": "Bryan",
+                "lastname": "Zaragoza",
+                "position": "LF",
+                "value": 20000000.0,
+                "rating": 3,
+                "startAge": 23
+            }
+        ]
+    },
+    {
+        "clubName": "Arsenal",
+        "foundingYear": 1886,
+        "trainer": {
+            "firstname": "Mikel",
+            "lastname": "Arteta"
+        },
+        "players": [
+            {
+                "firstname": "David",
+                "lastname": "Raya",
+                "position": "TW",
+                "value": 35000000.0,
+                "rating": 8,
+                "startAge": 29
+            },
+            {
+                "firstname": "Ben",
+                "lastname": "White",
+                "position": "RV",
+                "value": 50000000.0,
+                "rating": 6,
+                "startAge": 27
+            },
+            {
+                "firstname": "William",
+                "lastname": "Saliba",
+                "position": "IV",
+                "value": 90000000.0,
+                "rating": 9,
+                "startAge": 24
+            },
+            {
+                "firstname": "Gabriel",
+                "lastname": "Magalhaes",
+                "position": "IV",
+                "value": 60000000.0,
+                "rating": 7,
+                "startAge": 27
+            },
+            {
+                "firstname": "Oleksandr",
+                "lastname": "Zinchenko",
+                "position": "LV",
+                "value": 40000000.0,
+                "rating": 6,
+                "startAge": 28
+            },
+            {
+                "firstname": "Declan",
+                "lastname": "Rice",
+                "position": "ZDM",
+                "value": 110000000.0,
+                "rating": 9,
+                "startAge": 26
+            },
+            {
+                "firstname": "Martin",
+                "lastname": "Odegaard",
+                "position": "ZM",
+                "value": 100000000.0,
+                "rating": 9,
+                "startAge": 26
+            },
+            {
+                "firstname": "Kai",
+                "lastname": "Havertz",
+                "position": "ZM",
+                "value": 55000000.0,
+                "rating": 6,
+                "startAge": 26
+            },
+            {
+                "firstname": "Bukayo",
+                "lastname": "Saka",
+                "position": "RF",
+                "value": 130000000.0,
+                "rating": 8,
+                "startAge": 23
+            },
+            {
+                "firstname": "Gabriel",
+                "lastname": "Martinelli",
+                "position": "LF",
+                "value": 70000000.0,
+                "rating": 6,
+                "startAge": 24
+            },
+            {
+                "firstname": "Gabriel",
+                "lastname": "Jesus",
+                "position": "ST",
+                "value": 55000000.0,
+                "rating": 6,
+                "startAge": 28
+            },
+            {
+                "firstname": "Aaron",
+                "lastname": "Ramsdale",
+                "position": "TW",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 27
+            },
+            {
+                "firstname": "Takehiro",
+                "lastname": "Tomiyasu",
+                "position": "RV",
+                "value": 25000000.0,
+                "rating": 4,
+                "startAge": 26
+            },
+            {
+                "firstname": "Jurrien",
+                "lastname": "Timber",
+                "position": "IV",
+                "value": 40000000.0,
+                "rating": 6,
+                "startAge": 23
+            },
+            {
+                "firstname": "Jakub",
+                "lastname": "Kiwior",
+                "position": "IV",
+                "value": 25000000.0,
+                "rating": 4,
+                "startAge": 24
+            },
+            {
+                "firstname": "Thomas",
+                "lastname": "Partey",
+                "position": "ZDM",
+                "value": 20000000.0,
+                "rating": 6,
+                "startAge": 32
+            },
+            {
+                "firstname": "Leandro",
+                "lastname": "Trossard",
+                "position": "LF",
+                "value": 25000000.0,
+                "rating": 7,
+                "startAge": 30
+            }
+        ]
+    },
+    {
+        "clubName": "FC Barcelona",
+        "foundingYear": 1899,
+        "trainer": {
+            "firstname": "Xavi",
+            "lastname": "Hernandez"
+        },
+        "players": [
+            {
+                "firstname": "Marc-Andre",
+                "lastname": "ter Stegen",
+                "position": "TW",
+                "value": 25000000.0,
+                "rating": 9,
+                "startAge": 33
+            },
+            {
+                "firstname": "Jules",
+                "lastname": "Kounde",
+                "position": "RV",
+                "value": 50000000.0,
+                "rating": 8,
+                "startAge": 26
+            },
+            {
+                "firstname": "Ronald",
+                "lastname": "Araujo",
+                "position": "IV",
+                "value": 80000000.0,
+                "rating": 8,
+                "startAge": 26
+            },
+            {
+                "firstname": "Pau",
+                "lastname": "Cubarsi",
+                "position": "IV",
+                "value": 60000000.0,
+                "rating": 6,
+                "startAge": 18
+            },
+            {
+                "firstname": "Alejandro",
+                "lastname": "Balde",
+                "position": "LV",
+                "value": 50000000.0,
+                "rating": 7,
+                "startAge": 21
+            },
+            {
+                "firstname": "Frenkie",
+                "lastname": "de Jong",
+                "position": "ZM",
+                "value": 70000000.0,
+                "rating": 8,
+                "startAge": 28
+            },
+            {
+                "firstname": "Pedri",
+                "lastname": "Gonzalez",
+                "position": "ZM",
+                "value": 90000000.0,
+                "rating": 8,
+                "startAge": 22
+            },
+            {
+                "firstname": "Gavi",
+                "lastname": "Paez",
+                "position": "ZM",
+                "value": 80000000.0,
+                "rating": 6,
+                "startAge": 21
+            },
+            {
+                "firstname": "",
+                "lastname": "Raphinha",
+                "position": "RF",
+                "value": 45000000,
+                "rating": 9,
+                "startAge": 28
+            },
+            {
+                "firstname": "Robert",
+                "lastname": "Lewandowski",
+                "position": "ST",
+                "value": 15000000.0,
+                "rating": 8,
+                "startAge": 36
+            },
+            {
+                "firstname": "Lamine",
+                "lastname": "Yamal",
+                "position": "LF",
+                "value": 90000000.0,
+                "rating": 8,
+                "startAge": 17
+            },
+            {
+                "firstname": "Inaki",
+                "lastname": "Pena",
+                "position": "TW",
+                "value": 10000000.0,
+                "rating": 5,
+                "startAge": 25
+            },
+            {
+                "firstname": "Andreas",
+                "lastname": "Christensen",
+                "position": "IV",
+                "value": 40000000.0,
+                "rating": 4,
+                "startAge": 28
+            },
+            {
+                "firstname": "Joao",
+                "lastname": "Cancelo",
+                "position": "RV",
+                "value": 35000000.0,
+                "rating": 8,
+                "startAge": 30
+            },
+            {
+                "firstname": "Fermin",
+                "lastname": "Lopez",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 4,
+                "startAge": 21
+            },
+            {
+                "firstname": "Ferran",
+                "lastname": "Torres",
+                "position": "LF",
+                "value": 30000000.0,
+                "rating": 4,
+                "startAge": 25
+            },
+            {
+                "firstname": "Vitor",
+                "lastname": "Roque",
+                "position": "ST",
+                "value": 40000000.0,
+                "rating": 4,
+                "startAge": 20
+            }
+        ]
+    },
+    {
+        "clubName": "Liverpool",
+        "foundingYear": 1892,
+        "trainer": {
+            "firstname": "Arne",
+            "lastname": "Slot"
+        },
+        "players": [
+            {
+                "firstname": "Alisson",
+                "lastname": "Becker",
+                "position": "TW",
+                "value": 35000000.0,
+                "rating": 9,
+                "startAge": 32
+            },
+            {
+                "firstname": "Trent",
+                "lastname": "Alexander-Arnold",
+                "position": "RV",
+                "value": 80000000.0,
+                "rating": 7,
+                "startAge": 26
+            },
+            {
+                "firstname": "Ibrahima",
+                "lastname": "Konate",
+                "position": "IV",
+                "value": 40000000.0,
+                "rating": 7,
+                "startAge": 26
+            },
+            {
+                "firstname": "Virgil",
+                "lastname": "van Dijk",
+                "position": "IV",
+                "value": 25000000.0,
+                "rating": 8,
+                "startAge": 33
+            },
+            {
+                "firstname": "Andrew",
+                "lastname": "Robertson",
+                "position": "LV",
+                "value": 30000000.0,
+                "rating": 7,
+                "startAge": 31
+            },
+            {
+                "firstname": "Alexis",
+                "lastname": "Mac Allister",
+                "position": "ZM",
+                "value": 60000000.0,
+                "rating": 8,
+                "startAge": 26
+            },
+            {
+                "firstname": "Dominik",
+                "lastname": "Szoboszlai",
+                "position": "ZM",
+                "value": 70000000.0,
+                "rating": 6,
+                "startAge": 24
+            },
+            {
+                "firstname": "Curtis",
+                "lastname": "Jones",
+                "position": "ZM",
+                "value": 30000000.0,
+                "rating": 5,
+                "startAge": 24
+            },
+            {
+                "firstname": "Mohamed",
+                "lastname": "Salah",
+                "position": "RF",
+                "value": 40000000.0,
+                "rating": 9,
+                "startAge": 32
+            },
+            {
+                "firstname": "Luis",
+                "lastname": "Diaz",
+                "position": "LF",
+                "value": 50000000.0,
+                "rating": 8,
+                "startAge": 28
+            },
+            {
+                "firstname": "Darwin",
+                "lastname": "Nunez",
+                "position": "ST",
+                "value": 65000000.0,
+                "rating": 6,
+                "startAge": 26
+            },
+            {
+                "firstname": "Caoimhin",
+                "lastname": "Kelleher",
+                "position": "TW",
+                "value": 15000000.0,
+                "rating": 4,
+                "startAge": 26
+            },
+            {
+                "firstname": "Joe",
+                "lastname": "Gomez",
+                "position": "IV",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 27
+            },
+            {
+                "firstname": "Jarell",
+                "lastname": "Quansah",
+                "position": "IV",
+                "value": 20000000.0,
+                "rating": 4,
+                "startAge": 22
+            },
+            {
+                "firstname": "Kostas",
+                "lastname": "Tsimikas",
+                "position": "LV",
+                "value": 10000000.0,
+                "rating": 4,
+                "startAge": 29
+            },
+            {
+                "firstname": "Ryan",
+                "lastname": "Gravenberch",
+                "position": "ZM",
+                "value": 35000000.0,
+                "rating": 7,
+                "startAge": 23
+            },
+            {
+                "firstname": "Diogo",
+                "lastname": "Jota",
+                "position": "LF",
+                "value": 50000000.0,
+                "rating": 8,
+                "startAge": 28
+            }
+        ]
+    },
+    {
+        "clubName": "Paris Saint-Germain",
+        "foundingYear": 1970,
+        "trainer": {
+            "firstname": "Luis",
+            "lastname": "Enrique"
+        },
+        "players": [
+            {
+                "firstname": "Gianluigi",
+                "lastname": "Donnarumma",
+                "position": "TW",
+                "value": 50000000.0,
+                "rating": 9,
+                "startAge": 26
+            },
+            {
+                "firstname": "Achraf",
+                "lastname": "Hakimi",
+                "position": "RV",
+                "value": 70000000.0,
+                "rating": 9,
+                "startAge": 26
+            },
+            {
+                "firstname": "",
+                "lastname": "Marquinhos",
+                "position": "IV",
+                "value": 40000000,
+                "rating": 8,
+                "startAge": 30
+            },
+            {
+                "firstname": "Lucas",
+                "lastname": "Hernandez",
+                "position": "IV",
+                "value": 45000000.0,
+                "rating": 7,
+                "startAge": 29
+            },
+            {
+                "firstname": "Nuno",
+                "lastname": "Mendes",
+                "position": "LV",
+                "value": 60000000.0,
+                "rating": 7,
+                "startAge": 22
+            },
+            {
+                "firstname": "",
+                "lastname": "Vitinha",
+                "position": "ZM",
+                "value": 60000000,
+                "rating": 7,
+                "startAge": 24
+            },
+            {
+                "firstname": "Warren",
+                "lastname": "Zaire-Emery",
+                "position": "ZM",
+                "value": 90000000.0,
+                "rating": 7,
+                "startAge": 19
+            },
+            {
+                "firstname": "Manuel",
+                "lastname": "Ugarte",
+                "position": "ZDM",
+                "value": 40000000.0,
+                "rating": 5,
+                "startAge": 23
+            },
+            {
+                "firstname": "Ousmane",
+                "lastname": "Dembele",
+                "position": "RF",
+                "value": 50000000.0,
+                "rating": 8,
+                "startAge": 28
+            },
+            {
+                "firstname": "Kylian",
+                "lastname": "Mbappe",
+                "position": "LF",
+                "value": 180000000.0,
+                "rating": 10,
+                "startAge": 26
+            },
+            {
+                "firstname": "Goncalo",
+                "lastname": "Ramos",
+                "position": "ST",
+                "value": 45000000.0,
+                "rating": 6,
+                "startAge": 24
+            },
+            {
+                "firstname": "Arnau",
+                "lastname": "Tenas",
+                "position": "TW",
+                "value": 8000000.0,
+                "rating": 3,
+                "startAge": 23
+            },
+            {
+                "firstname": "Milan",
+                "lastname": "Skriniar",
+                "position": "IV",
+                "value": 30000000.0,
+                "rating": 5,
+                "startAge": 30
+            },
+            {
+                "firstname": "Danilo",
+                "lastname": "Pereira",
+                "position": "IV",
+                "value": 8000000.0,
+                "rating": 4,
+                "startAge": 33
+            },
+            {
+                "firstname": "Bradley",
+                "lastname": "Barcola",
+                "position": "LF",
+                "value": 30000000.0,
+                "rating": 7,
+                "startAge": 22
+            },
+            {
+                "firstname": "Lee",
+                "lastname": "Kang-In",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 24
+            },
+            {
+                "firstname": "Marco",
+                "lastname": "Asensio",
+                "position": "RF",
+                "value": 35000000.0,
+                "rating": 6,
+                "startAge": 29
+            }
+        ]
+    },
+    {
+        "clubName": "Inter Mailand",
+        "foundingYear": 1908,
+        "trainer": {
+            "firstname": "Simone",
+            "lastname": "Inzaghi"
+        },
+        "players": [
+            {
+                "firstname": "Yann",
+                "lastname": "Sommer",
+                "position": "TW",
+                "value": 4000000.0,
+                "rating": 6,
+                "startAge": 36
+            },
+            {
+                "firstname": "Denzel",
+                "lastname": "Dumfries",
+                "position": "RV",
+                "value": 30000000.0,
+                "rating": 6,
+                "startAge": 28
+            },
+            {
+                "firstname": "Benjamin",
+                "lastname": "Pavard",
+                "position": "IV",
+                "value": 40000000.0,
+                "rating": 6,
+                "startAge": 29
+            },
+            {
+                "firstname": "Alessandro",
+                "lastname": "Bastoni",
+                "position": "IV",
+                "value": 70000000.0,
+                "rating": 8,
+                "startAge": 26
+            },
+            {
+                "firstname": "Federico",
+                "lastname": "Dimarco",
+                "position": "LV",
+                "value": 60000000.0,
+                "rating": 7,
+                "startAge": 26
+            },
+            {
+                "firstname": "Nicolo",
+                "lastname": "Barella",
+                "position": "ZM",
+                "value": 75000000.0,
+                "rating": 9,
+                "startAge": 28
+            },
+            {
+                "firstname": "Hakan",
+                "lastname": "Calhanoglu",
+                "position": "ZM",
+                "value": 40000000.0,
+                "rating": 8,
+                "startAge": 31
+            },
+            {
+                "firstname": "Henrikh",
+                "lastname": "Mkhitaryan",
+                "position": "ZM",
+                "value": 5000000.0,
+                "rating": 6,
+                "startAge": 36
+            },
+            {
+                "firstname": "Marcus",
+                "lastname": "Thuram",
+                "position": "ST",
+                "value": 40000000.0,
+                "rating": 8,
+                "startAge": 27
+            },
+            {
+                "firstname": "Lautaro",
+                "lastname": "Martinez",
+                "position": "ST",
+                "value": 110000000.0,
+                "rating": 9,
+                "startAge": 27
+            },
+            {
+                "firstname": "David",
+                "lastname": "Twink",
+                "position": "LV",
+                "value": 1000000.0,
+                "rating": 2,
+                "startAge": 18
+            },
+            {
+                "firstname": "Emil",
+                "lastname": "Audero",
+                "position": "TW",
+                "value": 5000000.0,
+                "rating": 4,
+                "startAge": 28
+            },
+            {
+                "firstname": "Francesco",
+                "lastname": "Acerbi",
+                "position": "IV",
+                "value": 2000000.0,
+                "rating": 6,
+                "startAge": 37
+            },
+            {
+                "firstname": "Carlos",
+                "lastname": "Augusto",
+                "position": "LV",
+                "value": 20000000.0,
+                "rating": 4,
+                "startAge": 25
+            },
+            {
+                "firstname": "Davide",
+                "lastname": "Frattesi",
+                "position": "ZM",
+                "value": 35000000.0,
+                "rating": 5,
+                "startAge": 25
+            },
+            {
+                "firstname": "Marko",
+                "lastname": "Arnautovic",
+                "position": "ST",
+                "value": 3000000.0,
+                "rating": 5,
+                "startAge": 36
+            },
+            {
+                "firstname": "Davy",
+                "lastname": "Klaassen",
+                "position": "ZM",
+                "value": 3000000.0,
+                "rating": 4,
+                "startAge": 32
+            }
+        ]
+    },
+    {
+        "clubName": "Atlético Madrid",
+        "foundingYear": 1903,
+        "trainer": {
+            "firstname": "Diego",
+            "lastname": "Simeone"
+        },
+        "players": [
+            {
+                "firstname": "Jan",
+                "lastname": "Oblak",
+                "position": "TW",
+                "value": 25000000.0,
+                "rating": 9,
+                "startAge": 32
+            },
+            {
+                "firstname": "Nahuel",
+                "lastname": "Molina",
+                "position": "RV",
+                "value": 35000000.0,
+                "rating": 7,
+                "startAge": 27
+            },
+            {
+                "firstname": "Jose Maria",
+                "lastname": "Gimenez",
+                "position": "IV",
+                "value": 30000000.0,
+                "rating": 7,
+                "startAge": 30
+            },
+            {
+                "firstname": "Axel",
+                "lastname": "Witsel",
+                "position": "IV",
+                "value": 4000000.0,
+                "rating": 6,
+                "startAge": 36
+            },
+            {
+                "firstname": "Samuel",
+                "lastname": "Lino",
+                "position": "LV",
+                "value": 30000000.0,
+                "rating": 6,
+                "startAge": 24
+            },
+            {
+                "firstname": "Rodrigo",
+                "lastname": "De Paul",
+                "position": "ZM",
+                "value": 35000000.0,
+                "rating": 7,
+                "startAge": 30
+            },
+            {
+                "firstname": "Koke",
+                "lastname": "Resurreccion",
+                "position": "ZM",
+                "value": 10000000.0,
+                "rating": 5,
+                "startAge": 33
+            },
+            {
+                "firstname": "Pablo",
+                "lastname": "Barrios",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 21
+            },
+            {
+                "firstname": "Antoine",
+                "lastname": "Griezmann",
+                "position": "ST",
+                "value": 25000000.0,
+                "rating": 9,
+                "startAge": 34
+            },
+            {
+                "firstname": "Alvaro",
+                "lastname": "Morata",
+                "position": "ST",
+                "value": 20000000.0,
+                "rating": 6,
+                "startAge": 32
+            },
+            {
+                "firstname": "Angel",
+                "lastname": "Correa",
+                "position": "RF",
+                "value": 25000000.0,
+                "rating": 7,
+                "startAge": 30
+            },
+            {
+                "firstname": "Horatiu",
+                "lastname": "Moldovan",
+                "position": "TW",
+                "value": 5000000.0,
+                "rating": 4,
+                "startAge": 26
+            },
+            {
+                "firstname": "Cesar",
+                "lastname": "Azpilicueta",
+                "position": "RV",
+                "value": 2000000.0,
+                "rating": 4,
+                "startAge": 35
+            },
+            {
+                "firstname": "Mario",
+                "lastname": "Hermoso",
+                "position": "IV",
+                "value": 20000000.0,
+                "rating": 4,
+                "startAge": 29
+            },
+            {
+                "firstname": "Reinildo",
+                "lastname": "Mandava",
+                "position": "LV",
+                "value": 8000000.0,
+                "rating": 4,
+                "startAge": 31
+            },
+            {
+                "firstname": "Thomas",
+                "lastname": "Lemar",
+                "position": "ZM",
+                "value": 15000000.0,
+                "rating": 5,
+                "startAge": 29
+            },
+            {
+                "firstname": "Memphis",
+                "lastname": "Depay",
+                "position": "ST",
+                "value": 10000000.0,
+                "rating": 6,
+                "startAge": 31
+            }
+        ]
+    },
+    {
+        "clubName": "Juventus Turin",
+        "foundingYear": 1897,
+        "trainer": {
+            "firstname": "Thiago",
+            "lastname": "Motta"
+        },
+        "players": [
+            {
+                "firstname": "Wojciech",
+                "lastname": "Szczesny",
+                "position": "TW",
+                "value": 8000000.0,
+                "rating": 8,
+                "startAge": 35
+            },
+            {
+                "firstname": "Danilo",
+                "lastname": "Luiz",
+                "position": "RV",
+                "value": 10000000.0,
+                "rating": 7,
+                "startAge": 33
+            },
+            {
+                "firstname": "",
+                "lastname": "Bremer",
+                "position": "IV",
+                "value": 50000000,
+                "rating": 8,
+                "startAge": 28
+            },
+            {
+                "firstname": "Federico",
+                "lastname": "Gatti",
+                "position": "IV",
+                "value": 25000000.0,
+                "rating": 6,
+                "startAge": 26
+            },
+            {
+                "firstname": "Andrea",
+                "lastname": "Cambiaso",
+                "position": "LV",
+                "value": 30000000.0,
+                "rating": 6,
+                "startAge": 24
+            },
+            {
+                "firstname": "Manuel",
+                "lastname": "Locatelli",
+                "position": "ZDM",
+                "value": 35000000.0,
+                "rating": 6,
+                "startAge": 27
+            },
+            {
+                "firstname": "Adrien",
+                "lastname": "Rabiot",
+                "position": "ZM",
+                "value": 30000000.0,
+                "rating": 7,
+                "startAge": 30
+            },
+            {
+                "firstname": "Nicolo",
+                "lastname": "Fagioli",
+                "position": "ZM",
+                "value": 20000000.0,
+                "rating": 5,
+                "startAge": 24
+            },
+            {
+                "firstname": "Federico",
+                "lastname": "Chiesa",
+                "position": "LF",
+                "value": 50000000.0,
+                "rating": 8,
+                "startAge": 27
+            },
+            {
+                "firstname": "Dusan",
+                "lastname": "Vlahovic",
+                "position": "ST",
+                "value": 65000000.0,
+                "rating": 7,
+                "startAge": 25
+            },
+            {
+                "firstname": "Weston",
+                "lastname": "McKennie",
+                "position": "ZM",
+                "value": 25000000.0,
+                "rating": 5,
+                "startAge": 26
+            },
+            {
+                "firstname": "Mattia",
+                "lastname": "Perin",
+                "position": "TW",
+                "value": 4000000.0,
+                "rating": 4,
+                "startAge": 32
+            },
+            {
+                "firstname": "Alex",
+                "lastname": "Sandro",
+                "position": "LV",
+                "value": 2000000.0,
+                "rating": 5,
+                "startAge": 34
+            },
+            {
+                "firstname": "Daniele",
+                "lastname": "Rugani",
+                "position": "IV",
+                "value": 4000000.0,
+                "rating": 3,
+                "startAge": 30
+            },
+            {
+                "firstname": "Timothy",
+                "lastname": "Weah",
+                "position": "RV",
+                "value": 15000000.0,
+                "rating": 5,
+                "startAge": 24
+            },
+            {
+                "firstname": "Fabio",
+                "lastname": "Miretti",
+                "position": "ZM",
+                "value": 20000000.0,
+                "rating": 5,
+                "startAge": 22
+            },
+            {
+                "firstname": "Clemens",
+                "lastname": "Muenzer",
+                "position": "ST",
+                "value": 18000000.0,
+                "rating": 10,
+                "startAge": 17
+            }
+        ]
+    }
+]
