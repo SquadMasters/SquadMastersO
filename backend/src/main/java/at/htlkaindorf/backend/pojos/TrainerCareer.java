@@ -2,10 +2,7 @@ package at.htlkaindorf.backend.pojos;
 
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class TrainerCareer {
 
     @EmbeddedId

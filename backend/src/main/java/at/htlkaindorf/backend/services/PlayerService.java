@@ -17,9 +17,20 @@ public class PlayerService {
 
     public final PlayerRepository playerRepository;
 
-    public List<Player> getAllPlayersClubs(Integer id) {
+    public List<Player> getAllPlayersClubs(Long id) {
 
         List<Player> players = playerRepository.findPlayersByClub(id);
+
+        if (players.isEmpty()) {
+            log.error("Keine Spieler vorhanden!");
+        }
+
+        return players;
+    }
+
+    public List<Player> getAllPlayers() {
+
+        List<Player> players = playerRepository.findAll();
 
         if (players.isEmpty()) {
             log.error("Keine Spieler vorhanden!");

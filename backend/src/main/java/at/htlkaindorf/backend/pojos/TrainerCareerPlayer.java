@@ -2,15 +2,13 @@ package at.htlkaindorf.backend.pojos;
 
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Builder
 public class TrainerCareerPlayer {
 
     @EmbeddedId

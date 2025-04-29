@@ -24,5 +24,6 @@ public class Trainer {
 
     @OneToOne(mappedBy = "trainer", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonBackReference
+    @ToString.Exclude
     private Club club;
 }

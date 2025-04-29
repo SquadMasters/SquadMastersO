@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -20,7 +17,7 @@ public class Club {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer club_id;
+    private Long club_id;
 
     @Column(nullable = false)
     private String clubName;
@@ -29,9 +26,11 @@ public class Club {
     private Integer foundingYear;
 
     @OneToMany(mappedBy = "club", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<TrainerCareer> trainerCareers;
 
     @OneToMany(mappedBy = "club", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<TrainerCareerPlayer> careerPlayers;
 
     @OneToMany(mappedBy = "startClub", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

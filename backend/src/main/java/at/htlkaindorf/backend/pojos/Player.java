@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -38,6 +39,7 @@ public class Player {
     private Integer startAge;
 
     @OneToMany(mappedBy = "player", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<TrainerCareerPlayer> trainerCareerPlayerList;
 
     @ManyToMany(mappedBy = "wishlistEntries")
@@ -46,5 +48,6 @@ public class Player {
     @ManyToOne
     @JoinColumn(name = "club_id")
     @JsonBackReference
+    @ToString.Exclude
     private Club startClub;
 }
