@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.controller;
 
+import at.htlkaindorf.backend.dto.ClubDTO;
 import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.services.ClubService;
 import at.htlkaindorf.backend.utils.JWTUtils;
@@ -22,10 +23,10 @@ public class ClubController {
     private final ClubService clubsService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<Club>> getAllClubs() {
+    public ResponseEntity<List<ClubDTO>> getAllClubs() {
 
         if (!clubsService.getAllClubs().isEmpty()) {
-            return ResponseEntity.ok(clubsService.getAllClubs());
+            return ResponseEntity.ok(clubsService.getAllClubsDTO());
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No clubs available!");
         }

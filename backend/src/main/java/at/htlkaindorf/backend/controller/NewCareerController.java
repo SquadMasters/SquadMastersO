@@ -28,7 +28,7 @@ public class NewCareerController {
     private final PlayerService playerService;
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createNewCareer(@RequestBody String careerName) {
+    public ResponseEntity<Boolean> createNewCareer(@RequestBody String careerName, @RequestBody String clubName, @RequestBody String username) {
 
         if (careerName == null || careerName.trim().isEmpty()) {
             return ResponseEntity.badRequest().build();

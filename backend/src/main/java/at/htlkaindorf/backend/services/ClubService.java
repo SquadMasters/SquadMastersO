@@ -1,5 +1,8 @@
 package at.htlkaindorf.backend.services;
 
+import at.htlkaindorf.backend.dto.ClubDTO;
+import at.htlkaindorf.backend.mapper.ClubMapper;
+import at.htlkaindorf.backend.mapper.UserMapper;
 import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.pojos.User;
 import at.htlkaindorf.backend.repositories.ClubRepository;
@@ -9,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +20,18 @@ import java.util.List;
 public class ClubService {
 
     public final ClubRepository clubRepository;
+    private final ClubMapper clubMapper;
+
+    public List<ClubDTO> getAllClubsDTO() {
+
+        List<Club> clubs = clubRepository.findAll();
+
+        if (clubs.isEmpty()) {
+            log.error("Keine Clubs vorhanden!");
+        }
+
+        return clubs.stream().map(clubMapper::toDTO).collect(Collectors.toList());
+    }
 
     public List<Club> getAllClubs() {
 
