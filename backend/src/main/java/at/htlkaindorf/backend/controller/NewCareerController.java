@@ -34,7 +34,6 @@ public class NewCareerController {
             return ResponseEntity.badRequest().build();
         }
 
-
         Random random = new Random();
 
         Career career = Career.builder().season(2025).careerName(careerName).build();
