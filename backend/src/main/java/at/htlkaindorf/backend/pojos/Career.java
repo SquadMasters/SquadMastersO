@@ -16,6 +16,7 @@ public class Career {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long career_id;
 
+    @Column(unique = true)
     private String careerName;
 
     private Integer season;

@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.controller;
 import at.htlkaindorf.backend.dto.UserDTO;
 import at.htlkaindorf.backend.pojos.User;
 import at.htlkaindorf.backend.services.AuthService;
+import at.htlkaindorf.backend.services.UserService;
 import at.htlkaindorf.backend.utils.JWTUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {

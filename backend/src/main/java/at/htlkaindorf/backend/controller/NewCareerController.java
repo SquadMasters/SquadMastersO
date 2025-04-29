@@ -1,12 +1,10 @@
 package at.htlkaindorf.backend.controller;
 
+import at.htlkaindorf.backend.dto.NewCareerRequestDTO;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
-import at.htlkaindorf.backend.services.CareerService;
-import at.htlkaindorf.backend.services.ClubService;
-import at.htlkaindorf.backend.services.PlayerService;
-import at.htlkaindorf.backend.services.TrainerCareerService;
+import at.htlkaindorf.backend.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -26,17 +24,25 @@ public class NewCareerController {
     private final CareerService careerService;
     private final ClubService clubsService;
     private final PlayerService playerService;
+    private final UserService userService;
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createNewCareer(@RequestBody String careerName, @RequestBody String clubName, @RequestBody String username) {
+    public ResponseEntity<Boolean> createNewCareer(@RequestBody NewCareerRequestDTO newCareerRequestDTO) {
 
-        if (careerName == null || careerName.trim().isEmpty()) {
+        if (newCareerRequestDTO.getCareerName() == null || newCareerRequestDTO.getCareerName().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
+        }
+
+        User user;
+        try {
+            user = userService.getUserByUsername(newCareerRequestDTO.getUsername());
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
         }
 
         Random random = new Random();
 
-        Career career = Career.builder().season(2025).careerName(careerName).build();
+        Career career = Career.builder().season(2025).careerName(newCareerRequestDTO.getCareerName()).build();
         List<TrainerCareer> trainerCareers = new ArrayList<>();
         List<TrainerCareerPlayer> trainerCareerPlayers;
         List<TrainerCareerPlayer> allPlayers = new ArrayList<>();
@@ -48,7 +54,20 @@ public class NewCareerController {
             int budget = 10_000_000 + random.nextInt(90_000_000);
 
             TrainerCareerPK trainerCareerPK = new TrainerCareerPK(club.getClub_id(), career.getCareer_id());
-            TrainerCareer trainerCareer = TrainerCareer.builder().trainerCareer_pk(trainerCareerPK).career(career).budget(budget).club(club).build();
+            TrainerCareer trainerCareer = TrainerCareer.builder()
+                    .trainerCareer_pk(trainerCareerPK)
+                    .career(career)
+                    .budget(budget)
+                    .club(club)
+                    .build();
+
+            if (club.getClubName().equals(newCareerRequestDTO.getClubName())) {
+                trainerCareer.setUser(user);
+                List<TrainerCareer> careersOfUser = user.getTrainerCareers();
+                careersOfUser.add(trainerCareer);
+                user.setTrainerCareers(careersOfUser);
+            }
+
             trainerCareers.add(trainerCareer);
 
             trainerCareerPlayers = new ArrayList<>();
@@ -94,5 +113,4 @@ public class NewCareerController {
 
         return ResponseEntity.ok(true);
     }
-
 }

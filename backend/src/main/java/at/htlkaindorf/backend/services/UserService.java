@@ -20,7 +20,7 @@ public class UserService {
 
     public User getUserByUsername(String username) {
 
-        if (username == null || username.trim().isEmpty()) {
+        if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username cannot be empty!");
         }
 

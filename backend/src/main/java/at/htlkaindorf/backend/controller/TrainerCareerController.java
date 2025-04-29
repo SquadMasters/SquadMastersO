@@ -1,5 +1,7 @@
 package at.htlkaindorf.backend.controller;
 
+import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
+import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.services.AuthService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/trainerCareer")
@@ -19,10 +22,13 @@ import java.util.List;
 public class TrainerCareerController {
 
     private final TrainerCareerService trainerCareerService;
+    private final TrainerCareersMapper trainerCareersMapper;
 
     @GetMapping("/allByUser")
-    public ResponseEntity<List<TrainerCareer>> getAlleUsersById(@RequestBody String username) {
+    public ResponseEntity<List<ShowAllTrainerCareersDTO>> getAlleUsersById(@RequestBody String username) {
 
-        return ResponseEntity.ok(trainerCareerService.getAllTrainerCareersByUser(username));
+        List<TrainerCareer> trainerCareers = trainerCareerService.getAllTrainerCareersByUser(username);
+
+        return ResponseEntity.ok(trainerCareers.stream().map(trainerCareersMapper::toDTO).collect(Collectors.toList()));
     }
 }
