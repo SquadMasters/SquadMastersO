@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Random;
 
 @RestController
-@RequestMapping("/createNewCareer")
+@RequestMapping("/newCareer")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 @Slf4j
@@ -27,7 +27,7 @@ public class NewCareerController {
     private final ClubService clubsService;
     private final PlayerService playerService;
 
-    @PostMapping("/createNewCareer")
+    @PostMapping("/create")
     public ResponseEntity<Boolean> createNewCareer(@RequestBody String careerName) {
 
         if (careerName == null || careerName.trim().isEmpty()) {
