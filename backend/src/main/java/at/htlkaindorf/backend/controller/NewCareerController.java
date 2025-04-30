@@ -59,6 +59,10 @@ public class NewCareerController {
                     .career(career)
                     .budget(budget)
                     .club(club)
+                    .wins(0)
+                    .losses(0)
+                    .draws(0)
+                    .goalDiff(0)
                     .build();
 
             if (club.getClubName().equals(newCareerRequestDTO.getClubName())) {

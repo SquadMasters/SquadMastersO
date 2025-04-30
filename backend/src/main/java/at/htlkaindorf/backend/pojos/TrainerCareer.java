@@ -30,6 +30,15 @@ public class TrainerCareer {
 
     private Integer budget;
 
+    private Integer wins;
+
+    private Integer draws;
+
+    private Integer losses;
+
+    private Integer goalDiff;
+
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

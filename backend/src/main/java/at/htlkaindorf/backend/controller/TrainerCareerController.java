@@ -1,6 +1,7 @@
 package at.htlkaindorf.backend.controller;
 
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
+import at.htlkaindorf.backend.dto.TableDataDTO;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.services.AuthService;
@@ -22,13 +23,21 @@ import java.util.stream.Collectors;
 public class TrainerCareerController {
 
     private final TrainerCareerService trainerCareerService;
-    private final TrainerCareersMapper trainerCareersMapper;
 
     @GetMapping("/allByUser")
     public ResponseEntity<List<ShowAllTrainerCareersDTO>> getAlleUsersById(@RequestBody String username) {
 
-        List<TrainerCareer> trainerCareers = trainerCareerService.getAllTrainerCareersByUser(username);
+        List<ShowAllTrainerCareersDTO> trainerCareers = trainerCareerService.getAllTrainerCareersByUser(username);
 
-        return ResponseEntity.ok(trainerCareers.stream().map(trainerCareersMapper::toDTO).collect(Collectors.toList()));
+        return ResponseEntity.ok(trainerCareers);
+    }
+
+    @GetMapping("/tableDataByCareer")
+    public ResponseEntity<List<TableDataDTO>> getTableFromCareer(@RequestBody String careername) {
+
+        List<TableDataDTO> trainerCareers = trainerCareerService.getAllTeamsFromCareer(careername);
+
+        return ResponseEntity.ok(trainerCareers);
+
     }
 }
