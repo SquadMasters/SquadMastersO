@@ -24,8 +24,8 @@ public class TrainerCareerController {
 
     private final TrainerCareerService trainerCareerService;
 
-    @GetMapping("/allByUser")
-    public ResponseEntity<List<ShowAllTrainerCareersDTO>> getAlleUsersById(@RequestBody String username) {
+    @GetMapping("/allByUser/{username}")
+    public ResponseEntity<List<ShowAllTrainerCareersDTO>> getAlleUsersById(@PathVariable String username) {
 
         List<ShowAllTrainerCareersDTO> trainerCareers = trainerCareerService.getAllTrainerCareersByUser(username);
 
