@@ -32,8 +32,8 @@ public class TrainerCareerController {
         return ResponseEntity.ok(trainerCareers);
     }
 
-    @GetMapping("/tableDataByCareer")
-    public ResponseEntity<List<TableDataDTO>> getTableFromCareer(@RequestBody String careername) {
+    @GetMapping("/tableDataByCareer/{careername}")
+    public ResponseEntity<List<TableDataDTO>> getTableFromCareer(@PathVariable String careername) {
 
         List<TableDataDTO> trainerCareers = trainerCareerService.getAllTeamsFromCareer(careername);
 
