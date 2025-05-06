@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,7 +32,7 @@ public class AuthService {
 
     public UserDTO registerUser(String userName, String passwd) {
 
-        User user = User.builder().userName(userName).userPassword(passwd).build();
+        User user = User.builder().userName(userName).userPassword(passwd).trainerCareers(new ArrayList<>()).build();
 
         if (!userRepository.getUsersByUserName(userName).isEmpty()) {
             log.error("Username schon vorhanden!");

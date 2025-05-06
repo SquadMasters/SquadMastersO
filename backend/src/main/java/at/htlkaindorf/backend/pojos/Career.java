@@ -21,6 +21,8 @@ public class Career {
 
     private Integer season;
 
+    private Boolean isRunning;
+
     @OneToMany(mappedBy = "career", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<TrainerCareer> trainerCareers;

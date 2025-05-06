@@ -23,25 +23,22 @@ public class ClubService {
     private final ClubMapper clubMapper;
 
     public List<ClubDTO> getAllClubsDTO() {
-
         List<Club> clubs = clubRepository.findAll();
-
-        if (clubs.isEmpty()) {
-            log.error("Keine Clubs vorhanden!");
-        }
-
+        logIfEmpty(clubs, "Keine Clubs vorhanden!");
         return clubs.stream().map(clubMapper::toDTO).collect(Collectors.toList());
     }
 
     public List<Club> getAllClubs() {
-
         List<Club> clubs = clubRepository.findAll();
-
-        if (clubs.isEmpty()) {
-            log.error("Keine Clubs vorhanden!");
-        }
-
+        logIfEmpty(clubs, "Keine Clubs vorhanden!");
         return clubs;
     }
+
+    private void logIfEmpty(List<?> list, String message) {
+        if (list.isEmpty()) {
+            log.error(message);
+        }
+    }
+
 
 }

@@ -27,4 +27,8 @@ public class CareerService {
 
         return true;
     }
+
+    public List<String> getCareersToJoin(String username) {
+        return careerRepository.getCareersWithoutUser(username);
+    }
 }

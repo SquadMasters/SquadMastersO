@@ -17,7 +17,7 @@ import java.util.Random;
 @RestController
 @RequestMapping("/newCareer")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @Slf4j
 public class NewCareerController {
 
@@ -42,7 +42,7 @@ public class NewCareerController {
 
         Random random = new Random();
 
-        Career career = Career.builder().season(2025).careerName(newCareerRequestDTO.getCareerName()).build();
+        Career career = Career.builder().season(2025).isRunning(false).careerName(newCareerRequestDTO.getCareerName()).build();
         List<TrainerCareer> trainerCareers = new ArrayList<>();
         List<TrainerCareerPlayer> trainerCareerPlayers;
         List<TrainerCareerPlayer> allPlayers = new ArrayList<>();

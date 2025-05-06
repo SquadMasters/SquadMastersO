@@ -16,4 +16,13 @@ public interface TrainerCareerRepository extends JpaRepository<TrainerCareer, Tr
     @Query("SELECT c FROM TrainerCareer c WHERE c.career.careerName = ?1")
     List<TrainerCareer> findAllByCareer(String career);
 
+    @Query("SELECT t.club.clubName FROM TrainerCareer t WHERE t.career.careerName = ?1 AND t.user.userName = ?2")
+    String findClubNameByUserAndCareer(String careername, String username);
+
+    @Query("SELECT t FROM TrainerCareer t WHERE t.club.clubName = ?1 AND t.career.careerName = ?2")
+    TrainerCareer findTrainerCareerByClubnameAndCareername(String clubname, String careername);
+
+    @Query("SELECT t.club.clubName FROM TrainerCareer t WHERE t.user IS NULL AND t.career.careerName = ?1")
+    List<String> findTrainerCareersToJoin(String careername);
+
 }

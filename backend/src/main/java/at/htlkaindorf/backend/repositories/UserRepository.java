@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.repositories;
 
+import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.pojos.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

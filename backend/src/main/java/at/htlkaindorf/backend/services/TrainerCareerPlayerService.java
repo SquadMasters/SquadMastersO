@@ -1,11 +1,40 @@
 package at.htlkaindorf.backend.services;
 
+import at.htlkaindorf.backend.dto.PlayerListDTO;
+import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
+import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
+import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
+import at.htlkaindorf.backend.pojos.Club;
+import at.htlkaindorf.backend.pojos.TrainerCareer;
+import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
+import at.htlkaindorf.backend.repositories.ClubRepository;
+import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
+import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
+import at.htlkaindorf.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class TrainerCareerPlayerService {
+
+    public final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
+    private final TrainerCareerRepository trainerCareerRepository;
+    private final TrainerCareerPlayerMapper trainerCareerPlayerMapper;
+
+
+    public List<PlayerListDTO> getAllPlayersByTrainerCareer(String username, String careername) {
+
+        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findPlayersByTrainerCareer(clubname, careername);
+
+        return tcPlayers.stream()
+                .map(trainerCareerPlayerMapper::toPlayerListDTO)
+                .toList();
+    }
 }
