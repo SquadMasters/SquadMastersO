@@ -13,6 +13,7 @@ public interface TrainerCareersMapper {
     @Mapping(target = "clubName", source = "club.clubName")
     @Mapping(target = "careerName", source = "career.careerName")
     @Mapping(target = "username", source = "user.userName")
+    @Mapping(target = "startUser", source = "career.startUser.userName")
     ShowAllTrainerCareersDTO toDTO(TrainerCareer trainerCareer);
 
     @Mapping(target = "clubName", source = "club.clubName")

@@ -23,6 +23,10 @@ public class Career {
 
     private Boolean isRunning;
 
+    @ManyToOne
+    @JoinColumn(name = "startUserFK")
+    private User startUser;
+
     @OneToMany(mappedBy = "career", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<TrainerCareer> trainerCareers;

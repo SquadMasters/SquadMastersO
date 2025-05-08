@@ -24,6 +24,9 @@ public class User {
     @Column(nullable = false)
     private String userPassword;
 
+    @OneToMany(mappedBy = "startUser", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    List<Career> careers;
+
     @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @ToString.Exclude
     private List<TrainerCareer> trainerCareers;

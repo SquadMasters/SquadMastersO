@@ -38,6 +38,8 @@ public class TrainerCareer {
 
     private Integer goalDiff;
 
+    private Integer leagueTitleCount;
+
 
     @ManyToOne
     @JoinColumn(name = "user_id")

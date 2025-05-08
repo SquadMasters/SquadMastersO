@@ -41,7 +41,11 @@ public class NewCareerController {
 
         Random random = new Random();
 
-        Career career = Career.builder().season(2025).isRunning(false).careerName(newCareerRequestDTO.getCareerName()).build();
+        Career career = Career.builder().season(2025).startUser(user).isRunning(false).careerName(newCareerRequestDTO.getCareerName()).build();
+        List<Career> careers = user.getCareers();
+        careers.add(career);
+        user.setCareers(careers);
+
         List<TrainerCareer> trainerCareers = new ArrayList<>();
         List<TrainerCareerPlayer> trainerCareerPlayers;
         List<TrainerCareerPlayer> allPlayers = new ArrayList<>();
@@ -62,6 +66,7 @@ public class NewCareerController {
                     .losses(0)
                     .draws(0)
                     .goalDiff(0)
+                    .leagueTitleCount(0)
                     .build();
 
             if (club.getClubName().equals(newCareerRequestDTO.getClubName())) {

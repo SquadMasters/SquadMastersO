@@ -14,4 +14,5 @@ public class ShowAllTrainerCareersDTO {
     private String clubName;
     private String careerName;
     private String username;
+    private String startUser;
 }

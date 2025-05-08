@@ -32,7 +32,7 @@ public class AuthService {
 
     public UserDTO registerUser(String userName, String passwd) {
 
-        User user = User.builder().userName(userName).userPassword(passwd).trainerCareers(new ArrayList<>()).build();
+        User user = User.builder().userName(userName).trainerCareers(new ArrayList<>()).userPassword(passwd).trainerCareers(new ArrayList<>()).build();
 
         if (!userRepository.getUsersByUserName(userName).isEmpty()) {
             log.error("Username schon vorhanden!");

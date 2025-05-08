@@ -14,5 +14,6 @@ public class HomepageDTO {
     private String lastname;
     private String username;
     private Integer season;
+    private Integer leagueTitleCount;
 
 }
