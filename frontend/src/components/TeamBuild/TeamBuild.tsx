@@ -1,40 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Table } from "react-bootstrap";
 import "./TeamBuild.css";
 
 const TeamBuild = () => {
-    const initialPlayers = [
-        { rating: 84, firstname: "Thibaut", lastname: "Courtois", short: "TC", position: "TW", age: 32, value: "€25M" },
-        { rating: 80, firstname: "Andriy", lastname: "Lunin", short: "AL", position: "TW", age: 26, value: "€20M" },
-        { rating: 75, firstname: "Fran", lastname: "González", short: "FG", position: "TW", age: 19, value: "€0.4M" },
-        { rating: 82, firstname: "Dani", lastname: "Carvajal", short: "DC", position: "RV", age: 33, value: "€8M" },
-        { rating: 83, firstname: "Éder", lastname: "Militão", short: "EM", position: "IV", age: 27, value: "€40M" },
-        { rating: 81, firstname: "David", lastname: "Alaba", short: "DA", position: "IV", age: 32, value: "€15M" },
-        { rating: 84, firstname: "Antonio", lastname: "Rüdiger", short: "AR", position: "IV", age: 32, value: "€25M" },
-        { rating: 79, firstname: "Ferland", lastname: "Mendy", short: "FM", position: "LV", age: 29, value: "€18M" },
-        { rating: 78, firstname: "Lucas", lastname: "Vázquez", short: "LV", position: "RV", age: 33, value: "€5M" },
-        { rating: 77, firstname: "Fran", lastname: "García", short: "FG", position: "LV", age: 25, value: "€10M" },
-        { rating: 75, firstname: "Jesús", lastname: "Vallejo", short: "JV", position: "IV", age: 28, value: "€2M" },
-        { rating: 86, firstname: "Jude", lastname: "Bellingham", short: "JB", position: "ZM", age: 21, value: "€120M" },
-        { rating: 84, firstname: "Federico", lastname: "Valverde", short: "FV", position: "ZM", age: 26, value: "€90M" },
-        { rating: 83, firstname: "Eduardo", lastname: "Camavinga", short: "EC", position: "ZM", age: 21, value: "€70M" },
-        { rating: 83, firstname: "Aurélien", lastname: "Tchouaméni", short: "AT", position: "ZM", age: 24, value: "€80M" },
-        { rating: 80, firstname: "Luka", lastname: "Modrić", short: "LM", position: "ZM", age: 39, value: "€3M" },
-        { rating: 78, firstname: "Dani", lastname: "Ceballos", short: "DC", position: "ZM", age: 28, value: "€15M" },
-        { rating: 77, firstname: "Arda", lastname: "Güler", short: "AG", position: "OM", age: 19, value: "€20M" },
-        { rating: 88, firstname: "Kylian", lastname: "Mbappé", short: "KM", position: "ST", age: 25, value: "€180M" },
-        { rating: 87, firstname: "Vinícius", lastname: "Júnior", short: "VJ", position: "LF", age: 24, value: "€150M" },
-        { rating: 85, firstname: "Rodrygo", lastname: "Goes", short: "RG", position: "RF", age: 23, value: "€100M" },
-        { rating: 78, firstname: "Brahim", lastname: "Díaz", short: "BD", position: "OM", age: 24, value: "€25M" },
-        { rating: 77, firstname: "Endrick", lastname: "Felipe", short: "EF", position: "ST", age: 18, value: "€30M" },
-    ];
+    const savedTeam = localStorage.getItem("selectedTeam");
+    const parsedTeam = savedTeam ? JSON.parse(savedTeam) : null;
+    const clubName = parsedTeam?.name || "Unbekanntes Team";
+    const clubLogo = parsedTeam?.logo || "/default-logo.png";
+
+    const username = localStorage.getItem("username") || "";
+    const careername = localStorage.getItem("careername") || "";
 
     const fieldPositions = ["LAV", "IV1", "IV2", "RAV", "ZM1", "DZM", "ZM2", "LF", "ST", "RF", "TW"];
-    const [players] = useState(initialPlayers);
+    const [players, setPlayers] = useState<any[]>([]);
     const [field, setField] = useState(fieldPositions.reduce((acc, pos) => ({ ...acc, [pos]: null }), {}));
     const [highlighted, setHighlighted] = useState<{ [key: string]: boolean }>({});
     const [assignedPlayers, setAssignedPlayers] = useState<Set<string>>(new Set());
     const [selectedPosition, setSelectedPosition] = useState("Alle");
+
+    useEffect(() => {
+        const url = `http://localhost:8080/trainerCareerPlayer/allPlayersFromTrainerCareer?username=${encodeURIComponent(username)}&careername=${encodeURIComponent(careername)}`;
+
+        fetch(url)
+            .then((res) => {
+                if (!res.ok) throw new Error(`Fehler: ${res.status}`);
+                return res.json();
+            })
+            .then((data) => {
+                console.log("Empfangene Spieler:", data);
+                const withShorts = data.map((p: any) => ({
+                    ...p,
+                    short: getInitials(p.firstname, p.lastname),
+                    age: p.ageNow,
+                    value: `€${(p.value / 1_000_000).toFixed(1)}M`,
+                }));
+                setPlayers(withShorts);
+            })
+            .catch((err) => {
+                console.error("Fehler beim Laden der Spieler:", err);
+            });
+    }, [username, careername]);
+
+
+
+
+
+
+    const getInitials = (first: string, last: string) => {
+        return `${first?.[0] || ""}${last?.[0] || ""}`.toUpperCase();
+    };
 
     const handleDragStart = (event: React.DragEvent, player: any) => {
         event.dataTransfer.setData("player", JSON.stringify(player));
@@ -59,10 +73,7 @@ const TeamBuild = () => {
 
         const allowedPositions = validPositions[player.position] || [];
 
-        if (!allowedPositions.includes(position)) {
-            return;
-        }
-
+        if (!allowedPositions.includes(position)) return;
         if (Object.values(field).includes(player)) return;
 
         setField(prev => ({ ...prev, [position]: player }));
@@ -83,10 +94,9 @@ const TeamBuild = () => {
     };
 
     const getTotalRating = () => {
-        const total = Object.values(field)
+        return Object.values(field)
             .filter(player => player !== null)
             .reduce((sum, player) => sum + (player?.rating || 0), 0);
-        return Math.round(total);
     };
 
     const getTotalValue = () => {
@@ -94,16 +104,21 @@ const TeamBuild = () => {
             .filter(player => player !== null)
             .reduce((sum, player) => {
                 if (!player?.value) return sum;
-                const valueString = player.value.replace(/[^0-9.]/g, "").replace("M", "");
-                return sum + parseFloat(valueString);
+                const num = parseFloat(player.value.replace(/[^0-9.]/g, ""));
+                return sum + num;
             }, 0);
-
-        return `€${total}M`;
+        return `€${total.toFixed(1)}M`;
     };
 
     return (
         <div className="teambuild-container">
             <h1 className="teambuild-title">TeamBuild</h1>
+
+            {/* Clubanzeige */}
+            <div className="club-header">
+                <img src={clubLogo} alt={clubName} className="club-logo" />
+                <h2>{clubName}</h2>
+            </div>
 
             {/* Infos */}
             <div className="team-info">

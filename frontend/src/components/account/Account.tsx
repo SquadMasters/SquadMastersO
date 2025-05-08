@@ -20,9 +20,9 @@ const Account: React.FC = () => {
     const [career, setCareer] = useState<Career | null>(null);
 
     useEffect(() => {
-        // Benutzername aus LocalStorage holen
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        setUsername(storedUser.username || null);
+        // Benutzername direkt als String holen
+        const storedUsername = localStorage.getItem('username');
+        setUsername(storedUsername);
 
         // Karriere aus LocalStorage holen
         const storedCareer = JSON.parse(localStorage.getItem('career') || '{}');
@@ -37,7 +37,7 @@ const Account: React.FC = () => {
 
             <div className="card p-4 shadow mx-auto" style={{ maxWidth: '500px', borderRadius: '15px' }}>
                 <h4 className="mb-3">Benutzername:</h4>
-                <p className="fs-5">{username || 'Kein Benutzer gefunden'}</p>
+                <p className="fs-5">{username || 'Kein Benutzer gefunden || Loggen Sie sich ein'}</p>
 
                 <hr />
 
@@ -46,7 +46,6 @@ const Account: React.FC = () => {
                     <div className="text-center">
                         <img src={career.team.logoUrl} alt={career.team.name} style={{ width: '100px' }} className="mb-3" />
                         <p className="fs-5">{career.team.name}</p>
-                        <small className="text-muted">{career.team.league} - {career.team.country}</small>
 
                         <hr className="my-4" />
 
@@ -56,7 +55,7 @@ const Account: React.FC = () => {
                         <small className="text-muted">Erstellt am: {new Date(career.createdAt).toLocaleDateString()}</small>
                     </div>
                 ) : (
-                    <p className="text-muted">Kein Team ausgewählt.</p>
+                    <p className="text-muted">Keine Karriere gestartet.</p>
                 )}
             </div>
         </div>

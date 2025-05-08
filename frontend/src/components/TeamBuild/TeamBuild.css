@@ -196,3 +196,13 @@
     box-shadow: 0 0 10px 4px #00ffff;
     background-color: #00aaff;
 }
+.club-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.club-logo {
+    height: 50px;
+    margin-right: 15px;
+}

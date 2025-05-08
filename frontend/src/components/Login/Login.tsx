@@ -7,15 +7,34 @@ const Login: React.FC = () => {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (username && password) {
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
 
-        if (username === storedUser.username && password === storedUser.password) {
-            navigate('/karriereauswahl');
+                if (response.ok) {
+                    const token = await response.text();
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('username', username); // ✅ speichert aktuellen User
+                    navigate('/karriereauswahl');
+                } else {
+                    const errorData = await response.text();
+                    alert(`Login fehlgeschlagen: ${errorData}`);
+                }
+            } catch (error) {
+                console.error('Fehler beim Login:', error);
+                alert('Ein Fehler ist aufgetreten.');
+            }
         } else {
-            alert('Falscher Benutzername oder Passwort.');
+            alert('Bitte Benutzername und Passwort eingeben.');
         }
     };
 

@@ -1,17 +1,79 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Card, Carousel, Col, Container, ListGroup, Row, Table } from "react-bootstrap";
 import "./Home.css";
 
+// Logo-Imports
+import arsenal from '../../assets/arsenalwappen.png';
+import atletico from '../../assets/atleticowappen.png';
+import barca from '../../assets/barcawappen.png';
+import bayern from '../../assets/bayernwappen.png';
+import city from '../../assets/citywappen.png';
+import inter from '../../assets/interwappen.png';
+import juve from '../../assets/juve.png';
+import liverpool from '../../assets/liverpool.png';
+import milan from '../../assets/milan.png';
+import psg from '../../assets/psgwappen.png';
+import real from '../../assets/reallogo.png';
+
+const logoMap: { [key: string]: string } = {
+    'Arsenal': arsenal,
+    'Atlético Madrid': atletico,
+    'FC Barcelona': barca,
+    'Bayern München': bayern,
+    'Manchester City': city,
+    'Inter Mailand': inter,
+    'Juventus Turin': juve,
+    'Liverpool': liverpool,
+    'AC Mailand': milan,
+    'Paris Saint-Germain': psg,
+    'Real Madrid': real,
+};
+
+interface TableDataDTO {
+    clubName: string;
+    wins: number;
+    draws: number;
+    losses: number;
+    goalDiff: number;
+}
+
 const Home = () => {
+    const [tableData, setTableData] = useState<TableDataDTO[]>([]);
+    const [userClubName, setUserClubName] = useState('');
+    const [opponentClubName, setOpponentClubName] = useState('');
+
+    useEffect(() => {
+        const careerName = localStorage.getItem("careername");
+        if (!careerName) return;
+
+        axios.get(`http://localhost:8080/trainerCareer/tableDataByCareer/${careerName}`)
+            .then(res => {
+                setTableData(res.data);
+            })
+            .catch(err => {
+                console.error("Fehler beim Laden der Tabelle:", err);
+            });
+
+        const career = JSON.parse(localStorage.getItem("career") || "{}");
+        if (career?.team?.name) {
+            setUserClubName(career.team.name);
+        }
+
+        const opponentName = localStorage.getItem("opponentTeamName") || '';
+        setOpponentClubName(opponentName);
+    }, []);
+
     return (
         <Container className="home">
             <Row>
                 <Col sm={9} style={{ paddingLeft: "0" }}>
                     <Row>
                         <Col sm={5}>
-                            <h2 className="home-blue_color">Juventus</h2>
+                            <h2 className="home-blue_color">{userClubName}</h2>
                             <img
-                                src={"src/components/Home/hometest/juve.png"}
-                                alt={"clubLogo"}
+                                src={logoMap[userClubName] || ''}
+                                alt={userClubName}
                                 height={"350px"}
                                 width={"250px"}
                             />
@@ -22,10 +84,10 @@ const Home = () => {
                             <h3 className="home-next-match-date">01.01.2025</h3>
                         </Col>
                         <Col sm={5}>
-                            <h2 className="home-blue_color">Milan</h2>
+                            <h2 className="home-blue_color">{opponentClubName}</h2>
                             <img
-                                src={"src/components/Home/hometest/milan.png"}
-                                alt={"clubLogo"}
+                                src={logoMap[opponentClubName] || ''}
+                                alt={opponentClubName}
                                 height={"350px"}
                                 width={"250px"}
                             />
@@ -45,7 +107,7 @@ const Home = () => {
                                     <Card.Text>„ka was des für ein text is“</Card.Text>
                                 </Card.Body>
                                 <ListGroup className="list-group-flush">
-                                    <ListGroup.Item>Real Madrid</ListGroup.Item>
+                                    <ListGroup.Item>{userClubName}</ListGroup.Item>
                                     <ListGroup.Item>1st Place</ListGroup.Item>
                                     <ListGroup.Item>5 Titles</ListGroup.Item>
                                 </ListGroup>
@@ -114,25 +176,30 @@ const Home = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {Array.from({ length: 20 }, (_, index) => (
-                            <tr key={index}>
-                                <td style={{ textAlign: "center" }}>{index + 1}</td>
-                                <td style={{ textAlign: "center" }}>Team{index}</td>
-                                <td style={{ textAlign: "center" }}>
-                                    <img
-                                        src={"src/components/Home/hometest/juve.png"}
-                                        alt={"logo"}
-                                        height={"20px"}
-                                        width={"20px"}
-                                    />
-                                </td>
-                                <td style={{ textAlign: "center" }}>0</td>
-                                <td style={{ textAlign: "center" }}>0</td>
-                                <td style={{ textAlign: "center" }}>0</td>
-                                <td style={{ textAlign: "center" }}>0</td>
-                                <td style={{ textAlign: "center" }}>0</td>
-                            </tr>
-                        ))}
+                        {tableData.map((team, index) => {
+                            const games = team.wins + team.draws + team.losses;
+                            const points = team.wins * 3 + team.draws;
+
+                            return (
+                                <tr key={index}>
+                                    <td style={{ textAlign: "center" }}>{index + 1}</td>
+                                    <td style={{ textAlign: "center" }}>{team.clubName}</td>
+                                    <td style={{ textAlign: "center" }}>
+                                        <img
+                                            src={logoMap[team.clubName] || ''}
+                                            alt={team.clubName}
+                                            height="20px"
+                                            width="20px"
+                                        />
+                                    </td>
+                                    <td style={{ textAlign: "center" }}>{games}</td>
+                                    <td style={{ textAlign: "center" }}>{team.wins}</td>
+                                    <td style={{ textAlign: "center" }}>{team.losses}</td>
+                                    <td style={{ textAlign: "center" }}>{team.draws}</td>
+                                    <td style={{ textAlign: "center" }}>{points}</td>
+                                </tr>
+                            );
+                        })}
                         </tbody>
                     </Table>
                 </Col>

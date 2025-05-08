@@ -1,60 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface Team {
-    id: number;
-    name: string;
-    country: string;
-    league: string;
-    logoUrl: string;
-    careerName: string;
+interface Club {
+    club_id: number;
+    clubName: string;
 }
-
-// Beispielhafte Team-Liste
-const testTeams = [
-    { name: "FC Bayern", country: "Deutschland", league: "Bundesliga", logoUrl: "/images/test1.png" },
-    { name: "Real Madrid", country: "Spanien", league: "La Liga", logoUrl: "src/assets/reallogo.png" },
-    { name: "Test Team 3", country: "England", league: "Premier League", logoUrl: "/images/test3.png" },
-];
 
 const KarriereErstellen: React.FC = () => {
     const [careerName, setCareerName] = useState('');
-    const [selectedTeamIndex, setSelectedTeamIndex] = useState<number>(0);
+    const [clubs, setClubs] = useState<Club[]>([]);
+    const [selectedClubName, setSelectedClubName] = useState<string>('');
     const navigate = useNavigate();
+    const username = localStorage.getItem('username'); // ✅ holt eingeloggten User
 
-    const handleCreateCareer = (e: React.FormEvent) => {
+    useEffect(() => {
+        axios.get('http://localhost:8080/clubs/all')
+            .then(res => {
+                setClubs(res.data);
+                if (res.data.length > 0) {
+                    setSelectedClubName(res.data[0].clubName);
+                }
+            })
+            .catch(() => alert('Fehler beim Laden der Clubs'));
+    }, []);
+
+    const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!careerName || !selectedClubName || !username) {
+            alert('Bitte fülle alle Felder aus');
+            return;
+        }
 
-        const selectedTeam = testTeams[selectedTeamIndex];
+        const request = {
+            careerName,
+            username,
+            clubName: selectedClubName
+        };
 
-        if (careerName && selectedTeam) {
-            const existingTeams = JSON.parse(localStorage.getItem('teams') || '[]') as Team[];
-
-            const newTeam: Team = {
-                id: existingTeams.length > 0 ? existingTeams[existingTeams.length - 1].id + 1 : 1,
-                name: selectedTeam.name,
-                country: selectedTeam.country,
-                league: selectedTeam.league,
-                logoUrl: selectedTeam.logoUrl,
-                careerName: careerName,
-            };
-
-            const updatedTeams = [...existingTeams, newTeam];
-            localStorage.setItem('teams', JSON.stringify(updatedTeams));
-
-
+        try {
+            await axios.post('http://localhost:8080/newCareer/create', request, {
+                headers: { 'Content-Type': 'application/json' }
+            });
             navigate('/karriereauswahl');
-        } else {
-            alert('Bitte Karriere-Name auswählen.');
+        } catch (err) {
+            alert('Fehler beim Erstellen der Karriere');
+            console.error(err);
         }
     };
 
     return (
         <div className="container mt-5">
             <h1 className="text-center mb-4">Eigene Karriere erstellen</h1>
-            <div className="card p-4 shadow mx-auto" style={{ maxWidth: '600px', borderRadius: '15px' }}>
-                <form onSubmit={handleCreateCareer}>
+            <div className="card p-4 shadow mx-auto" style={{ maxWidth: '600px' }}>
+                <form onSubmit={handleCreate}>
                     <div className="mb-3">
                         <label className="form-label">Karriere-Name</label>
                         <input
@@ -62,28 +62,30 @@ const KarriereErstellen: React.FC = () => {
                             className="form-control"
                             value={careerName}
                             onChange={(e) => setCareerName(e.target.value)}
-                            placeholder="Karriere-Name"
+                            required
                         />
                     </div>
-
                     <div className="mb-3">
                         <label className="form-label">Team auswählen</label>
                         <select
                             className="form-select"
-                            value={selectedTeamIndex}
-                            onChange={(e) => setSelectedTeamIndex(parseInt(e.target.value))}
+                            value={selectedClubName}
+                            onChange={(e) => setSelectedClubName(e.target.value)}
+                            required
                         >
-                            {testTeams.map((team, index) => (
-                                <option key={index} value={index}>
-                                    {team.name} ({team.league})
+                            {clubs.map(club => (
+                                <option key={club.club_id} value={club.clubName}>
+                                    {club.clubName}
                                 </option>
                             ))}
                         </select>
                     </div>
-
-                    <button type="submit" className="btn btn-primary w-100">
-                        Karriere erstellen
-                    </button>
+                    <div className="d-grid gap-2 mt-4">
+                        <button type="submit" className="btn btn-primary">Karriere erstellen</button>
+                        <button type="button" className="btn btn-outline-secondary" onClick={() => navigate('/karriereauswahl')}>
+                            Zurück
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
