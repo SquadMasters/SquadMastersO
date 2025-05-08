@@ -17,6 +17,7 @@ public interface TrainerCareersMapper {
     ShowAllTrainerCareersDTO toDTO(TrainerCareer trainerCareer);
 
     @Mapping(target = "clubName", source = "club.clubName")
+    @Mapping(target = "username", source = "user.userName")
     TableDataDTO toTableDTO(TrainerCareer trainerCareer);
 
     @Mapping(target = "clubname", source = "club.clubName")

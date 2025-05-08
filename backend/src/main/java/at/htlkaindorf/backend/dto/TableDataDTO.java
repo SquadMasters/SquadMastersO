@@ -18,4 +18,6 @@ public class TableDataDTO {
     private Integer losses;
 
     private Integer goalDiff;
+
+    private String username;
 }
