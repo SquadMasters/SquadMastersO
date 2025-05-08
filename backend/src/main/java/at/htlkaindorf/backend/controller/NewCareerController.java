@@ -17,7 +17,6 @@ import java.util.Random;
 @RestController
 @RequestMapping("/newCareer")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*")
 @Slf4j
 public class NewCareerController {
 

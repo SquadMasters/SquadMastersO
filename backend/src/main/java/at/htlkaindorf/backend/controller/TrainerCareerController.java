@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/trainerCareer")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*")
 public class TrainerCareerController {
 
     private final TrainerCareerService trainerCareerService;

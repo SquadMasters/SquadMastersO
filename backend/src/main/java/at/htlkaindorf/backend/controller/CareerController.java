@@ -18,7 +18,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/careers")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "*")
 @Slf4j
 public class CareerController {
 
