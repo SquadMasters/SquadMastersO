@@ -12,6 +12,7 @@ import Registrieren from "./components/Registrieren/Registrieren.tsx";
 import Account from "./components/account/Account.tsx";
 import KarriereErstellen from "./components/karriereerstellen/KarriereErstellen.tsx";
 import {useEffect} from "react";
+import KarriereBeitreten from "./components/KarriereBeitreten/KarriereBeitreten.tsx";
 
 function AppContent() {
 
@@ -39,6 +40,7 @@ function AppContent() {
                 <Route path={"/registrieren"} element={<Registrieren/>}/>
                 <Route path={"/account"} element={<Account/>}/>
                 <Route path={"/karriereerstellen"} element={<KarriereErstellen/>}/>
+                <Route path={"/karrierebeitreten"} element={<KarriereBeitreten/>}/>
             </Routes>
         </>
     );

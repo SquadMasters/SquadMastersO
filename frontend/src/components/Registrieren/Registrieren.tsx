@@ -1,18 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import styles from './Register.module.css'; // eigenes CSS Modul
+import styles from './Register.module.css'; // Dein CSS-Modul
 
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleRegister = (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (username && password) {
-            localStorage.setItem('user', JSON.stringify({ username, password }));
-            navigate('/');
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Registrierung erfolgreich:', data);
+                    navigate('/'); // Weiterleitung auf Login-Seite oder Startseite
+                } else {
+                    const errorData = await response.text();
+                    alert(`Registrierung fehlgeschlagen: ${errorData}`);
+                }
+            } catch (error) {
+                console.error('Fehler bei der Registrierung:', error);
+                alert('Ein Fehler ist aufgetreten.');
+            }
         } else {
             alert('Bitte Benutzername und Passwort eingeben.');
         }
