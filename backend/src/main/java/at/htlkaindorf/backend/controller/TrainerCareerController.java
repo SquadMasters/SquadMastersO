@@ -59,12 +59,12 @@ public class TrainerCareerController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/homepageInfo")
-    public ResponseEntity<HomepageDTO> getCareersToJoin(@RequestBody TrainerCareerRequest request) {
+    @GetMapping("/homepageInfo/{username}/{careername}")
+    public ResponseEntity<HomepageDTO> getHomepageInfo(
+            @PathVariable String username,
+            @PathVariable String careername) {
 
-        HomepageDTO homepageDTO = trainerCareerService.getHomepageInfo(request.getUsername(), request.getCareername());
-
+        HomepageDTO homepageDTO = trainerCareerService.getHomepageInfo(username, careername);
         return ResponseEntity.ok(homepageDTO);
-
     }
 }
