@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+//import axios from "axios";
+import api from "../../api";
 import { Card, Carousel, Col, Container, ListGroup, Row, Table } from "react-bootstrap";
 import "./Home.css";
 
@@ -43,11 +44,20 @@ const Home = () => {
     const [userClubName, setUserClubName] = useState('');
     const [opponentClubName, setOpponentClubName] = useState('');
 
+    const [homepageInfo, setHomepageInfo] = useState<{
+        clubname: string;
+        firstname: string;
+        lastname: string;
+        username: string;
+        season: number;
+        leagueTitleCount: number;
+    } | null>(null);
+
     useEffect(() => {
         const careerName = localStorage.getItem("careername");
         if (!careerName) return;
 
-        axios.get(`http://localhost:8080/trainerCareer/tableDataByCareer/${careerName}`)
+        api.get(`/trainerCareer/tableDataByCareer/${careerName}`)
             .then(res => {
                 setTableData(res.data);
             })
@@ -64,6 +74,23 @@ const Home = () => {
         setOpponentClubName(opponentName);
     }, []);
 
+    useEffect(() => {
+        const username = localStorage.getItem("username") || "";
+        const careername = localStorage.getItem("careername") || "";
+        if (!username || !careername) return;
+
+        api.get(`/trainerCareer/homepageInfo/${username}/${careername}`)
+
+            .then(res => {
+                setHomepageInfo(res.data);
+            })
+            .catch(err => {
+                console.error("Fehler beim Laden der Homepage-Daten:", err);
+            });
+
+
+    }, []);
+
     return (
         <Container className="home">
             <Row>
@@ -72,10 +99,9 @@ const Home = () => {
                         <Col sm={5}>
                             <h2 className="home-blue_color">{userClubName}</h2>
                             <img
-                                src={logoMap[userClubName] || ''}
+                                src={logoMap[userClubName]}
                                 alt={userClubName}
-                                height={"350px"}
-                                width={"250px"}
+                                className="team-logo"
                             />
                         </Col>
                         <Col sm={2} style={{ paddingTop: "180px" }}>
@@ -85,12 +111,15 @@ const Home = () => {
                         </Col>
                         <Col sm={5}>
                             <h2 className="home-blue_color">{opponentClubName}</h2>
-                            <img
-                                src={logoMap[opponentClubName] || ''}
-                                alt={opponentClubName}
-                                height={"350px"}
-                                width={"250px"}
-                            />
+                            {logoMap[opponentClubName] ? (
+                                <img
+                                    src={logoMap[opponentClubName]}
+                                    alt={opponentClubName}
+                                    className="team-logo"
+                                />
+                            ) : (
+                                <p className="text-muted">Kein Gegner-Logo verfügbar</p>
+                            )}
                         </Col>
                     </Row>
 
@@ -103,20 +132,28 @@ const Home = () => {
                                     className="profile-img"
                                 />
                                 <Card.Body>
-                                    <Card.Title>Sebastian Hörmann</Card.Title>
-                                    <Card.Text>„ka was des für ein text is“</Card.Text>
+                                    <Card.Title>
+                                        {homepageInfo ? `${homepageInfo.firstname} ${homepageInfo.lastname}` : "Trainername..."}
+                                    </Card.Title>
+                                    <Card.Text>
+                                        Benutzer: <strong>{homepageInfo?.username || "..."}</strong>
+                                    </Card.Text>
                                 </Card.Body>
                                 <ListGroup className="list-group-flush">
-                                    <ListGroup.Item>{userClubName}</ListGroup.Item>
-                                    <ListGroup.Item>1st Place</ListGroup.Item>
-                                    <ListGroup.Item>5 Titles</ListGroup.Item>
+                                    <ListGroup.Item>
+                                        Verein: <strong>{homepageInfo?.clubname || "..."}</strong>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        Saison: <strong>{homepageInfo?.season || "..."}</strong>
+                                    </ListGroup.Item>
+                                    <ListGroup.Item>
+                                        Titel: <strong>{homepageInfo?.leagueTitleCount || 0}</strong>
+                                    </ListGroup.Item>
                                 </ListGroup>
-                                <Card.Body>
-                                    <Card.Link href="#">Profil ansehen</Card.Link>
-                                    <Card.Link href="#">Mehr Infos</Card.Link>
-                                </Card.Body>
+
                             </Card>
                         </Col>
+
                         <Col sm={6}>
                             <h1 className="home-blue_color">Top-Transfer</h1>
                             <Carousel className="home-carousel">
@@ -185,13 +222,16 @@ const Home = () => {
                                     <td style={{ textAlign: "center" }}>{index + 1}</td>
                                     <td style={{ textAlign: "center" }}>{team.clubName}</td>
                                     <td style={{ textAlign: "center" }}>
-                                        <img
-                                            src={logoMap[team.clubName] || ''}
-                                            alt={team.clubName}
-                                            height="20px"
-                                            width="20px"
-                                        />
+                                        <div className="table-logo-wrapper">
+                                            <img
+                                                src={logoMap[team.clubName] || ''}
+                                                alt={team.clubName}
+                                                height="20px"
+                                                width="20px"
+                                            />
+                                        </div>
                                     </td>
+
                                     <td style={{ textAlign: "center" }}>{games}</td>
                                     <td style={{ textAlign: "center" }}>{team.wins}</td>
                                     <td style={{ textAlign: "center" }}>{team.losses}</td>

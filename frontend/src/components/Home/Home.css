@@ -170,3 +170,19 @@
     color: #004b99;
     text-decoration: underline;
 }
+/* Teamlogo Styling */
+.home .team-logo {
+    width: 250px;
+    height: 250px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.home .table-logo-wrapper {
+    background-color: white;
+    padding: 2px;
+    border-radius: 4px;
+    display: inline-block;
+}

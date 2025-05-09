@@ -110,11 +110,11 @@
 }
 
 .nav-button.prev {
-    left: 200px;
+    left: 100px;
 }
 
 .nav-button.next {
-    right: 200px;
+    right: 100px;
 }
 
 .nav-button:hover {

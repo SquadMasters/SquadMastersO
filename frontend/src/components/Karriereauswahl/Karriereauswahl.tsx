@@ -23,7 +23,8 @@ interface Team {
     league: string;
     logoUrl: string;
     careerName: string;
-    type?: 'create' | 'join';
+    startUser?: string;
+    type?: 'create' | 'join' | 'empty';
 }
 
 const logoMap: { [key: string]: string } = {
@@ -61,11 +62,11 @@ const Karriereauswahl: React.FC = () => {
                         league: 'Unbekannt',
                         logoUrl,
                         careerName: career.careerName,
+                        startUser: career.startUser,
                     };
                 });
                 setTeams(fetchedTeams);
 
-                // Lese alle beigetretenen Karrieren aus localStorage
                 const joined = JSON.parse(localStorage.getItem('joinedCareers') || '[]');
                 setJoinedCareers(joined);
             } catch (error) {
@@ -77,30 +78,43 @@ const Karriereauswahl: React.FC = () => {
     }, [username]);
 
     const startCareer = () => {
-        if (selectedTeam) {
-            const career = {
-                careerName: selectedTeam.careerName,
-                team: selectedTeam,
-                createdAt: new Date().toISOString(),
-            };
+        if (!selectedTeam) return;
 
-            localStorage.setItem('career', JSON.stringify(career));
-            localStorage.setItem('careername', selectedTeam.careerName);
-            localStorage.setItem('username', username); // ✅ Hier sicherstellen
-            localStorage.setItem('selectedTeam', JSON.stringify({
-                name: selectedTeam.name,
-                logo: selectedTeam.logoUrl,
-            }));
+        const career = {
+            careerName: selectedTeam.careerName,
+            team: selectedTeam,
+            createdAt: new Date().toISOString(),
+        };
 
-            navigate('/home');
+        localStorage.setItem('career', JSON.stringify(career));
+        localStorage.setItem('careername', selectedTeam.careerName);
+        localStorage.setItem('username', username);
+        localStorage.setItem('selectedTeam', JSON.stringify({ name: selectedTeam.name }));
+
+        const otherClubs = Object.keys(logoMap).filter(name => name !== selectedTeam.name);
+        const randomOpponentName = otherClubs[Math.floor(Math.random() * otherClubs.length)];
+
+        if (randomOpponentName) {
+            localStorage.setItem('opponentTeamName', randomOpponentName);
+            console.log("✅ Gegner gesetzt:", randomOpponentName);
         }
-    };
 
+        navigate('/home');
+    };
 
     const allItems: Team[] = [
         ...teams,
+        ...Array(Math.max(0, 5 - teams.length)).fill(null).map((_, i) => ({
+            id: 10000 + i,
+            name: '',
+            country: '',
+            league: '',
+            logoUrl: '',
+            careerName: '',
+            type: 'empty'
+        })),
         {
-            id: teams.length + 1000,
+            id: 9001,
             name: 'Erstellen',
             country: '',
             league: '',
@@ -109,7 +123,7 @@ const Karriereauswahl: React.FC = () => {
             type: 'create',
         },
         {
-            id: teams.length + 1001,
+            id: 9002,
             name: 'Beitreten',
             country: '',
             league: '',
@@ -129,46 +143,59 @@ const Karriereauswahl: React.FC = () => {
                 <button className="nav-button prev" onClick={prevSlide}>&lt;</button>
                 <div className="carousel-track">
                     {allItems.map((item, index) => {
-                        const position = (index - currentIndex + allItems.length) % allItems.length;
-                        let transform = '', scale = 1, zIndex = 0, opacity = 1;
-
-                        if (position === 0) {
-                            transform = 'translateX(0)';
-                            scale = 1;
-                            zIndex = 5;
-                        } else if (position === 1) {
-                            transform = 'translateX(30%)';
-                            scale = 0.9;
-                            zIndex = 4;
-                        } else if (position === allItems.length - 1) {
-                            transform = 'translateX(-30%)';
-                            scale = 0.9;
-                            zIndex = 4;
-                        } else {
-                            transform = 'translateX(0) scale(0)';
-                            opacity = 0;
-                        }
+                        const offset = ((index - currentIndex + allItems.length) % allItems.length);
+                        const visible = offset >= 0 && offset < 5;
+                        const scale = offset === 2 ? 1 : 0.9;
+                        const zIndex = 10 - Math.abs(2 - offset);
+                        const translate = (offset - 2) * 160;
 
                         return (
                             <div
                                 key={item.id}
-                                className={`carousel-card ${position === 0 ? 'active' : ''}`}
-                                style={{ transform: `${transform} scale(${scale})`, zIndex, opacity }}
+                                className={`carousel-card ${offset === 2 ? 'active' : ''}`}
+                                style={{ transform: `translateX(${translate}px) scale(${scale})`, zIndex, opacity: visible ? 1 : 0 }}
                                 onClick={() => {
-                                    if (index < teams.length) {
+                                    if (item.type === 'empty') return;
+                                    if (item.type === 'create') navigate('/karriereerstellen');
+                                    else if (item.type === 'join') navigate('/karrierebeitreten');
+                                    else {
                                         setSelectedTeam(item);
-                                        setCurrentIndex(index);
-                                    } else if (item.type === 'create') {
-                                        navigate('/karriereerstellen');
-                                    } else if (item.type === 'join') {
-                                        navigate('/karrierebeitreten');
+                                        // zentriere die Karte in der Mitte (Index 2 sichtbar = Mitte von 5)
+                                        const middleIndex = 2;
+                                        const newIndex = (index - middleIndex + allItems.length) % allItems.length;
+                                        setCurrentIndex(newIndex);
                                     }
                                 }}
+
                             >
-                                {index < teams.length ? (
+                                {item.type === 'create' ? (
+                                    <div className="create-card">
+                                        <h3>{item.careerName}</h3>
+                                        <p>Erstelle dein eigenes Team</p>
+                                        <button className="btn btn-outline-primary" onClick={() => navigate('/karriereerstellen')}>
+                                            Erstellen
+                                        </button>
+                                    </div>
+                                ) : item.type === 'join' ? (
+                                    <div className="create-card">
+                                        <h3>{item.careerName}</h3>
+                                        <p>Wähle ein Team aus einer bestehenden Karriere</p>
+                                        <button className="btn btn-outline-success" onClick={() => navigate('/karrierebeitreten')}>
+                                            Beitreten
+                                        </button>
+                                    </div>
+                                ) : item.type === 'empty' ? (
+                                    <div className="create-card">
+                                        <h3>Leerer Slot</h3>
+                                        <p>Keine Karriere vorhanden</p>
+                                    </div>
+                                ) : (
                                     <div className="card-body">
                                         <h3>{item.name}</h3>
                                         <h4>{item.careerName}</h4>
+                                        <p style={{ fontSize: '0.85rem' }} className="text-muted">
+                                            Erstellt von: {item.startUser}
+                                        </p>
                                         {joinedCareers.includes(item.careerName) && (
                                             <p className="text-muted" style={{ fontSize: '0.9rem' }}>
                                                 Beigetretene Karriere
@@ -177,22 +204,6 @@ const Karriereauswahl: React.FC = () => {
                                         {item.logoUrl && (
                                             <img src={item.logoUrl} alt={item.name} style={{ width: '80px', marginBottom: '10px' }} />
                                         )}
-                                    </div>
-                                ) : item.type === 'create' ? (
-                                    <div className="create-card">
-                                        <h3>{item.careerName}</h3>
-                                        <p>Erstelle dein eigenes Team</p>
-                                        <button className="btn btn-outline-primary" onClick={() => navigate('/karriereerstellen')}>
-                                            Erstellen
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="create-card">
-                                        <h3>{item.careerName}</h3>
-                                        <p>Wähle ein Team aus einer bestehenden Karriere</p>
-                                        <button className="btn btn-outline-success" onClick={() => navigate('/karrierebeitreten')}>
-                                            Beitreten
-                                        </button>
                                     </div>
                                 )}
                             </div>

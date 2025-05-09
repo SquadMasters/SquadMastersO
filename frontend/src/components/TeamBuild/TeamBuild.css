@@ -13,111 +13,27 @@
     text-align: center;
 }
 
-.team-field-container {
-    padding-top: 200px;
+.club-header {
     display: flex;
-    justify-content: center;
     align-items: center;
-    position: relative;
+    margin-bottom: 10px;
 }
 
-.team-field {
-    position: relative;
-    width: 350px;
-    height: 500px;
-    background-color: #2c7a2c;
-    border: 5px solid white;
-    border-radius: 10px;
-}
-
-.field-lines {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.goal-area {
-    width: 80%;
+.club-logo {
     height: 50px;
-    border: 3px solid white;
+    margin-right: 15px;
 }
 
-.center-circle {
-    width: 80px;
-    height: 80px;
-    border: 3px solid white;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.player {
-    position: absolute;
-    background-color: #007bff;
-    color: white;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-weight: bold;
+.team-info {
+    margin-bottom: 20px;
     text-align: center;
-}
-
-/* Positionierung für 4-3-3 DM Formation */
-.goalkeeper { bottom: 5px; left: 50%; transform: translateX(-50%); }
-
-.defender.left { bottom: 20%; left: 10%; }
-.defender.center-left { bottom: 20%; left: 35%; }
-.defender.center-right { bottom: 20%; right: 35%; }
-.defender.right { bottom: 20%; right: 10%; }
-
-.midfielder.defensive { bottom: 35%; left: 50%; transform: translateX(-50%); }
-
-.midfielder.left { bottom: 50%; left: 35%; }
-.midfielder.right { bottom: 50%; right: 35%; }
-
-.attacker.left { top: 15%; left: 25%; }
-.attacker.center { top: 5%; left: 50%; transform: translateX(-50%); }
-.attacker.right { top: 15%; right: 25%; }
-
-.player-list {
-    margin-left: 20px;
-}
-
-.player-list h2 {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.player-list ul {
-    list-style: none;
-    padding: 0;
-}
-
-.player-list li {
-    padding: 8px;
-    border-bottom: 1px solid #ccc;
-}
-/* CSS */
-.teambuild-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
-    background-color: #f0f0f0;
-    min-height: 100vh;
 }
 
 .teambuild-content {
     display: flex;
-    flex-direction: row;
+    gap: 40px;
     justify-content: center;
     align-items: flex-start;
-    gap: 20px;
 }
 
 .team-field-container {
@@ -126,19 +42,90 @@
     justify-content: center;
 }
 
-.player-list {
-    flex: 1;
-    min-width: 300px;
-}
-
 .team-field {
     position: relative;
-    width: 350px;
-    height: 500px;
+    width: 360px;
+    height: 540px;
     background-color: #2c7a2c;
     border: 5px solid white;
     border-radius: 10px;
+    overflow: hidden;
 }
+
+/* --- Feldlinien --- */
+.field-lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Mittellinie */
+.half-line {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: white;
+    transform: translateY(-1px);
+}
+
+/* Mittelkreis */
+.center-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 80px;
+    border: 2px solid white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Tore */
+.goal-area.top,
+.goal-area.bottom {
+    position: absolute;
+    width: 60px;
+    height: 4px;
+    background-color: white;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.goal-area.top {
+    top: 2px;
+}
+
+.goal-area.bottom {
+    bottom: 2px;
+}
+
+/* Strafräume */
+.penalty-box.top,
+.penalty-box.bottom {
+    position: absolute;
+    width: 180px;
+    height: 50px;
+    border: 2px solid white;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.penalty-box.top {
+    top: 0;
+    border-bottom: none;
+}
+
+.penalty-box.bottom {
+    bottom: 0;
+    border-top: none;
+}
+
+/* Spieler */
 .player {
     position: absolute;
     background-color: grey;
@@ -156,32 +143,6 @@
     transition: background-color 0.3s;
 }
 
-/* Blaues Aufleuchten nach Drop */
-.player.highlight {
-    background-color: #0056b3 !important;
-}
-
-/* Positionierung für die 4-3-3 DM Formation */
-.TW { bottom: 5px; left: 50%; transform: translateX(-50%); }
-
-.LAV { bottom: 20%; left: 10%; }
-.IV1 { bottom: 20%; left: 35%; }
-.IV2 { bottom: 20%; right: 35%; }
-.RAV { bottom: 20%; right: 10%; }
-
-.DZM { bottom: 35%; left: 50%; transform: translateX(-50%); }
-
-.ZM1 { bottom: 50%; left: 35%; }
-.ZM2 { bottom: 50%; right: 35%; }
-
-.LF { top: 15%; left: 25%; }
-.ST { top: 5%; left: 50%; transform: translateX(-50%); }
-.RF { top: 15%; right: 25%; }
-
-/* Tabelle weiter nach rechts verschieben */
-.player-list {
-    margin-left: 50px;
-}
 .player.highlight {
     animation: glow 1s ease-in-out;
 }
@@ -196,13 +157,39 @@
     box-shadow: 0 0 10px 4px #00ffff;
     background-color: #00aaff;
 }
-.club-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
+
+/* Spielerpositionen – etwas höher gesetzt */
+.TW { bottom: 40px; left: 50%; transform: translateX(-50%); }
+.LAV { bottom: 120px; left: 20px; }
+.IV1 { bottom: 120px; left: 100px; }
+.IV2 { bottom: 120px; right: 100px; }
+.RAV { bottom: 120px; right: 20px; }
+
+.DZM { bottom: 200px; left: 50%; transform: translateX(-50%); }
+.ZM1 { bottom: 250px; left: 100px; }
+.ZM2 { bottom: 250px; right: 100px; }
+
+.LF { bottom: 330px; left: 80px; }
+.ST { bottom: 380px; left: 50%; transform: translateX(-50%); }
+.RF { bottom: 330px; right: 80px; }
+
+/* Spieler-Liste */
+.player-list {
+    flex: 1;
+    min-width: 400px;
+    max-height: 540px;
+    overflow-y: auto;
+    background-color: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.club-logo {
-    height: 50px;
-    margin-right: 15px;
+.player-list h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.assigned-row {
+    background-color: #d1ecff !important;
 }

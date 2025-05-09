@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {useNavigate} from "react-router-dom";
 
 interface Team {
     id: number;
@@ -18,6 +19,7 @@ interface Career {
 const Account: React.FC = () => {
     const [username, setUsername] = useState<string | null>(null);
     const [career, setCareer] = useState<Career | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // Benutzername direkt als String holen
@@ -53,6 +55,11 @@ const Account: React.FC = () => {
                         <p className="text-primary">{career.careerName}</p>
 
                         <small className="text-muted">Erstellt am: {new Date(career.createdAt).toLocaleDateString()}</small>
+
+                        <button className="btn btn-danger mt-4 w-100"  onClick={() => navigate('/')}>
+                            Log Out
+                        </button>
+
                     </div>
                 ) : (
                     <p className="text-muted">Keine Karriere gestartet.</p>
