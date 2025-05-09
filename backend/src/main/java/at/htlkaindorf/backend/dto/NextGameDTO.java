@@ -16,4 +16,6 @@ public class NextGameDTO {
     private String awayTeam;
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate date;
+    private Integer homeGoals;
+    private Integer awayGoals;
 }
