@@ -4,6 +4,7 @@ import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -55,4 +56,22 @@ public class TrainerCareer {
             inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "player_Id")
     )
     private List<Player> wishlistEntries;
+
+    @OneToMany(mappedBy = "homeTeam", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ToString.Exclude
+    private List<Game> homeGames = new ArrayList<>();
+
+    @OneToMany(mappedBy = "awayTeam", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ToString.Exclude
+    private List<Game> awayGames = new ArrayList<>();
+
+    public void addHomeGame(Game game) {
+        homeGames.add(game);
+        game.setHomeTeam(this);
+    }
+
+    public void addAwayGame(Game game) {
+        awayGames.add(game);
+        game.setAwayTeam(this);
+    }
 }

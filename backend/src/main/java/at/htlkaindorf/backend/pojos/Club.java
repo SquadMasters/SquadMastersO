@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,7 +17,8 @@ import java.util.List;
 public class Club {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(sequenceName = "club_sequence", name = "club_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "club_sequence")
     private Long club_id;
 
     @Column(nullable = false)

@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,6 +26,7 @@ public class NewCareerController {
     private final ClubService clubsService;
     private final PlayerService playerService;
     private final UserService userService;
+    private final GameService gameService;
 
     @PostMapping("/create")
     public ResponseEntity<Boolean> createNewCareer(@RequestBody NewCareerRequestDTO newCareerRequestDTO) {
@@ -41,7 +44,7 @@ public class NewCareerController {
 
         Random random = new Random();
 
-        Career career = Career.builder().season(2025).startUser(user).isRunning(false).careerName(newCareerRequestDTO.getCareerName()).build();
+        Career career = Career.builder().currentCareerDate(LocalDate.of(2025, 6, 1)).startUser(user).isRunning(false).careerName(newCareerRequestDTO.getCareerName()).build();
         List<Career> careers = user.getCareers();
         careers.add(career);
         user.setCareers(careers);
@@ -115,10 +118,12 @@ public class NewCareerController {
         career.setTrainerCareers(trainerCareers);
         career.setPlayers(allPlayers);
 
+        gameService.generateTrainerCareerGames(trainerCareers);
         careerService.careerRepository.save(career);
 
         log.info("Neue Karriere erstellt!");
 
         return ResponseEntity.ok(true);
     }
+
 }

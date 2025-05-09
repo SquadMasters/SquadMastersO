@@ -24,6 +24,6 @@ public interface TrainerCareersMapper {
     @Mapping(target = "username", source = "user.userName")
     @Mapping(target = "firstname", source = "club.trainer.firstname")
     @Mapping(target = "lastname", source = "club.trainer.lastname")
-    @Mapping(target = "season", source = "career.season")
+    @Mapping(target = "season", expression = "java(trainerCareer.getCareer().getCurrentCareerDate().getYear())")
     HomepageDTO toHomepageDTO(TrainerCareer trainerCareer);
 }

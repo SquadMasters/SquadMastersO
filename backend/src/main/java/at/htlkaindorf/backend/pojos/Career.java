@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.pojos;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -13,13 +14,14 @@ import java.util.List;
 public class Career {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @SequenceGenerator(sequenceName = "career_sequence", name = "career_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "career_sequence")
     private Long career_id;
 
     @Column(unique = true)
     private String careerName;
 
-    private Integer season;
+    private LocalDate currentCareerDate;
 
     private Boolean isRunning;
 

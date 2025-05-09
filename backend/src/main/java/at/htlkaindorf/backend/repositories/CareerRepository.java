@@ -18,4 +18,7 @@ public interface CareerRepository extends JpaRepository<Career, Long> {
         ) AND c.isRunning = false
     """)
     List<String> getCareersWithoutUser(String username);
+
+    @Query("SELECT c FROM Career c WHERE c.careerName = ?1")
+    Career findCareerByName(String careername);
 }
