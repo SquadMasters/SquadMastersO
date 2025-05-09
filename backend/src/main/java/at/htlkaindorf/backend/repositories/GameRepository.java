@@ -31,7 +31,7 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     """)
     Game getNextGameForTrainerCareer(@Param("clubname") String clubname, @Param("careername") String careername, @Param("currentdate") LocalDate currentDate);
 
-    @Query("SELECT g FROM Game g WHERE ((g.homeTeam.club.clubName = :clubname AND g.homeTeam.career.careerName = :careername) OR (g.awayTeam.club.clubName = :clubname AND g.awayTeam.career.careerName = :careername)) AND g.matchDate > :currentdate ORDER BY g.matchDate")
-    List<Game> getAllGamesForTrainerCareer(@Param("clubname") String clubname, @Param("careername") String careername, @Param("currentdate") LocalDate currentDate);
+    @Query("SELECT g FROM Game g WHERE ((g.homeTeam.club.clubName = :clubname AND g.homeTeam.career.careerName = :careername) OR (g.awayTeam.club.clubName = :clubname AND g.awayTeam.career.careerName = :careername)) ORDER BY g.matchDate")
+    List<Game> getAllGamesForTrainerCareer(@Param("clubname") String clubname, @Param("careername") String careername);
 
 }

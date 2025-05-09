@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.repositories;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pojos.Career;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
+import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,5 +25,4 @@ public interface TrainerCareerRepository extends JpaRepository<TrainerCareer, Tr
 
     @Query("SELECT t.club.clubName FROM TrainerCareer t WHERE t.user IS NULL AND t.career.careerName = ?1")
     List<String> findTrainerCareersToJoin(String careername);
-
 }

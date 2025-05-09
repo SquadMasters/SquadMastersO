@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class NextGameDTO {
 
+    private Long game_id;
     private String homeTeam;
     private String awayTeam;
     @JsonFormat(pattern = "dd.MM.yyyy")

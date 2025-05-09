@@ -4,6 +4,7 @@ import at.htlkaindorf.backend.pojos.Career;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface CareerRepository extends JpaRepository<Career, Long> {
@@ -21,4 +22,7 @@ public interface CareerRepository extends JpaRepository<Career, Long> {
 
     @Query("SELECT c FROM Career c WHERE c.careerName = ?1")
     Career findCareerByName(String careername);
+
+    @Query("SELECT c.currentCareerDate FROM Career c WHERE c.careerName = ?1")
+    LocalDate getCurrentCareerDate(String careername);
 }

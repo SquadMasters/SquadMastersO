@@ -31,4 +31,5 @@ public class CareerService {
     public List<String> getCareersToJoin(String username) {
         return careerRepository.getCareersWithoutUser(username);
     }
+
 }

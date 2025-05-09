@@ -2,6 +2,7 @@ package at.htlkaindorf.backend.controller;
 
 import at.htlkaindorf.backend.dto.PlayerListDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
+import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
 import at.htlkaindorf.backend.services.TrainerCareerPlayerService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
 import lombok.AllArgsConstructor;
@@ -31,5 +32,10 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok(players);
     }
 
+    @GetMapping("/allPlayersFromCareer")
+    public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(@RequestParam String careername) {
 
+        List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByCareer(careername);
+        return ResponseEntity.ok(players);
+    }
 }

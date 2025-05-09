@@ -2,6 +2,7 @@ package at.htlkaindorf.backend.services;
 
 import at.htlkaindorf.backend.dto.PlayerListDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
+import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.Club;
@@ -35,6 +36,15 @@ public class TrainerCareerPlayerService {
 
         return tcPlayers.stream()
                 .map(trainerCareerPlayerMapper::toPlayerListDTO)
+                .toList();
+    }
+
+    public List<TrainerCareerPlayerDTO> getAllPlayersByCareer(String careername) {
+
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersFromCareer(careername);
+
+        return tcPlayers.stream()
+                .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
                 .toList();
     }
 }

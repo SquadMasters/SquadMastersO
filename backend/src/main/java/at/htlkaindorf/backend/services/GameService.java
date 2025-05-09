@@ -104,12 +104,7 @@ public class GameService {
             throw new IllegalArgumentException("No club found for user and career.");
         }
 
-        Career career = careerRepository.findCareerByName(careername);
-        if (career == null) {
-            throw new IllegalArgumentException("Career not found.");
-        }
-
-        List<Game> games = gameRepository.getAllGamesForTrainerCareer(clubname, careername, career.getCurrentCareerDate());
+        List<Game> games = gameRepository.getAllGamesForTrainerCareer(clubname, careername);
         if (games.isEmpty()) {
             return null;
         }
