@@ -114,4 +114,16 @@ public class TrainerCareerService {
         }
         return false;
     }
+
+    public Boolean isUserReady(String username, String careername) {
+
+        TrainerCareer career = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
+
+        if (career == null) {
+            log.error("Keine Karriere gefunden!");
+            return false;
+        }
+
+        return career.getReadyForSimulation();
+    }
 }

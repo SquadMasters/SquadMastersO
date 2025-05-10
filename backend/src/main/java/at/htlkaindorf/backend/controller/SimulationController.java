@@ -46,6 +46,11 @@ public class SimulationController {
         return ResponseEntity.ok(true);
     }
 
+    @GetMapping("/isUserReady")
+    public ResponseEntity<Boolean> isUserReady(@RequestParam String username, @RequestParam String careername) {
+        return ResponseEntity.ok(trainerCareerService.isUserReady(username, careername));
+    }
+
     @GetMapping("/notReadyUsers")
     public ResponseEntity<List<String>> getNotReadyUsers(@RequestParam String careername) {
         return ResponseEntity.ok(trainerCareerService.getNotReadyUsers(careername));
