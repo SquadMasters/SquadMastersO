@@ -27,6 +27,7 @@ public class Career {
 
     @ManyToOne
     @JoinColumn(name = "startUserFK")
+    @ToString.Exclude
     private User startUser;
 
     @OneToMany(mappedBy = "career", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

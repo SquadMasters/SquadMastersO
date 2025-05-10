@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,5 +82,36 @@ public class TrainerCareerService {
         if (list.isEmpty()) {
             log.info(message);
         }
+    }
+
+    public Boolean userSetReady(String username, String careername) {
+
+        TrainerCareer career = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
+
+        if (career == null) {
+            log.info("Keine Karriere gefunden!");
+            return false;
+        }
+
+        career.changeReady();
+
+        trainerCareerRepository.save(career);
+
+        return true;
+    }
+
+    public List<String> getNotReadyUsers(String careername) {
+        return trainerCareerRepository.getNotReadyUsersFromCareer(careername);
+    }
+
+    public Boolean isUserAllowedToSimulate(String username, String careername) {
+
+        String startuser = trainerCareerRepository.getStartUsername(username, careername);
+        List<String> notReadyUsers = trainerCareerRepository.getNotReadyUsersFromCareer(careername);
+
+        if (notReadyUsers.isEmpty() && startuser.equals(username)) {
+            return true;
+        }
+        return false;
     }
 }

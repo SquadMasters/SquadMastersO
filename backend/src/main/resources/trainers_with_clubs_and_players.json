@@ -20,7 +20,7 @@
                 "lastname": "Carvajal",
                 "position": "RV",
                 "value": 15000000.0,
-                "rating": 7,
+                "rating": 6,
                 "startAge": 33
             },
             {
@@ -1104,7 +1104,7 @@
             {
                 "firstname": "Marcus",
                 "lastname": "Thuram",
-                "position": "ST",
+                "position": "RF",
                 "value": 40000000.0,
                 "rating": 8,
                 "startAge": 27
@@ -1120,7 +1120,7 @@
             {
                 "firstname": "David",
                 "lastname": "Twink",
-                "position": "LV",
+                "position": "LF",
                 "value": 1000000.0,
                 "rating": 2,
                 "startAge": 18
@@ -1314,7 +1314,7 @@
             {
                 "firstname": "Memphis",
                 "lastname": "Depay",
-                "position": "ST",
+                "position": "LF",
                 "value": 10000000.0,
                 "rating": 6,
                 "startAge": 31
@@ -1460,8 +1460,8 @@
             {
                 "firstname": "Clemens",
                 "lastname": "Muenzer",
-                "position": "ST",
-                "value": 18000000.0,
+                "position": "RF",
+                "value": 100000000.0,
                 "rating": 10,
                 "startAge": 17
             }

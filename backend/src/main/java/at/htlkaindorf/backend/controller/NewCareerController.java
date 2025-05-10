@@ -70,6 +70,7 @@ public class NewCareerController {
                     .draws(0)
                     .goalDiff(0)
                     .leagueTitleCount(0)
+                    .readyForSimulation(false)
                     .build();
 
             if (club.getClubName().equals(newCareerRequestDTO.getClubName())) {

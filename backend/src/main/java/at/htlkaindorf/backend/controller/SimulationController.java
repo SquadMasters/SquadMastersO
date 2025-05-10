@@ -5,13 +5,11 @@ import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.services.CareerService;
+import at.htlkaindorf.backend.services.TrainerCareerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -25,13 +23,42 @@ import java.util.Random;
 public class SimulationController {
 
     private final CareerService careerService;
+    private final TrainerCareerService trainerCareerService;
 
     @PostMapping("/start")
     public ResponseEntity<Boolean> startSimulation(String careername) {
 
 
+        return ResponseEntity.ok(true);
+    }
+
+    @PatchMapping("/pressReady")
+    public ResponseEntity<Boolean> pressReadyForSimulation(
+            @RequestParam String username,
+            @RequestParam String careername) {
+
+        Boolean setReady = trainerCareerService.userSetReady(username, careername);
+
+        if (Boolean.FALSE.equals(setReady)) {
+            return ResponseEntity.badRequest().body(false);
+        }
 
         return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/notReadyUsers")
+    public ResponseEntity<List<String>> getNotReadyUsers(@RequestParam String careername) {
+        return ResponseEntity.ok(trainerCareerService.getNotReadyUsers(careername));
+    }
+
+    @GetMapping("/isAllowedToSimulate")
+    public ResponseEntity<Boolean> isAllowedToSimulate(
+            @RequestParam String username,
+            @RequestParam String careername) {
+
+        Boolean isAllowed = trainerCareerService.isUserAllowedToSimulate(username, careername);
+
+        return ResponseEntity.ok(isAllowed);
     }
 
 }

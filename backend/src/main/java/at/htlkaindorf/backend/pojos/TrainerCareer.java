@@ -41,6 +41,7 @@ public class TrainerCareer {
 
     private Integer leagueTitleCount;
 
+    private Boolean readyForSimulation;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -73,5 +74,9 @@ public class TrainerCareer {
     public void addAwayGame(Game game) {
         awayGames.add(game);
         game.setAwayTeam(this);
+    }
+
+    public void changeReady() {
+        readyForSimulation = !readyForSimulation;
     }
 }
