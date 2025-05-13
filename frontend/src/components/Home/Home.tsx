@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
-//import axios from "axios";
+import { useEffect, useState } from "react";
 import api from "../../api";
 import { Card, Carousel, Col, Container, ListGroup, Row, Table } from "react-bootstrap";
 import "./Home.css";
 
-// Logo-Imports
 import arsenal from '../../assets/arsenalwappen.png';
 import atletico from '../../assets/atleticowappen.png';
 import barca from '../../assets/barcawappen.png';
@@ -31,6 +29,20 @@ const logoMap: { [key: string]: string } = {
     'Real Madrid': real,
 };
 
+const teamColorMap: { [key: string]: string[] } = {
+    'Arsenal': ['#9B1B30', '#FFFFFF'],
+    'Atlético Madrid': ['#003B5C', '#C8102E'],
+    'FC Barcelona': ['#004D98', '#A50021'],
+    'Bayern München': ['#D50032', '#FFFFFF'],
+    'Manchester City': ['#3E8FC7', '#FFFFFF'],
+    'Inter Mailand': ['#003DA5', '#FFFFFF'],
+    'Juventus Turin': ['#000000', '#FFFFFF'],
+    'Liverpool': ['#00B5A0', '#C8102E'],
+    'AC Mailand': ['#9C1B29', '#FFFFFF'],
+    'Paris Saint-Germain': ['#0060A9', '#E30613'],
+    'Real Madrid': ['#D4AF37', '#FFFFFF'],
+};
+
 interface TableDataDTO {
     clubName: string;
     wins: number;
@@ -39,11 +51,15 @@ interface TableDataDTO {
     goalDiff: number;
 }
 
+interface NextGameDTO {
+    opponentTeamName: string;
+    gameDate: string;
+}
+
 const Home = () => {
     const [tableData, setTableData] = useState<TableDataDTO[]>([]);
     const [userClubName, setUserClubName] = useState('');
-    const [opponentClubName, setOpponentClubName] = useState('');
-
+    const [nextGame, setNextGame] = useState<NextGameDTO | null>(null);
     const [homepageInfo, setHomepageInfo] = useState<{
         clubname: string;
         firstname: string;
@@ -52,11 +68,13 @@ const Home = () => {
         season: number;
         leagueTitleCount: number;
     } | null>(null);
+    const [teamColors, setTeamColors] = useState<string[]>(['#ffffff', '#ffffff']); // Default Blau-Weiß
 
     useEffect(() => {
         const careerName = localStorage.getItem("careername");
         if (!careerName) return;
 
+        // Lade Tabellendaten
         api.get(`/trainerCareer/tableDataByCareer/${careerName}`)
             .then(res => {
                 setTableData(res.data);
@@ -65,14 +83,33 @@ const Home = () => {
                 console.error("Fehler beim Laden der Tabelle:", err);
             });
 
+        // Lade Career-Daten
         const career = JSON.parse(localStorage.getItem("career") || "{}");
         if (career?.team?.name) {
             setUserClubName(career.team.name);
+            // Setze Teamfarben basierend auf dem Clubnamen
+            setTeamColors(teamColorMap[career.team.name] || ['#ffffff', '#ffffff']);
         }
 
-        const opponentName = localStorage.getItem("opponentTeamName") || '';
-        setOpponentClubName(opponentName);
-    }, []);
+        // Lade nächsten Gegner
+        const username = localStorage.getItem("username") || "";
+        if (username && careerName) {
+            api.get(`/games/nextGame/${username}/${careerName}`)
+                .then(res => {
+                    if (res.data) {
+                        const nextGameData = res.data;
+                        const opponentTeamName = nextGameData.homeTeam === userClubName ? nextGameData.awayTeam : nextGameData.homeTeam;
+                        setNextGame({
+                            opponentTeamName,
+                            gameDate: nextGameData.date
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error("Fehler beim Laden des nächsten Spiels:", err);
+                });
+        }
+    }, [userClubName]); // Abhängig von userClubName
 
     useEffect(() => {
         const username = localStorage.getItem("username") || "";
@@ -80,24 +117,27 @@ const Home = () => {
         if (!username || !careername) return;
 
         api.get(`/trainerCareer/homepageInfo/${username}/${careername}`)
-
             .then(res => {
                 setHomepageInfo(res.data);
             })
             .catch(err => {
                 console.error("Fehler beim Laden der Homepage-Daten:", err);
             });
-
-
     }, []);
+
+    const activeLinkStyle = {
+        color: '#fff',
+        background: `linear-gradient(135deg, ${teamColors[0]} 0%, ${teamColors[1]} 100%)`,
+        boxShadow: `0px 0px 12px ${teamColors[0]}`,
+    };
 
     return (
         <Container className="home">
             <Row>
-                <Col sm={9} style={{ paddingLeft: "0" }}>
+                <Col sm={9} style={{ paddingLeft: "0" }} >
                     <Row>
                         <Col sm={5}>
-                            <h2 className="home-blue_color">{userClubName}</h2>
+                            <h2 className="home-blue_color" style={{ color: teamColors[0] }}>{userClubName}</h2>
                             <img
                                 src={logoMap[userClubName]}
                                 alt={userClubName}
@@ -105,17 +145,20 @@ const Home = () => {
                             />
                         </Col>
                         <Col sm={2} style={{ paddingTop: "180px" }}>
-                            <h5 className="home-next-match-text">Next Match</h5>
-                            <h1 className="display-4 home-next-match-vs">VS</h1>
-                            <h3 className="home-next-match-date">01.01.2025</h3>
+                            <h5 className="home-next-match-text" style={{ color: teamColors[0] }}>Next Match</h5>
+                            <h1 className="display-4 home-next-match-vs" style={{ color: teamColors[0] }}>VS</h1>
+                            <h3 className="home-next-match-date" style={{ color: teamColors[0] }}>
+                                {nextGame?.gameDate || "Datum nicht verfügbar"}
+                            </h3>
                         </Col>
-                        <Col sm={5}>
-                            <h2 className="home-blue_color">{opponentClubName}</h2>
-                            {logoMap[opponentClubName] ? (
+                        <Col sm={5} style={{borderColor: teamColors[0]}}>
+                            <h2 className="home-blue_color" style={{ color: teamColors[0] }}>{nextGame?.opponentTeamName || "Kein Gegner"}</h2>
+                            {nextGame?.opponentTeamName && logoMap[nextGame.opponentTeamName] ? (
                                 <img
-                                    src={logoMap[opponentClubName]}
-                                    alt={opponentClubName}
+                                    src={logoMap[nextGame.opponentTeamName]}
+                                    alt={nextGame.opponentTeamName}
                                     className="team-logo"
+
                                 />
                             ) : (
                                 <p className="text-muted">Kein Gegner-Logo verfügbar</p>
@@ -125,7 +168,7 @@ const Home = () => {
 
                     <Row style={{ paddingTop: "100px" }}>
                         <Col sm={6}>
-                            <Card className="home-trainer-card">
+                            <Card className="home-trainer-card" style={activeLinkStyle}>
                                 <Card.Img
                                     variant="top"
                                     src="src/components/navbarleft/pictures/mannlich.png"
@@ -150,12 +193,11 @@ const Home = () => {
                                         Titel: <strong>{homepageInfo?.leagueTitleCount || 0}</strong>
                                     </ListGroup.Item>
                                 </ListGroup>
-
                             </Card>
                         </Col>
 
                         <Col sm={6}>
-                            <h1 className="home-blue_color">Top-Transfer</h1>
+                            <h1 className="home-blue_color" style={{ color: teamColors[0] }}>Top-Transfer</h1>
                             <Carousel className="home-carousel">
                                 <Carousel.Item>
                                     <img
@@ -165,8 +207,8 @@ const Home = () => {
                                         alt="Jude Bellingham"
                                     />
                                     <Carousel.Caption className="home-carousel-caption">
-                                        <h3>Jude Bellingham</h3>
-                                        <p>From Dortmund to Real Madrid</p>
+                                        <h3 style={{ color: "white" }}>Jude Bellingham</h3>
+                                        <p >From Dortmund to Real Madrid</p>
                                     </Carousel.Caption>
                                 </Carousel.Item>
                                 <Carousel.Item>
@@ -177,7 +219,7 @@ const Home = () => {
                                         alt="Kylian Mbappe"
                                     />
                                     <Carousel.Caption className="home-carousel-caption">
-                                        <h3>Kylian Mbappe</h3>
+                                        <h3 style={{ color: "white" }}>Kylian Mbappe</h3>
                                         <p>From PSG to Real Madrid</p>
                                     </Carousel.Caption>
                                 </Carousel.Item>
@@ -189,7 +231,7 @@ const Home = () => {
                                         alt="Paul Pogba"
                                     />
                                     <Carousel.Caption className="home-carousel-caption">
-                                        <h3>Paul Pogba</h3>
+                                        <h3 style={{ color: "white" }}>Paul Pogba</h3>
                                         <p>From Juventus to Manchester United</p>
                                     </Carousel.Caption>
                                 </Carousel.Item>

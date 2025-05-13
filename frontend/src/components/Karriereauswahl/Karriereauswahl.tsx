@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Karriereauswahl.css';
 import axios from 'axios';
@@ -89,7 +89,7 @@ const Karriereauswahl: React.FC = () => {
         localStorage.setItem('career', JSON.stringify(career));
         localStorage.setItem('careername', selectedTeam.careerName);
         localStorage.setItem('username', username);
-        localStorage.setItem('selectedTeam', JSON.stringify({ name: selectedTeam.name }));
+        localStorage.setItem('selectedTeam', JSON.stringify({name: selectedTeam.name}));
 
         const otherClubs = Object.keys(logoMap).filter(name => name !== selectedTeam.name);
         const randomOpponentName = otherClubs[Math.floor(Math.random() * otherClubs.length)];
@@ -153,7 +153,11 @@ const Karriereauswahl: React.FC = () => {
                             <div
                                 key={item.id}
                                 className={`carousel-card ${offset === 2 ? 'active' : ''}`}
-                                style={{ transform: `translateX(${translate}px) scale(${scale})`, zIndex, opacity: visible ? 1 : 0 }}
+                                style={{
+                                    transform: `translateX(${translate}px) scale(${scale})`,
+                                    zIndex,
+                                    opacity: visible ? 1 : 0
+                                }}
                                 onClick={() => {
                                     if (item.type === 'empty') return;
                                     if (item.type === 'create') navigate('/karriereerstellen');
@@ -172,7 +176,8 @@ const Karriereauswahl: React.FC = () => {
                                     <div className="create-card">
                                         <h3>{item.careerName}</h3>
                                         <p>Erstelle dein eigenes Team</p>
-                                        <button className="btn btn-outline-primary" onClick={() => navigate('/karriereerstellen')}>
+                                        <button className="btn btn-outline-primary"
+                                                onClick={() => navigate('/karriereerstellen')}>
                                             Erstellen
                                         </button>
                                     </div>
@@ -180,7 +185,8 @@ const Karriereauswahl: React.FC = () => {
                                     <div className="create-card">
                                         <h3>{item.careerName}</h3>
                                         <p>Wähle ein Team aus einer bestehenden Karriere</p>
-                                        <button className="btn btn-outline-success" onClick={() => navigate('/karrierebeitreten')}>
+                                        <button className="btn btn-outline-success"
+                                                onClick={() => navigate('/karrierebeitreten')}>
                                             Beitreten
                                         </button>
                                     </div>
@@ -193,16 +199,17 @@ const Karriereauswahl: React.FC = () => {
                                     <div className="card-body">
                                         <h3>{item.name}</h3>
                                         <h4>{item.careerName}</h4>
-                                        <p style={{ fontSize: '0.85rem' }} className="text-muted">
+                                        <p style={{fontSize: '0.85rem'}} className="text-muted">
                                             Erstellt von: {item.startUser}
                                         </p>
                                         {joinedCareers.includes(item.careerName) && (
-                                            <p className="text-muted" style={{ fontSize: '0.9rem' }}>
+                                            <p className="text-muted" style={{fontSize: '0.9rem'}}>
                                                 Beigetretene Karriere
                                             </p>
                                         )}
                                         {item.logoUrl && (
-                                            <img src={item.logoUrl} alt={item.name} style={{ width: '80px', marginBottom: '10px' }} />
+                                            <img src={item.logoUrl} alt={item.name}
+                                                 style={{width: '80px', marginBottom: '10px'}}/>
                                         )}
                                     </div>
                                 )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import "./Transfermarkt.css";
 import api from "../../api.ts";
 
@@ -23,8 +23,6 @@ const Transfermarkt: React.FC = () => {
     const [maxValue, setMaxValue] = useState(999999999);
     const [currentPage, setCurrentPage] = useState(1);
     const playersPerPage = 4;
-
-
 
 
     const uniqueClubs = Array.from(new Set(alleSpieler.map(s => s.clubname))).sort();
@@ -102,7 +100,7 @@ const Transfermarkt: React.FC = () => {
                 <div className="filter-box">
                     <label>Min Rating</label>
                     <select value={minRating} onChange={(e) => setMinRating(Number(e.target.value))}>
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                        {Array.from({length: 10}, (_, i) => i + 1).map((val) => (
                             <option key={val} value={val}>
                                 {val}
                             </option>
@@ -113,7 +111,7 @@ const Transfermarkt: React.FC = () => {
                 <div className="filter-box">
                     <label>Max Rating</label>
                     <select value={maxRating} onChange={(e) => setMaxRating(Number(e.target.value))}>
-                        {Array.from({ length: 10 }, (_, i) => i + 1).map((val) => (
+                        {Array.from({length: 10}, (_, i) => i + 1).map((val) => (
                             <option key={val} value={val}>
                                 {val}
                             </option>

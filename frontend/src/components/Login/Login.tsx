@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
 import styles from './Login.module.css';
 
 const Login: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -17,29 +18,51 @@ const Login: React.FC = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({username, password}),
                 });
 
                 if (response.ok) {
                     const token = await response.text();
                     localStorage.setItem('token', token);
-                    localStorage.setItem('username', username); // ✅ speichert aktuellen User
+                    localStorage.setItem('username', username);
                     navigate('/karriereauswahl');
                 } else {
-                    const errorData = await response.text();
-                    alert(`Login fehlgeschlagen: ${errorData}`);
+                    const errorText = await response.text();
+                    const messageMatch = errorText.match(/"message"\s*:\s*"([^"]+)"/);
+                    const shortMessage = messageMatch ? messageMatch[1] : 'Login fehlgeschlagen.';
+                    setErrorMessage(shortMessage);
                 }
             } catch (error) {
                 console.error('Fehler beim Login:', error);
-                alert('Ein Fehler ist aufgetreten.');
+                setErrorMessage('Ein Fehler ist aufgetreten.');
             }
         } else {
-            alert('Bitte Benutzername und Passwort eingeben.');
+            setErrorMessage(' Kein User gefunden');
         }
     };
 
     return (
         <div className={styles['login-wrapper']}>
+            {errorMessage && (
+                <div className={styles['error-overlay']}>
+                    <div className={styles['error-card']}>
+                        <div className={styles['error-header']}>
+                            <span className={styles['error-icon']}>❗</span>
+                            <span className={styles['error-title']}>Error</span>
+                        </div>
+                        <div className={styles['error-message']}>
+                            {errorMessage}
+                        </div>
+                        <button
+                            className={styles['retry-button']}
+                            onClick={() => window.location.reload()}
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className={styles['login-card']}>
                 <h2 className={styles['login-title']}>Login</h2>
                 <form onSubmit={handleSubmit}>
@@ -69,6 +92,7 @@ const Login: React.FC = () => {
                         Einloggen
                     </button>
                 </form>
+
                 <div className={styles['login-link']}>
                     <small>Noch keinen Account? <a href="/registrieren">Registrieren</a></small>
                 </div>

@@ -1,6 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "./Account.css"; // Verlinke die CSS-Datei
+import arsenal from '../../assets/arsenalwappen.png';
+import atletico from '../../assets/atleticowappen.png';
+import barca from '../../assets/barcawappen.png';
+import bayern from '../../assets/bayernwappen.png';
+import city from '../../assets/citywappen.png';
+import inter from '../../assets/interwappen.png';
+import juve from '../../assets/juve.png';
+import liverpool from '../../assets/liverpool.png';
+import milan from '../../assets/milan.png';
+import psg from '../../assets/psgwappen.png';
+import real from '../../assets/reallogo.png';
+
+const logoMap: { [key: string]: string } = {
+    'Arsenal': arsenal,
+    'Atlético Madrid': atletico,
+    'FC Barcelona': barca,
+    'Bayern München': bayern,
+    'Manchester City': city,
+    'Inter Mailand': inter,
+    'Juventus Turin': juve,
+    'Liverpool': liverpool,
+    'AC Mailand': milan,
+    'Paris Saint-Germain': psg,
+    'Real Madrid': real,
+};
+
+const teamColorMap: { [key: string]: string[] } = {
+    'Arsenal': ['#E30613', '#C8102E', '#9B1B30'],
+    'Atlético Madrid': ['#C8102E', '#003B5C', '#FFFFFF'],
+    'FC Barcelona': ['#A50021', '#004D98'],
+    'Bayern München': ['#D50032', '#FFFFFF'],
+    'Manchester City': ['#3E8FC7', '#FFFFFF'],
+    'Inter Mailand': ['#003DA5', '#FFFFFF'],
+    'Juventus Turin': ['#000000', '#FFFFFF'],
+    'Liverpool': ['#C8102E', '#00B5A0'],
+    'AC Mailand': ['#9C1B29', '#FFFFFF'],
+    'Paris Saint-Germain': ['#0060A9', '#E30613'],
+    'Real Madrid': ['#D4AF37', '#FFFFFF'],
+};
 
 interface Team {
     id: number;
@@ -8,6 +48,7 @@ interface Team {
     country: string;
     league: string;
     logoUrl: string;
+    teamColor: string[]; // Teamfarben
 }
 
 interface Career {
@@ -22,47 +63,59 @@ const Account: React.FC = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Benutzername direkt als String holen
         const storedUsername = localStorage.getItem('username');
         setUsername(storedUsername);
 
-        // Karriere aus LocalStorage holen
         const storedCareer = JSON.parse(localStorage.getItem('career') || '{}');
         if (storedCareer && storedCareer.team) {
             setCareer(storedCareer);
         }
     }, []);
 
+    const team = career?.team;
+    const teamColors = team ? teamColorMap[team.name] : ['#1e88e5']; // Default Blau
+    const primaryColor = teamColors[0];
+    const secondaryColor = teamColors[1] || '#FFFFFF';
+
     return (
-        <div className="container mt-5">
-            <h1 className="text-center mb-4">Account Übersicht</h1>
+        <div className="account-container" style={{ backgroundColor: '#ffffff' }}>
+            <h1 className="account-title" style={{ color: primaryColor }}>Account Übersicht</h1>
 
-            <div className="card p-4 shadow mx-auto" style={{ maxWidth: '500px', borderRadius: '15px' }}>
-                <h4 className="mb-3">Benutzername:</h4>
-                <p className="fs-5">{username || 'Kein Benutzer gefunden || Loggen Sie sich ein'}</p>
+            <div className="account-card" style={{ borderColor: primaryColor }}>
+                <h4 className="account-subtitle">Benutzername:</h4>
+                <p className="account-username">{username || 'Kein Benutzer gefunden'}</p>
 
-                <hr />
+                <hr className="account-divider" />
 
-                <h4 className="mt-4 mb-3">Gewähltes Team:</h4>
+                <h4 className="account-subtitle">Gewähltes Team:</h4>
                 {career && career.team ? (
-                    <div className="text-center">
-                        <img src={career.team.logoUrl} alt={career.team.name} style={{ width: '100px' }} className="mb-3" />
-                        <p className="fs-5">{career.team.name}</p>
+                    <div className="account-team-section">
+                        <img
+                            src={career.team.logoUrl}
+                            alt={career.team.name}
+                            className="account-team-logo"
+                        />
+                        <p className="account-team-name" style={{ color: primaryColor }}>{career.team.name}</p>
 
-                        <hr className="my-4" />
+                        <hr className="account-divider" />
 
-                        <h5>Karriere-Name:</h5>
-                        <p className="text-primary">{career.careerName}</p>
+                        <h5 className="account-career-title" style={{ color: primaryColor }}>Karriere-Name:</h5>
+                        <p className="account-career-name">{career.careerName}</p>
 
-                        <small className="text-muted">Erstellt am: {new Date(career.createdAt).toLocaleDateString()}</small>
+                        <small className="account-created-date">
+                            Erstellt am: {new Date(career.createdAt).toLocaleDateString()}
+                        </small>
 
-                        <button className="btn btn-danger mt-4 w-100"  onClick={() => navigate('/')}>
+                        <button
+                            className="account-logout-btn"
+                            onClick={() => navigate('/')}
+                            style={{ backgroundColor: primaryColor }}
+                        >
                             Log Out
                         </button>
-
                     </div>
                 ) : (
-                    <p className="text-muted">Keine Karriere gestartet.</p>
+                    <p className="account-no-career">Keine Karriere gestartet.</p>
                 )}
             </div>
         </div>

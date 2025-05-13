@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import styles from './Register.module.css'; // Dein CSS-Modul
+import React, {useState} from 'react';
+import {useNavigate} from 'react-router-dom';
+import styles from './Register.module.css';
 
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');
@@ -17,7 +17,7 @@ const Register: React.FC = () => {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ username, password }),
+                    body: JSON.stringify({username, password}),
                 });
 
                 if (response.ok) {

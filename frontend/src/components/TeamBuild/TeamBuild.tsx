@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Table, Button } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import "./TeamBuild.css";
 import arsenal from '../../assets/arsenalwappen.png';
 import atletico from '../../assets/atleticowappen.png';
@@ -12,6 +12,8 @@ import liverpool from '../../assets/liverpool.png';
 import milan from '../../assets/milan.png';
 import psg from '../../assets/psgwappen.png';
 import real from '../../assets/reallogo.png';
+import { Modal, Button } from 'react-bootstrap';
+
 
 const logoMap: { [key: string]: string } = {
     'Arsenal': arsenal,
@@ -27,47 +29,100 @@ const logoMap: { [key: string]: string } = {
     'Real Madrid': real,
 };
 
+const teamColorMap: { [key: string]: string[] } = {
+    'Arsenal': ['#9B1B30', '#E30613'],
+    'Atlético Madrid': ['#003B5C', '#C8102E'],
+    'FC Barcelona': ['#004D98', '#A50021'],
+    'Bayern München': ['#D50032', '#FFFFFF'],
+    'Manchester City': ['#3E8FC7', '#FFFFFF'],
+    'Inter Mailand': ['#003DA5', '#FFFFFF'],
+    'Juventus Turin': ['#000000', '#FFFFFF'],
+    'Liverpool': ['#00B5A0', '#C8102E'],
+    'AC Mailand': ['#9C1B29', '#FFFFFF'],
+    'Paris Saint-Germain': ['#0060A9', '#E30613'],
+    'Real Madrid': ['#D4AF37', '#FFFFFF'],
+};
+
+const fieldPositions = ["TW", "LV", "RV", "IV1", "IV2", "ZDM", "ZM1", "ZM2", "LF", "RF", "ST"];
+
+
+
 const TeamBuild = () => {
     const savedTeam = localStorage.getItem("selectedTeam");
     const parsedTeam = savedTeam ? JSON.parse(savedTeam) : null;
     const clubName = parsedTeam?.name || "Unbekanntes Team";
     const clubLogo = logoMap[parsedTeam?.name] || "/default-logo.png";
+    const [teamColors, setTeamColors] = useState<string[]>(['#1e88e5', '#ffffff']);
 
     const username = localStorage.getItem("username") || "";
     const careername = localStorage.getItem("careername") || "";
 
-    const fieldPositions = ["LAV", "IV1", "IV2", "RAV", "ZM1", "DZM", "ZM2", "LF", "ST", "RF", "TW"];
     const [players, setPlayers] = useState<any[]>([]);
     const [field, setField] = useState<Record<string, any>>({});
     const [highlighted, setHighlighted] = useState<Record<string, boolean>>({});
     const [assignedPlayers, setAssignedPlayers] = useState<Set<string>>(new Set());
     const [selectedPosition, setSelectedPosition] = useState("Alle");
+    const [isLoading, setIsLoading] = useState(true);
+    const [removePlayerPosition, setRemovePlayerPosition] = useState<string | null>(null);
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
+
+
+
+    const handleCloseErrorModal = () => setShowErrorModal(false);
 
 
     useEffect(() => {
-        const url = `http://localhost:8080/trainerCareerPlayer/allPlayersFromTrainerCareer?username=${encodeURIComponent(username)}&careername=${encodeURIComponent(careername)}`;
+        const initialField: Record<string, any> = {};
+        fieldPositions.forEach(pos => initialField[pos] = null);
+        setField(initialField);
 
-        fetch(url)
-            .then((res) => {
-                if (!res.ok) throw new Error(`Fehler: ${res.status}`);
-                return res.json();
-            })
-            .then((data) => {
-                const withShorts = data.map((p: any) => ({
-                    ...p,
-                    short: getInitials(p.firstname, p.lastname),
-                    age: p.ageNow,
-                    value: `€${(p.value / 1_000_000).toFixed(1)}M`,
-                }));
-                setPlayers(withShorts);
-                const initialField: Record<string, any> = {};
-                fieldPositions.forEach(pos => initialField[pos] = null);
-                setField(initialField);
-            })
-            .catch((err) => {
-                console.error("Fehler beim Laden der Spieler:", err);
-            });
+        const loadData = async () => {
+            try {
+                const playersData = await fetchPlayers();
+                setPlayers(playersData);
+
+                const newField = {...initialField};
+                const newAssigned = new Set<string>();
+
+                playersData.forEach((player: any) => {
+                    if (player.positionInLineup && player.positionInLineup !== "B") {
+                        newField[player.positionInLineup] = player;
+                        newAssigned.add(player.short);
+                    }
+                });
+
+                setField(newField);
+                setAssignedPlayers(newAssigned);
+                setIsLoading(false);
+            } catch (err) {
+                console.error("Fehler beim Laden der Daten:", err);
+                setIsLoading(false);
+            }
+        };
+
+        loadData();
     }, [username, careername]);
+
+    useEffect(() => {
+        if (parsedTeam?.name) {
+            setTeamColors(teamColorMap[parsedTeam.name] || ['#1e88e5', '#ffffff']);
+        }
+    }, [parsedTeam]);
+
+    const fetchPlayers = async () => {
+        const url = `http://localhost:8080/trainerCareerPlayer/allPlayersFromTrainerCareer?username=${encodeURIComponent(username)}&careername=${encodeURIComponent(careername)}`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Fehler: ${response.status}`);
+
+        const data = await response.json();
+        return data.map((p: any) => ({
+            ...p,
+            short: getInitials(p.firstname, p.lastname),
+            age: p.ageNow,
+            value: `€${(p.value / 1_000_000).toFixed(1)}M`,
+        }));
+    };
 
     const getInitials = (first: string, last: string) => {
         return `${first?.[0] || ""}${last?.[0] || ""}`.toUpperCase();
@@ -80,15 +135,14 @@ const TeamBuild = () => {
     const handleDrop = (event: React.DragEvent, position: string) => {
         event.preventDefault();
         const droppedPlayer = JSON.parse(event.dataTransfer.getData("player"));
-
         const validPositions: { [key: string]: string[] } = {
             TW: ["TW"],
             IV: ["IV1", "IV2"],
-            LV: ["LAV"],
-            RV: ["RAV"],
-            ZM: ["ZM1", "ZM2", "DZM","ZDM"],
-            DZM: ["DZM", "ZM1", "ZM2","ZDM"],
-            OM: ["ZM1", "ZM2", "DZM"],
+            LV: ["LV"],
+            RV: ["RV"],
+            ZM: ["ZM1", "ZM2", "ZDM"],
+            ZDM: ["DZM", "ZM1", "ZM2","ZDM"],
+            OM: ["ZM1", "ZM2", "ZDM"],
             ST: ["ST"],
             LF: ["LF"],
             RF: ["RF"],
@@ -98,11 +152,15 @@ const TeamBuild = () => {
         if (!allowedPositions.includes(position)) return;
 
         setField(prev => {
-            const newField = { ...prev };
-            const oldPlayer = newField[position];
-            newField[position] = droppedPlayer;
+            const newField = {...prev};
+            const oldPlayer = newField[position]; // Der Spieler, der aktuell auf der Position steht
+            newField[position] = droppedPlayer; // Der neue Spieler, der abgelegt wurde
 
-            // Wenn Spieler ersetzt wurde, entferne alten aus "assigned"
+            // Tausche die Positionen der beiden Spieler
+            if (oldPlayer) {
+                newField[oldPlayer.positionInLineup] = oldPlayer;
+            }
+
             setAssignedPlayers(prevAssigned => {
                 const updated = new Set(prevAssigned);
                 updated.add(droppedPlayer.short);
@@ -118,6 +176,7 @@ const TeamBuild = () => {
             setHighlighted(prev => ({ ...prev, [position]: false }));
         }, 1000);
     };
+
 
     const handleDragOver = (event: React.DragEvent) => {
         event.preventDefault();
@@ -150,11 +209,11 @@ const TeamBuild = () => {
                 const validPositions: { [key: string]: string[] } = {
                     TW: ["TW"],
                     IV: ["IV1", "IV2"],
-                    LV: ["LAV"],
-                    RV: ["RAV"],
-                    ZM: ["ZM1", "ZM2", "DZM","ZDM"],
-                    DZM: ["DZM", "ZM1", "ZM2","ZDM"],
-                    OM: ["ZM1", "ZM2", "DZM"],
+                    LV: ["LV"],
+                    RV: ["RV"],
+                    ZM: ["ZM1", "ZM2", "ZDM"],
+                    ZDM: ["ZDM", "ZM1", "ZM2"],
+                    OM: ["ZM1", "ZM2", "ZDM"],
                     ST: ["ST"],
                     LF: ["LF"],
                     RF: ["RF"],
@@ -171,6 +230,91 @@ const TeamBuild = () => {
         setAssignedPlayers(usedShorts);
     };
 
+    const handleSaveLineup = async () => {
+        const lineup = fieldPositions.map(pos => field[pos]?.playerId).filter(id => id !== undefined);
+
+        // Überprüfen, ob 11 Spieler aufgestellt sind
+        if (lineup.length !== 11) {
+            setErrorMessage("Bitte stelle 11 Spieler auf!");  // Fehlermeldung setzen
+            setShowErrorModal(true);  // Modal öffnen
+            return; // Frühzeitig aus der Funktion zurückkehren
+        }
+
+        try {
+            const url = `http://localhost:8080/trainerCareerPlayer/changeStartElevenPlayers?username=${encodeURIComponent(username)}&careername=${encodeURIComponent(careername)}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ ids: lineup }),  // Spieler-IDs im Body senden
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error || 'Fehler beim Speichern');
+            }
+
+            // Entferne alert(), stattdessen ein Erfolgspopup (optional)
+            setErrorMessage("Aufstellung erfolgreich gespeichert!");
+            setShowErrorModal(true); // Erfolg im Modal anzeigen
+        } catch (error) {
+            setErrorMessage('Fehler beim Speichern: ' + (error instanceof Error ? error.message : 'Unbekannter Fehler'));
+            setShowErrorModal(true); // Fehler im Modal anzeigen
+        }
+    };
+
+
+
+
+    const handleRemoveAllPlayers = () => {
+        setField(prev => {
+            const newField = { ...prev };
+            // Alle Positionen auf null setzen, um alle Spieler zu entfernen
+            fieldPositions.forEach(position => {
+                newField[position] = null;
+            });
+
+            setAssignedPlayers(new Set()); // Leere die Liste der zugewiesenen Spieler
+            return newField;
+        });
+        // Keine Fehlermeldung und kein Modal für diese Funktion
+    };
+
+
+
+    const handleRemovePlayer = (position: string) => {
+        setField(prev => {
+            const newField = { ...prev };
+            newField[position] = null; // Entferne den Spieler, indem du die Position auf `null` setzt
+
+            setAssignedPlayers(prevAssigned => {
+                const updated = new Set(prevAssigned);
+                const player = prev[position];
+                if (player) updated.delete(player.short); // Entferne den Spieler aus der Liste der zugewiesenen Spieler
+                return updated;
+            });
+
+            return newField;
+        });
+
+        // Entferne den "Remove"-Modus nach dem Entfernen des Spielers
+        setRemovePlayerPosition(null);
+    };
+
+
+
+
+
+
+    const handlePlayerClick = (position: string) => {
+        // Toggle für das rote Kreuz - wenn bereits angezeigt, dann entfernen
+        setRemovePlayerPosition(prevPosition => (prevPosition === position ? null : position));
+    };
+
+
+
+
     return (
         <div className="teambuild-container">
             <h1 className="teambuild-title">TeamBuild</h1>
@@ -183,7 +327,12 @@ const TeamBuild = () => {
                 <p>Spieler: <strong>{getSelectedPlayerCount()}</strong> / {fieldPositions.length}</p>
                 <p>Gesamt-Rating: <strong>{getTotalRating()}</strong></p>
                 <p>Gesamt-Marktwert: <strong>{getTotalValue()}</strong></p>
-                <Button variant="primary" onClick={generateRandomLineup}>Zufällige Aufstellung</Button>
+                <Button style={{ background: teamColors[0] }} onClick={generateRandomLineup}>Zufällige Aufstellung</Button>
+                <Button style={{ background: teamColors[0] }} onClick={handleSaveLineup}>Aufstellung speichern</Button>
+
+
+                {/* Neuer Button zum Entfernen aller Spieler */}
+                <Button style={{ background: teamColors[0] }} onClick={handleRemoveAllPlayers}>Alle Spieler entfernen</Button>
             </div>
 
             <div className="teambuild-content">
@@ -200,6 +349,8 @@ const TeamBuild = () => {
 
                         {Object.keys(field).map((position, index) => {
                             const player = field[position];
+                            const isRemoveMode = removePlayerPosition === position; // Prüfen, ob der Spieler im "Remove"-Modus ist
+
                             return (
                                 <div
                                     key={index}
@@ -207,11 +358,33 @@ const TeamBuild = () => {
                                     onDrop={(event) => handleDrop(event, position)}
                                     onDragOver={handleDragOver}
                                     title={player ? `${player.firstname} ${player.lastname}` : position}
+                                    onClick={() => handlePlayerClick(position)} // Beim Klicken den Zustand umschalten
                                 >
-                                    {player ? player.short : position}
+                                    {player ? (
+                                        <>
+                                            {isRemoveMode ? (
+                                                <span
+                                                    className="remove-player"
+                                                    onClick={(e) => {
+                                                        e.stopPropagation(); // Verhindert, dass das Spieler-Klick-Ereignis auch ausgelöst wird
+                                                        handleRemovePlayer(position); // Spieler entfernen
+                                                    }}
+                                                >
+                            ❌
+                        </span>
+                                            ) : (
+                                                player.short // Spielerinitialen anzeigen
+                                            )}
+                                        </>
+                                    ) : (
+                                        position // Zeige die Position an, wenn kein Spieler da ist
+                                    )}
                                 </div>
                             );
                         })}
+
+
+
                     </div>
                 </div>
 
@@ -226,7 +399,7 @@ const TeamBuild = () => {
                             <option value="RV">RV</option>
                             <option value="IV">IV</option>
                             <option value="ZM">ZM</option>
-                            <option value="DZM">DZM</option>
+                            <option value="ZDM">ZDM</option>
                             <option value="OM">OM</option>
                             <option value="LF">LF</option>
                             <option value="RF">RF</option>
@@ -244,6 +417,7 @@ const TeamBuild = () => {
                             <th>Position</th>
                             <th>Alter</th>
                             <th>Wert</th>
+                           
                         </tr>
                         </thead>
                         <tbody>
@@ -251,7 +425,6 @@ const TeamBuild = () => {
                             .filter(p => selectedPosition === "Alle" || p.position === selectedPosition)
                             .map((p, idx) => {
                                 const isAssigned = assignedPlayers.has(p.short);
-
                                 return (
                                     <tr
                                         key={idx}
@@ -263,9 +436,7 @@ const TeamBuild = () => {
                                             cursor: isAssigned ? "not-allowed" : "grab",
                                         }}
                                     >
-
-
-                                    <td>{p.rating}</td>
+                                        <td>{p.rating}</td>
                                         <td>{p.short}</td>
                                         <td>{p.firstname}</td>
                                         <td>{p.lastname}</td>
@@ -279,6 +450,21 @@ const TeamBuild = () => {
                     </Table>
                 </div>
             </div>
+
+            <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Info</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>{errorMessage}</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowErrorModal(false)}>
+                        Schließen
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+
+
+
         </div>
     );
 };

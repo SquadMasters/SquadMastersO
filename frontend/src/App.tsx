@@ -1,4 +1,5 @@
-import {Route, Routes, BrowserRouter, useLocation} from 'react-router-dom';
+import { Route, Routes, BrowserRouter, useLocation } from 'react-router-dom';
+import { useEffect } from "react";
 
 import './App.css';
 import NavbarLeft from "./components/navbarleft/NavbarLeft";
@@ -11,21 +12,23 @@ import Karriereauswahl from "./components/Karriereauswahl/Karriereauswahl";
 import Registrieren from "./components/Registrieren/Registrieren.tsx";
 import Account from "./components/account/Account.tsx";
 import KarriereErstellen from "./components/karriereerstellen/KarriereErstellen.tsx";
-import {useEffect} from "react";
 import KarriereBeitreten from "./components/KarriereBeitreten/KarriereBeitreten.tsx";
 
 function AppContent() {
-
-    useEffect(() => {
-        localStorage.clear();
-    }, []);
-
     const location = useLocation();
 
-
     const hideNavbarRoutes = ['/','/karriereauswahl','/registrieren','/karriereerstellen'];
-
     const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
+
+    // Löscht den localStorage, wenn die Seite frisch geladen wird (Projekt-Neustart)
+    useEffect(() => {
+        const isFirstLoad = !sessionStorage.getItem("isFirstLoad");
+
+        if (isFirstLoad) {
+            localStorage.clear(); // localStorage löschen
+            sessionStorage.setItem("isFirstLoad", "true"); // Setze das Flag, dass die Seite schon geladen wurde
+        }
+    }, []);
 
     return (
         <>

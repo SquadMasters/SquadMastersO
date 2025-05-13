@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -13,7 +13,7 @@ const KarriereErstellen: React.FC = () => {
     const [clubs, setClubs] = useState<Club[]>([]);
     const [selectedClubName, setSelectedClubName] = useState<string>('');
     const navigate = useNavigate();
-    const username = localStorage.getItem('username'); // ✅ holt eingeloggten User
+    const username = localStorage.getItem('username');
 
     useEffect(() => {
         axios.get('http://localhost:8080/clubs/all')
@@ -41,7 +41,7 @@ const KarriereErstellen: React.FC = () => {
 
         try {
             await axios.post('http://localhost:8080/newCareer/create', request, {
-                headers: { 'Content-Type': 'application/json' }
+                headers: {'Content-Type': 'application/json'}
             });
             navigate('/karriereauswahl');
         } catch (err) {
@@ -53,7 +53,7 @@ const KarriereErstellen: React.FC = () => {
     return (
         <div className="container mt-5">
             <h1 className="text-center mb-4">Eigene Karriere erstellen</h1>
-            <div className="card p-4 shadow mx-auto" style={{ maxWidth: '600px' }}>
+            <div className="card p-4 shadow mx-auto" style={{maxWidth: '600px'}}>
                 <form onSubmit={handleCreate}>
                     <div className="mb-3">
                         <label className="form-label">Karriere-Name</label>
@@ -82,7 +82,8 @@ const KarriereErstellen: React.FC = () => {
                     </div>
                     <div className="d-grid gap-2 mt-4">
                         <button type="submit" className="btn btn-primary">Karriere erstellen</button>
-                        <button type="button" className="btn btn-outline-secondary" onClick={() => navigate('/karriereauswahl')}>
+                        <button type="button" className="btn btn-outline-secondary"
+                                onClick={() => navigate('/karriereauswahl')}>
                             Zurück
                         </button>
                     </div>
