@@ -7,6 +7,7 @@ import at.htlkaindorf.backend.pojos.Game;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.repositories.CareerRepository;
 import at.htlkaindorf.backend.repositories.GameRepository;
+import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class GameService {
     public final GameRepository gameRepository;
     private final TrainerCareerRepository trainerCareerRepository;
     private final CareerRepository careerRepository;
+    private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final GameMapper gameMapper;
 
     public void generateTrainerCareerGames(List<TrainerCareer> trainerCareers) {
@@ -140,6 +142,32 @@ public class GameService {
     }
 
     private void simulateGames(List<Game> games) {
+
+        for(Game game : games) {
+            Double ratingHomeTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(
+                    game.getHomeTeam().getCareer().getCareer_id(),
+                    game.getHomeTeam().getClub().getClub_id());
+
+            Double ratingAwayTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(
+                    game.getAwayTeam().getCareer().getCareer_id(),
+                    game.getAwayTeam().getClub().getClub_id());
+
+        }
+    }
+
+    private Double getRatingForNoStartingEleven(Long careerId, Long clubId) {
+
+        List<Double> topRatingGoalkeeper = trainerCareerPlayerRepository.findTopRatings(
+                careerId,
+                clubId,
+                new ArrayList<>(),
+                PageRequest.of(0, 3) // z. B. PageRequest.of(0, 5)
+        );
+
+        double avgRating = topRatingGoalkeeper.stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
 
     }
 

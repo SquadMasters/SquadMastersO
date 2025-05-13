@@ -2,9 +2,12 @@ package at.htlkaindorf.backend.repositories;
 
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.Player;
+import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -18,5 +21,18 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
 
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.player.player_Id = ?1 AND p.career.careerName = ?2")
     TrainerCareerPlayer findPlayerById(Long id, String careername);
+
+    @Query("SELECT AVG(p.ratingNow) FROM TrainerCareerPlayer p WHERE p.career.career_id = ?1 AND p.club.club_id = ?2 AND p.positionInLineup != 'B'")
+    Double findAvgRatingFromTrainerCareer(Long careerId, Long clubId);
+
+    @Query("SELECT p.ratingNow FROM TrainerCareerPlayer p " +
+            "WHERE p.career.careerId = :careerId AND p.club.clubId = :clubId AND p.player.position IN :positions " +
+            "ORDER BY p.ratingNow DESC")
+    List<Double> findTopRatings(
+            @Param("careerId") Long careerId,
+            @Param("clubId") Long clubId,
+            @Param("positions") List<String> positions,
+            Pageable pageable
+    );
 
 }

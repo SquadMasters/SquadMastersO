@@ -34,6 +34,7 @@ public class SimulationController {
         return ResponseEntity.ok(true);
     }
 
+    // geht nur startelf voll is
     @PatchMapping("/pressReady")
     public ResponseEntity<Boolean> pressReadyForSimulation(
             @RequestParam String username,
