@@ -32,4 +32,21 @@ public class CareerService {
         return careerRepository.getCareersWithoutUser(username);
     }
 
+
+    public Boolean changeCareerAfterFirstHalfSimulation(String careername) {
+
+        Career career = careerRepository.findCareerByName(careername);
+
+        if (career == null) {
+            log.error("Karriere mit dem Namen {} nicht gefunden!", careername);
+            return false;
+        }
+
+        career.changeIsRunning();
+        career.changeCurrentDate(true);
+        careerRepository.save(career);
+
+        return true;
+    }
+
 }

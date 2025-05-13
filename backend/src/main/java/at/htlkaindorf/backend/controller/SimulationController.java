@@ -25,8 +25,10 @@ public class SimulationController {
     private final CareerService careerService;
     private final TrainerCareerService trainerCareerService;
 
-    @PostMapping("/start")
+    @PostMapping("/startFirstHalfOfTheSeason")
     public ResponseEntity<Boolean> startSimulation(String careername) {
+
+        Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername);
 
 
         return ResponseEntity.ok(true);

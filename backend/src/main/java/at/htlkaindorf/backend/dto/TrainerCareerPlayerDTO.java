@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TrainerCareerPlayerDTO {
 
+    private Long playerId;
     private String firstname;
     private String lastname;
     private String position;

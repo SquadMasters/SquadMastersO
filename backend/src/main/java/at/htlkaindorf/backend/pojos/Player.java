@@ -31,10 +31,12 @@ public class Player {
     private String position;
 
     @Column(nullable = false)
-    private Double value;
+    @JsonProperty("value")
+    private Double startValue;
 
     @Column(nullable = false)
-    private Integer rating;
+    @JsonProperty("rating")
+    private Integer startRating;
 
     @Column(nullable = false)
     private Integer startAge;

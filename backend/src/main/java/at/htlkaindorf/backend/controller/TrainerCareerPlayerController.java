@@ -38,4 +38,20 @@ public class TrainerCareerPlayerController {
         List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByCareer(careername);
         return ResponseEntity.ok(players);
     }
+
+
+    @PostMapping("/changeStartElevenPlayers")
+    public ResponseEntity<String> changeStartElevenPlayers(
+            @RequestParam List<Long> ids,
+            @RequestParam String username,
+            @RequestParam String careername) {
+
+        try {
+            trainerCareerPlayerService.changeStartEleven(ids, username, careername);
+            return ResponseEntity.ok("Startelf erfolgreich geändert");
+        } catch (Exception e) {
+            log.error("Fehler beim Ändern der Startelf: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Fehler beim Ändern der Startelf");
+        }
+    }
 }

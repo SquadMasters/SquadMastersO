@@ -6,6 +6,7 @@ import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.Club;
+import at.htlkaindorf.backend.pojos.PositionInLineup;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
 import at.htlkaindorf.backend.repositories.ClubRepository;
@@ -46,5 +47,37 @@ public class TrainerCareerPlayerService {
         return tcPlayers.stream()
                 .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
                 .toList();
+    }
+
+    public void changeStartEleven(List<Long> ids, String username, String careername) {
+
+        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findPlayersByTrainerCareer(clubname, careername);
+
+
+        List<TrainerCareerPlayer> startingEleven = tcPlayers.stream()
+                .filter(player -> player.getPositionInLineup() != PositionInLineup.B)
+                .toList();
+
+        for (TrainerCareerPlayer trainerCareerPlayer : startingEleven) {
+            trainerCareerPlayer.setPositionInLineup(PositionInLineup.B);
+        }
+
+        int index = 0;
+
+        PositionInLineup[] positions = PositionInLineup.values();
+
+        for (Long id : ids) {
+
+            TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerByLastname(id);
+
+            if (player != null && index < positions.length) {
+                player.setPositionInLineup(positions[index]);
+            }
+
+            index++;
+        }
+
+        trainerCareerPlayerRepository.saveAll(tcPlayers);
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 @Data
@@ -37,4 +38,21 @@ public class Career {
     @OneToMany(mappedBy = "career", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<TrainerCareerPlayer> players;
+
+    public void changeIsRunning() {
+        if (!isRunning)
+            isRunning = true;
+    }
+
+    public void changeCurrentDate(Boolean firstHalf) {
+        if (currentCareerDate == null) {
+            currentCareerDate = LocalDate.of(2025, Month.JUNE, 1);
+        }
+
+        if (firstHalf) {
+            currentCareerDate = currentCareerDate.plusYears(1).withMonth(Month.JANUARY.getValue()).withDayOfMonth(1);
+        } else {
+            currentCareerDate = currentCareerDate.withMonth(Month.JUNE.getValue()).withDayOfMonth(1);
+        }
+    }
 }

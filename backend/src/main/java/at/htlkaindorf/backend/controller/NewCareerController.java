@@ -98,6 +98,8 @@ public class NewCareerController {
                         .movedRecently(false)
                         .positionInLineup(PositionInLineup.B)
                         .salesInquiry(false)
+                        .valueNow(player.getStartValue())
+                        .ratingNow(player.getStartRating())
                         .club(club)
                         .build();
                 trainerCareerPlayers.add(trainerCareerPlayer);

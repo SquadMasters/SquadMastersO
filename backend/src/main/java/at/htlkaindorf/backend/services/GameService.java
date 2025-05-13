@@ -9,6 +9,9 @@ import at.htlkaindorf.backend.repositories.CareerRepository;
 import at.htlkaindorf.backend.repositories.GameRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +23,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GameService {
 
     public final GameRepository gameRepository;
@@ -110,6 +114,33 @@ public class GameService {
         }
 
         return games.stream().map(gameMapper::toNextGameDTO).toList();
+    }
+
+    public Boolean simulateSeason(String careername, Boolean firstHalf) {
+
+        List<Game> games;
+
+        Pageable pageable;
+        if (firstHalf) {
+            pageable = PageRequest.of(0, 18);
+        } else {
+            pageable = PageRequest.of(1, 18);
+        }
+
+        games = gameRepository.getGamesFromCareer(careername, pageable);
+
+        if (games.isEmpty()) {
+            log.error("Keine Spiele gefunden für Karriere: {}", careername);
+            return false;
+        }
+
+        simulateGames(games);
+
+        return true;
+    }
+
+    private void simulateGames(List<Game> games) {
+
     }
 
 }

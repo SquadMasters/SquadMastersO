@@ -34,6 +34,10 @@ public class TrainerCareerPlayer {
 
     private Integer ageNow;
 
+    private Double valueNow;
+
+    private Integer ratingNow;
+
     private Boolean movedRecently;
 
     private PositionInLineup positionInLineup;
