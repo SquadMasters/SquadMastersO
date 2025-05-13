@@ -69,7 +69,7 @@ public class TrainerCareerPlayerService {
 
         for (Long id : ids) {
 
-            TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerByLastname(id);
+            TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerById(id, careername);
 
             if (player != null && index < positions.length) {
                 player.setPositionInLineup(positions[index]);

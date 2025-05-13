@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/trainerCareerPlayer")
@@ -42,16 +43,22 @@ public class TrainerCareerPlayerController {
 
     @PostMapping("/changeStartElevenPlayers")
     public ResponseEntity<String> changeStartElevenPlayers(
-            @RequestParam List<Long> ids,
+            @RequestBody Map<String, List<Long>> requestBody,
             @RequestParam String username,
             @RequestParam String careername) {
 
+        List<Long> ids = requestBody.get("ids");
+
+        if (ids == null || ids.size() != 11) {
+            return ResponseEntity.badRequest().body("{\"error\": \"Invalid number of players. Exactly 11 players required.\"}");
+        }
+
         try {
             trainerCareerPlayerService.changeStartEleven(ids, username, careername);
-            return ResponseEntity.ok("Startelf erfolgreich geändert");
+            return ResponseEntity.ok("{\"message\": \"Startelf erfolgreich geändert\"}");
         } catch (Exception e) {
             log.error("Fehler beim Ändern der Startelf: {}", e.getMessage());
-            return ResponseEntity.status(500).body("Fehler beim Ändern der Startelf");
+            return ResponseEntity.status(500).body("{\"error\": \"Fehler beim Ändern der Startelf: " + e.getMessage() + "\"}");
         }
     }
 }
