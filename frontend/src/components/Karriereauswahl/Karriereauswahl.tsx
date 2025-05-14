@@ -111,7 +111,7 @@ const Karriereauswahl: React.FC = () => {
             league: '',
             logoUrl: '',
             careerName: '',
-            type: 'empty'
+            type: 'empty' as "empty" // Hier wird der Typ explizit auf 'empty' gesetzt
         })),
         {
             id: 9001,
@@ -120,7 +120,7 @@ const Karriereauswahl: React.FC = () => {
             league: '',
             logoUrl: '',
             careerName: 'Eigene Karriere erstellen',
-            type: 'create',
+            type: 'create' as "create", // Hier wird der Typ explizit auf 'create' gesetzt
         },
         {
             id: 9002,
@@ -129,7 +129,7 @@ const Karriereauswahl: React.FC = () => {
             league: '',
             logoUrl: '',
             careerName: 'Bestehender Karriere beitreten',
-            type: 'join',
+            type: 'join' as "join", // Hier wird der Typ explizit auf 'join' gesetzt
         },
     ];
 
