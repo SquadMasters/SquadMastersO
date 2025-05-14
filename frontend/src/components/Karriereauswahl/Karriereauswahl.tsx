@@ -102,6 +102,7 @@ const Karriereauswahl: React.FC = () => {
         navigate('/home');
     };
 
+
     const allItems: Team[] = [
         ...teams,
         ...Array(Math.max(0, 5 - teams.length)).fill(null).map((_, i) => ({
@@ -132,6 +133,7 @@ const Karriereauswahl: React.FC = () => {
             type: 'join' as "join", // Hier wird der Typ explizit auf 'join' gesetzt
         },
     ];
+
 
     const nextSlide = () => setCurrentIndex((prev) => (prev + 1) % allItems.length);
     const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + allItems.length) % allItems.length);

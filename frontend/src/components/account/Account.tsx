@@ -2,31 +2,9 @@ import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom";
 import "./Account.css"; // Verlinke die CSS-Datei
-import arsenal from '../../assets/arsenalwappen.png';
-import atletico from '../../assets/atleticowappen.png';
-import barca from '../../assets/barcawappen.png';
-import bayern from '../../assets/bayernwappen.png';
-import city from '../../assets/citywappen.png';
-import inter from '../../assets/interwappen.png';
-import juve from '../../assets/juve.png';
-import liverpool from '../../assets/liverpool.png';
-import milan from '../../assets/milan.png';
-import psg from '../../assets/psgwappen.png';
-import real from '../../assets/reallogo.png';
 
-const logoMap: { [key: string]: string } = {
-    'Arsenal': arsenal,
-    'Atlético Madrid': atletico,
-    'FC Barcelona': barca,
-    'Bayern München': bayern,
-    'Manchester City': city,
-    'Inter Mailand': inter,
-    'Juventus Turin': juve,
-    'Liverpool': liverpool,
-    'AC Mailand': milan,
-    'Paris Saint-Germain': psg,
-    'Real Madrid': real,
-};
+
+
 
 const teamColorMap: { [key: string]: string[] } = {
     'Arsenal': ['#E30613', '#C8102E', '#9B1B30'],
@@ -75,7 +53,7 @@ const Account: React.FC = () => {
     const team = career?.team;
     const teamColors = team ? teamColorMap[team.name] : ['#1e88e5']; // Default Blau
     const primaryColor = teamColors[0];
-    const secondaryColor = teamColors[1] || '#FFFFFF';
+
 
     return (
         <div className="account-container" style={{ backgroundColor: '#ffffff' }}>

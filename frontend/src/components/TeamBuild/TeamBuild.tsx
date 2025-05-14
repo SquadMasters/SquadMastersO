@@ -14,6 +14,10 @@ import psg from '../../assets/psgwappen.png';
 import real from '../../assets/reallogo.png';
 import { Modal, Button } from 'react-bootstrap';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faShirt } from '@fortawesome/free-solid-svg-icons';
+
+
 
 const logoMap: { [key: string]: string } = {
     'Arsenal': arsenal,
@@ -62,17 +66,19 @@ const TeamBuild = () => {
     const [highlighted, setHighlighted] = useState<Record<string, boolean>>({});
     const [assignedPlayers, setAssignedPlayers] = useState<Set<string>>(new Set());
     const [selectedPosition, setSelectedPosition] = useState("Alle");
-    const [isLoading, setIsLoading] = useState(true);
+    const [,setIsLoading] = useState(true);
     const [removePlayerPosition, setRemovePlayerPosition] = useState<string | null>(null);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
 
 
-    const handleCloseErrorModal = () => setShowErrorModal(false);
+
+
 
 
     useEffect(() => {
+
         const initialField: Record<string, any> = {};
         fieldPositions.forEach(pos => initialField[pos] = null);
         setField(initialField);
@@ -123,6 +129,24 @@ const TeamBuild = () => {
             value: `€${(p.value / 1_000_000).toFixed(1)}M`,
         }));
     };
+
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setIsLoading(true);  // Ladezustand setzen
+                const playersData = await fetchPlayers();
+                setPlayers(playersData);
+
+                setIsLoading(false);  // Ladezustand zurücksetzen
+            } catch (err) {
+                console.error("Fehler beim Laden der Daten:", err);
+                setIsLoading(false);  // Ladezustand zurücksetzen im Fehlerfall
+            }
+        };
+
+        loadData();
+    }, [username, careername]);
+
 
     const getInitials = (first: string, last: string) => {
         return `${first?.[0] || ""}${last?.[0] || ""}`.toUpperCase();
@@ -358,7 +382,7 @@ const TeamBuild = () => {
                                     onDrop={(event) => handleDrop(event, position)}
                                     onDragOver={handleDragOver}
                                     title={player ? `${player.firstname} ${player.lastname}` : position}
-                                    onClick={() => handlePlayerClick(position)} // Beim Klicken den Zustand umschalten
+                                    onClick={() => handlePlayerClick(position)}
                                 >
                                     {player ? (
                                         <>
@@ -366,20 +390,28 @@ const TeamBuild = () => {
                                                 <span
                                                     className="remove-player"
                                                     onClick={(e) => {
-                                                        e.stopPropagation(); // Verhindert, dass das Spieler-Klick-Ereignis auch ausgelöst wird
-                                                        handleRemovePlayer(position); // Spieler entfernen
+                                                        e.stopPropagation();
+                                                        handleRemovePlayer(position);
                                                     }}
                                                 >
-                            ❌
-                        </span>
+                    ❌
+                </span>
                                             ) : (
-                                                player.short // Spielerinitialen anzeigen
+                                                <div className="shirt-icon">
+                                                    <FontAwesomeIcon icon={faShirt} className="shirt-icon-image" />
+                                                    <span className="shirt-icon-text">{player.short}</span>
+                                                </div>
                                             )}
                                         </>
                                     ) : (
-                                        position // Zeige die Position an, wenn kein Spieler da ist
+                                        <div className="shirt-icon">
+                                            <FontAwesomeIcon icon={faShirt} className="shirt-icon-image" />
+                                            <span className="shirt-icon-text">{position}</span> {/* Position anzeigen, falls kein Spieler */}
+                                        </div>
                                     )}
                                 </div>
+
+
                             );
                         })}
 
