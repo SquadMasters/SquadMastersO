@@ -30,6 +30,7 @@ public class TrainerCareerService {
     private final GameRepository gameRepository;
     private final UserService userService;
     private final TrainerCareersMapper trainerCareersMapper;
+    private final ClubService clubService;
 
     public List<ShowAllTrainerCareersDTO> getAllTrainerCareersByUser(String username) {
         List<TrainerCareer> careers = trainerCareerRepository.findAllByUserName(username);
@@ -135,12 +136,13 @@ public class TrainerCareerService {
     public Boolean changeTable(String careername, Boolean firstHalf) {
 
         List<Game> games;
+        Integer clubCount = clubService.getClubCount();
 
         Pageable pageable;
         if (firstHalf) {
-            pageable = PageRequest.of(0, 90);
+            pageable = PageRequest.of(0, clubCount*(clubCount-1));
         } else {
-            pageable = PageRequest.of(1, 90);
+            pageable = PageRequest.of(1, clubCount*(clubCount-1));
         }
 
         games = gameRepository.getGamesFromCareer(careername, pageable);

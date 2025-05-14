@@ -29,6 +29,7 @@ public class GameService {
     private final CareerRepository careerRepository;
     private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final GameMapper gameMapper;
+    private final ClubService clubService;
 
     public void generateTrainerCareerGames(List<TrainerCareer> trainerCareers) {
         List<Game> games = new ArrayList<>();
@@ -137,12 +138,13 @@ public class GameService {
     public Boolean simulateSeason(String careername, Boolean firstHalf) {
 
         List<Game> games;
+        Integer clubCount = clubService.getClubCount();
 
         Pageable pageable;
         if (firstHalf) {
-            pageable = PageRequest.of(0, 90);
+            pageable = PageRequest.of(0, clubCount*(clubCount-1));
         } else {
-            pageable = PageRequest.of(1, 90);
+            pageable = PageRequest.of(1, clubCount*(clubCount-1));
         }
 
         games = gameRepository.getGamesFromCareer(careername, pageable);
@@ -244,4 +246,7 @@ public class GameService {
                 .orElse(0.0);
     }
 
+    public Integer getNotPlayedGames(String careername) {
+        return gameRepository.getNotPlayedGamesCount(careername);
+    }
 }

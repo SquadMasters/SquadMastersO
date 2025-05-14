@@ -5,6 +5,7 @@ import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.services.CareerService;
+import at.htlkaindorf.backend.services.ClubService;
 import at.htlkaindorf.backend.services.GameService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +28,18 @@ public class SimulationController {
     private final CareerService careerService;
     private final GameService gameService;
     private final TrainerCareerService trainerCareerService;
+    private final ClubService clubService;
 
     // nicht jeder darf aufrufen
-    // wird öfter simuliert
     @PostMapping("/start")
     public ResponseEntity<Boolean> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
+
+        Integer countGames = gameService.getNotPlayedGames(careername);
+        Integer countClubs = clubService.getClubCount();
+
+        if ((countGames.equals((countClubs-1)*2*countClubs) && !firstHalf) || (countGames.equals((countClubs-1)*countClubs) && firstHalf) || countGames.equals(0)) {
+            return ResponseEntity.ok(false);
+        }
 
         Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername, firstHalf);
         Boolean simulateSeason = gameService.simulateSeason(careername, firstHalf);

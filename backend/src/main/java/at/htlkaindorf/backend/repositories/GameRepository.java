@@ -35,7 +35,9 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     @Query("SELECT g FROM Game g WHERE ((g.homeTeam.club.clubName = :clubname AND g.homeTeam.career.careerName = :careername) OR (g.awayTeam.club.clubName = :clubname AND g.awayTeam.career.careerName = :careername)) ORDER BY g.matchDate")
     List<Game> getAllGamesForTrainerCareer(@Param("clubname") String clubname, @Param("careername") String careername);
 
-
     @Query("SELECT g FROM Game g WHERE g.awayTeam.career.careerName = ?1 AND g.homeTeam.career.careerName = ?1 ORDER BY g.matchDate ASC")
     List<Game> getGamesFromCareer(String careername, Pageable pageable);
+
+    @Query("SELECT COALESCE(count(g), 0) FROM Game g WHERE g.awayTeam.career.careerName = ?1 AND g.homeTeam.career.careerName = ?1 AND g.awayGoals IS NULL AND g.homeGoals IS NULL")
+    Integer getNotPlayedGamesCount(String careername);
 }
