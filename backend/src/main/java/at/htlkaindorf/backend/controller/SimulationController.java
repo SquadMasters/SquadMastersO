@@ -5,9 +5,11 @@ import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.services.CareerService;
+import at.htlkaindorf.backend.services.GameService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,13 +25,21 @@ import java.util.Random;
 public class SimulationController {
 
     private final CareerService careerService;
+    private final GameService gameService;
     private final TrainerCareerService trainerCareerService;
 
-    @PostMapping("/startFirstHalfOfTheSeason")
-    public ResponseEntity<Boolean> startSimulation(String careername) {
+    // nicht jeder darf aufrufen
+    // wird öfter simuliert
+    @PostMapping("/start")
+    public ResponseEntity<Boolean> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
 
-        Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername);
+        Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername, firstHalf);
+        Boolean simulateSeason = gameService.simulateSeason(careername, firstHalf);
+        Boolean changeTable = trainerCareerService.changeTable(careername, firstHalf);
 
+        if (!changeCareer || !simulateSeason || !changeTable) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+        }
 
         return ResponseEntity.ok(true);
     }

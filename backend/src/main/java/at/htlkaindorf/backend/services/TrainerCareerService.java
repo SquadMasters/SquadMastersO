@@ -5,12 +5,16 @@ import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TableDataDTO;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.Club;
+import at.htlkaindorf.backend.pojos.Game;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.User;
 import at.htlkaindorf.backend.repositories.CareerRepository;
+import at.htlkaindorf.backend.repositories.GameRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 public class TrainerCareerService {
 
     public final TrainerCareerRepository trainerCareerRepository;
+    private final GameRepository gameRepository;
     private final UserService userService;
     private final TrainerCareersMapper trainerCareersMapper;
 
@@ -125,5 +130,56 @@ public class TrainerCareerService {
         }
 
         return career.getReadyForSimulation();
+    }
+
+    public Boolean changeTable(String careername, Boolean firstHalf) {
+
+        List<Game> games;
+
+        Pageable pageable;
+        if (firstHalf) {
+            pageable = PageRequest.of(0, 90);
+        } else {
+            pageable = PageRequest.of(1, 90);
+        }
+
+        games = gameRepository.getGamesFromCareer(careername, pageable);
+
+        if (games.isEmpty()) {
+            log.error("Keine Spiele gefunden für Karriere: {}", careername);
+            return false;
+        }
+
+        for (Game game : games) {
+
+            TrainerCareer homeTeam = game.getHomeTeam();
+            TrainerCareer awayTeam = game.getAwayTeam();
+            int homeTeamGoals = game.getHomeGoals();
+            int awayTeamGoals = game.getAwayGoals();
+
+            changeTeam(homeTeam, homeTeamGoals, awayTeamGoals);
+            changeTeam(awayTeam, awayTeamGoals, homeTeamGoals);
+
+            trainerCareerRepository.save(homeTeam);
+            trainerCareerRepository.save(awayTeam);
+        }
+
+        return true;
+    }
+
+    private void changeTeam(TrainerCareer team, Integer goals, Integer enemyGoals) {
+
+        if (goals > enemyGoals) {
+            int wins = team.getWins();
+            team.setWins(wins+1);
+        } else if (goals.equals(enemyGoals)) {
+            int draws = team.getDraws();
+            team.setDraws(draws+1);
+        } else {
+            int losses = team.getLosses();
+            team.setLosses(losses+1);
+        }
+        int goalDiff = team.getGoalDiff();
+        team.setGoalDiff(goalDiff + goals - enemyGoals);
     }
 }

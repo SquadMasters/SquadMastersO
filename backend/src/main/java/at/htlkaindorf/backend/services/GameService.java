@@ -17,10 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +35,9 @@ public class GameService {
         int year = LocalDate.now().getYear();
         Random random = new Random();
 
+        // Set to keep track of already generated dates
+        Set<LocalDate> generatedDates = new HashSet<>();
+
         for (TrainerCareer tc : trainerCareers) {
             if (tc.getHomeGames() == null) {
                 tc.setHomeGames(new ArrayList<>());
@@ -52,11 +52,17 @@ public class GameService {
                 TrainerCareer teamA = trainerCareers.get(i);
                 TrainerCareer teamB = trainerCareers.get(j);
 
-                games.add(createGame(teamA, teamB, getRandomDate(year, 7, 1, year, 12, 31, random)));
-                games.add(createGame(teamB, teamA, getRandomDate(year, 7, 1, year, 12, 31, random)));
+                LocalDate date1 = getRandomDate(year, 7, 1, year, 12, 31, random, generatedDates);
+                LocalDate date2 = getRandomDate(year, 7, 1, year, 12, 31, random, generatedDates);
 
-                games.add(createGame(teamA, teamB, getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random)));
-                games.add(createGame(teamB, teamA, getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random)));
+                games.add(createGame(teamA, teamB, date1));
+                games.add(createGame(teamB, teamA, date2));
+
+                LocalDate date3 = getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random, generatedDates);
+                LocalDate date4 = getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random, generatedDates);
+
+                games.add(createGame(teamA, teamB, date3));
+                games.add(createGame(teamB, teamA, date4));
             }
         }
 
@@ -77,12 +83,22 @@ public class GameService {
     }
 
     private LocalDate getRandomDate(int yearStart, int monthStart, int dayStart,
-                                    int yearEnd, int monthEnd, int dayEnd, Random random) {
+                                    int yearEnd, int monthEnd, int dayEnd, Random random,
+                                    Set<LocalDate> generatedDates) {
         LocalDate startDate = LocalDate.of(yearStart, monthStart, dayStart);
         LocalDate endDate = LocalDate.of(yearEnd, monthEnd, dayEnd);
         long days = ChronoUnit.DAYS.between(startDate, endDate);
-        return startDate.plusDays(random.nextInt((int) days + 1));
+
+        LocalDate randomDate;
+        do {
+            randomDate = startDate.plusDays(random.nextInt((int) days + 1)); // Zufälliges Datum generieren
+        } while (generatedDates.contains(randomDate)); // Prüfen, ob das Datum schon existiert
+
+        generatedDates.add(randomDate); // Das generierte Datum zu dem Set hinzufügen
+        return randomDate;
     }
+
+
 
 
     public NextGameDTO getNextGame(String username, String careername) {
@@ -124,9 +140,9 @@ public class GameService {
 
         Pageable pageable;
         if (firstHalf) {
-            pageable = PageRequest.of(0, 18);
+            pageable = PageRequest.of(0, 90);
         } else {
-            pageable = PageRequest.of(1, 18);
+            pageable = PageRequest.of(1, 90);
         }
 
         games = gameRepository.getGamesFromCareer(careername, pageable);
@@ -144,31 +160,88 @@ public class GameService {
     private void simulateGames(List<Game> games) {
 
         for(Game game : games) {
-            Double ratingHomeTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(
-                    game.getHomeTeam().getCareer().getCareer_id(),
-                    game.getHomeTeam().getClub().getClub_id());
 
-            Double ratingAwayTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(
-                    game.getAwayTeam().getCareer().getCareer_id(),
-                    game.getAwayTeam().getClub().getClub_id());
+            long careerIdHome = game.getHomeTeam().getCareer().getCareer_id();
+            long clubIdHome = game.getHomeTeam().getClub().getClub_id();
+            long careerIdAway = game.getAwayTeam().getCareer().getCareer_id();
+            long clubIdAway = game.getAwayTeam().getClub().getClub_id();
 
+            Double ratingHomeTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(careerIdHome, clubIdHome);
+
+            Double ratingAwayTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(careerIdAway, clubIdAway);
+
+            ratingHomeTeam = ratingHomeTeam == 0 ? getRatingForNoStartingEleven(careerIdHome, clubIdHome) : ratingHomeTeam;
+            ratingAwayTeam = ratingAwayTeam == 0 ? getRatingForNoStartingEleven(careerIdAway, clubIdAway) : ratingAwayTeam;
+
+            //log.info(game.getHomeTeam().getClub().getClubName() + "->" + ratingHomeTeam + " - " + game.getAwayTeam().getClub().getClubName() + "->" + ratingAwayTeam);
+
+            double difference = ratingHomeTeam - ratingAwayTeam;
+            boolean homeTeamBetter = true;
+
+            if (difference < 0) {
+                difference *= -1;
+                homeTeamBetter = false;
+            }
+
+            if (difference < 0.1) {
+                int upperLimit = 2 + new Random().nextInt(2);
+                game.setHomeGoals(new Random().nextInt(upperLimit));
+                game.setAwayGoals(new Random().nextInt(upperLimit));
+            } else if (difference < 0.25) {
+                int limit = 3 + new Random().nextInt(2);
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 4 : limit));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 4 : limit));
+            } else if (difference < 0.4) {
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 4 : 3));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 4 : 3));
+            } else if (difference < 0.7) {
+                int upperLimit = 4 + new Random().nextInt(2);
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? upperLimit : 3));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? upperLimit : 3));
+            } else if (difference < 1) {
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 5 : 3));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 5 : 3));
+            } else if (difference < 1.5) {
+                int limit = 2 + new Random().nextInt(2);
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 5 : limit));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 5 : limit));
+            } else if (difference < 2) {
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 5 : 2));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 5 : 2));
+            } else if (difference < 4) {
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 6 : 2));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 6 : 2));
+            } else {
+                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 6 : 1));
+                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 6 : 1));
+            }
+
+            gameRepository.save(game);
         }
     }
 
     private Double getRatingForNoStartingEleven(Long careerId, Long clubId) {
 
-        List<Double> topRatingGoalkeeper = trainerCareerPlayerRepository.findTopRatings(
+        double avgRatingGoalkeeper = getAverageRating(careerId, clubId, new String[] {"TW"}, 1);
+        double avgRatingDefender = getAverageRating(careerId, clubId, new String[] {"LV", "RV", "IV"}, 4);
+        double avgRatingStriker = getAverageRating(careerId, clubId, new String[] {"LF", "RF", "ST"}, 3);
+        double avgRatingMidfielder = getAverageRating(careerId, clubId, new String[] {"ZDM", "ZM"}, 3);
+
+        return (avgRatingGoalkeeper + avgRatingDefender + avgRatingStriker + avgRatingMidfielder) / 4;
+    }
+
+    private double getAverageRating(Long careerId, Long clubId, String[] roles, int pageSize) {
+        List<Double> ratings = trainerCareerPlayerRepository.findTopRatings(
                 careerId,
                 clubId,
-                new ArrayList<>(),
-                PageRequest.of(0, 3) // z. B. PageRequest.of(0, 5)
+                new ArrayList<>(Arrays.asList(roles)),
+                PageRequest.of(0, pageSize)
         );
 
-        double avgRating = topRatingGoalkeeper.stream()
+        return ratings.stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0.0);
-
     }
 
 }

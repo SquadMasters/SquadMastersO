@@ -33,7 +33,7 @@ public class CareerService {
     }
 
 
-    public Boolean changeCareerAfterFirstHalfSimulation(String careername) {
+    public Boolean changeCareerAfterFirstHalfSimulation(String careername, Boolean firstHalf) {
 
         Career career = careerRepository.findCareerByName(careername);
 
@@ -43,7 +43,7 @@ public class CareerService {
         }
 
         career.changeIsRunning();
-        career.changeCurrentDate(true);
+        career.changeCurrentDate(firstHalf);
         careerRepository.save(career);
 
         return true;
