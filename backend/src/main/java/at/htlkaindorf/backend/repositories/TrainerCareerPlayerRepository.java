@@ -27,8 +27,6 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
             "AND p.positionInLineup != at.htlkaindorf.backend.pojos.PositionInLineup.B")
     Double findAvgRatingFromTrainerCareer(Long careerId, Long clubId);
 
-
-
     @Query("SELECT p.ratingNow FROM TrainerCareerPlayer p " +
             "WHERE p.career.career_id = :careerId AND p.club.club_id = :clubId AND p.player.position IN :positions " +
             "ORDER BY p.ratingNow DESC")
@@ -39,4 +37,6 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
             Pageable pageable
     );
 
+    @Query("SELECT COALESCE(count(p), 0) FROM TrainerCareerPlayer p WHERE p.positionInLineup != at.htlkaindorf.backend.pojos.PositionInLineup.B AND p.career.careerName = ?1 AND p.club.clubName = ?2")
+    Integer findPlayersInStartingEleven(String careername, String clubname);
 }

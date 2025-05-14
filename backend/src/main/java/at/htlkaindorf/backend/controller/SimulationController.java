@@ -32,13 +32,16 @@ public class SimulationController {
 
     // nicht jeder darf aufrufen
     @PostMapping("/start")
-    public ResponseEntity<Boolean> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
+    public ResponseEntity<String> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
 
         Integer countGames = gameService.getNotPlayedGames(careername);
         Integer countClubs = clubService.getClubCount();
 
         if ((countGames.equals((countClubs-1)*2*countClubs) && !firstHalf) || (countGames.equals((countClubs-1)*countClubs) && firstHalf) || countGames.equals(0)) {
-            return ResponseEntity.ok(false);
+            return ResponseEntity.ok("Fehler beim Spiele simulieren!");
+        }
+        if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
+            return ResponseEntity.ok("User noch nicht ready!");
         }
 
         Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername, firstHalf);
@@ -46,25 +49,26 @@ public class SimulationController {
         Boolean changeTable = trainerCareerService.changeTable(careername, firstHalf);
 
         if (!changeCareer || !simulateSeason || !changeTable) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(false);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fehler beim simulieren!");
         }
 
-        return ResponseEntity.ok(true);
+        trainerCareerService.setUsersNotReady(careername);
+
+        return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
     }
 
-    // geht nur startelf voll is
     @PatchMapping("/pressReady")
-    public ResponseEntity<Boolean> pressReadyForSimulation(
+    public ResponseEntity<String> pressReadyForSimulation(
             @RequestParam String username,
             @RequestParam String careername) {
 
         Boolean setReady = trainerCareerService.userSetReady(username, careername);
 
         if (Boolean.FALSE.equals(setReady)) {
-            return ResponseEntity.badRequest().body(false);
+            return ResponseEntity.badRequest().body("keine volle Startelf gefunden!");
         }
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok("User ready!");
     }
 
     @GetMapping("/isUserReady")
