@@ -42,7 +42,7 @@ const logoMap: { [key: string]: string } = {
 };
 
 const Karriereauswahl: React.FC = () => {
-    const [teams, setTeams] = useState<Team[]>([]);
+    const [teams, setTeams] = useState< Team[]>([]);
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [joinedCareers, setJoinedCareers] = useState<string[]>([]);
@@ -161,7 +161,7 @@ const Karriereauswahl: React.FC = () => {
                                     opacity: visible ? 1 : 0
                                 }}
                                 onClick={() => {
-                                    if (item.type === 'empty') return;
+                                    if (item.type === 'empty') navigate('/karriereerstellen');
                                     if (item.type === 'create') navigate('/karriereerstellen');
                                     else if (item.type === 'join') navigate('/karrierebeitreten');
                                     else {
