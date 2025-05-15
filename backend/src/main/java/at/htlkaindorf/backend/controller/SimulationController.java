@@ -5,9 +5,12 @@ import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.services.CareerService;
+import at.htlkaindorf.backend.services.ClubService;
+import at.htlkaindorf.backend.services.GameService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,30 +26,49 @@ import java.util.Random;
 public class SimulationController {
 
     private final CareerService careerService;
+    private final GameService gameService;
     private final TrainerCareerService trainerCareerService;
+    private final ClubService clubService;
 
-    @PostMapping("/startFirstHalfOfTheSeason")
-    public ResponseEntity<Boolean> startSimulation(String careername) {
+    // nicht jeder darf aufrufen
+    @PostMapping("/start")
+    public ResponseEntity<String> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
 
-        Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername);
+        Integer countGames = gameService.getNotPlayedGames(careername);
+        Integer countClubs = clubService.getClubCount();
 
+        if ((countGames.equals((countClubs-1)*2*countClubs) && !firstHalf) || (countGames.equals((countClubs-1)*countClubs) && firstHalf) || countGames.equals(0)) {
+            return ResponseEntity.ok("Fehler beim Spiele simulieren!");
+        }
+        if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
+            return ResponseEntity.ok("User noch nicht ready!");
+        }
 
-        return ResponseEntity.ok(true);
+        Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername, firstHalf);
+        Boolean simulateSeason = gameService.simulateSeason(careername, firstHalf);
+        Boolean changeTable = trainerCareerService.changeTable(careername, firstHalf);
+
+        if (!changeCareer || !simulateSeason || !changeTable) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fehler beim simulieren!");
+        }
+
+        trainerCareerService.setUsersNotReady(careername);
+
+        return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
     }
 
-    // geht nur startelf voll is
     @PatchMapping("/pressReady")
-    public ResponseEntity<Boolean> pressReadyForSimulation(
+    public ResponseEntity<String> pressReadyForSimulation(
             @RequestParam String username,
             @RequestParam String careername) {
 
         Boolean setReady = trainerCareerService.userSetReady(username, careername);
 
         if (Boolean.FALSE.equals(setReady)) {
-            return ResponseEntity.badRequest().body(false);
+            return ResponseEntity.badRequest().body("keine volle Startelf gefunden!");
         }
 
-        return ResponseEntity.ok(true);
+        return ResponseEntity.ok("User ready!");
     }
 
     @GetMapping("/isUserReady")

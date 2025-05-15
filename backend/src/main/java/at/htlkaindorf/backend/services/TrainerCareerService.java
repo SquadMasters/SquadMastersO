@@ -5,14 +5,20 @@ import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TableDataDTO;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.Club;
+import at.htlkaindorf.backend.pojos.Game;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.User;
 import at.htlkaindorf.backend.repositories.CareerRepository;
+import at.htlkaindorf.backend.repositories.GameRepository;
+import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -23,8 +29,11 @@ import java.util.stream.Collectors;
 public class TrainerCareerService {
 
     public final TrainerCareerRepository trainerCareerRepository;
+    private final GameRepository gameRepository;
     private final UserService userService;
     private final TrainerCareersMapper trainerCareersMapper;
+    private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
+    private final ClubService clubService;
 
     public List<ShowAllTrainerCareersDTO> getAllTrainerCareersByUser(String username) {
         List<TrainerCareer> careers = trainerCareerRepository.findAllByUserName(username);
@@ -87,6 +96,10 @@ public class TrainerCareerService {
     public Boolean userSetReady(String username, String careername) {
 
         TrainerCareer career = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
+        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
+        if (!trainerCareerPlayerRepository.findPlayersInStartingEleven(careername, clubname).equals(11)) {
+            return false;
+        }
 
         if (career == null) {
             log.info("Keine Karriere gefunden!");
@@ -125,5 +138,71 @@ public class TrainerCareerService {
         }
 
         return career.getReadyForSimulation();
+    }
+
+    public Boolean changeTable(String careername, Boolean firstHalf) {
+
+        List<Game> games;
+        Integer clubCount = clubService.getClubCount();
+
+        Pageable pageable;
+        if (firstHalf) {
+            pageable = PageRequest.of(0, clubCount*(clubCount-1));
+        } else {
+            pageable = PageRequest.of(1, clubCount*(clubCount-1));
+        }
+
+        games = gameRepository.getGamesFromCareer(careername, pageable);
+
+        if (games.isEmpty()) {
+            log.error("Keine Spiele gefunden für Karriere: {}", careername);
+            return false;
+        }
+
+        for (Game game : games) {
+
+            TrainerCareer homeTeam = game.getHomeTeam();
+            TrainerCareer awayTeam = game.getAwayTeam();
+            int homeTeamGoals = game.getHomeGoals();
+            int awayTeamGoals = game.getAwayGoals();
+
+            changeTeam(homeTeam, homeTeamGoals, awayTeamGoals);
+            changeTeam(awayTeam, awayTeamGoals, homeTeamGoals);
+
+            trainerCareerRepository.save(homeTeam);
+            trainerCareerRepository.save(awayTeam);
+        }
+
+        return true;
+    }
+
+    private void changeTeam(TrainerCareer team, Integer goals, Integer enemyGoals) {
+
+        if (goals > enemyGoals) {
+            int wins = team.getWins();
+            team.setWins(wins+1);
+        } else if (goals.equals(enemyGoals)) {
+            int draws = team.getDraws();
+            team.setDraws(draws+1);
+        } else {
+            int losses = team.getLosses();
+            team.setLosses(losses+1);
+        }
+        int goalDiff = team.getGoalDiff();
+        team.setGoalDiff(goalDiff + goals - enemyGoals);
+    }
+
+    public void setUsersNotReady(String careername) {
+        List<TrainerCareer> careers = trainerCareerRepository.getTrainerCareersWithUserFromCareer(careername);
+
+        if (careers == null || careers.isEmpty()) {
+            return;
+        }
+
+        for (TrainerCareer career : careers) {
+            career.setReadyForSimulation(false);
+        }
+
+        trainerCareerRepository.saveAll(careers);
     }
 }

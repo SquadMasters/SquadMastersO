@@ -174,7 +174,7 @@
                 "lastname": "Walker",
                 "position": "RV",
                 "value": 15000000.0,
-                "rating": 8,
+                "rating": 7,
                 "startAge": 35
             },
             {
@@ -230,7 +230,7 @@
                 "lastname": "Foden",
                 "position": "LF",
                 "value": 110000000.0,
-                "rating": 8,
+                "rating": 7,
                 "startAge": 25
             },
             {
@@ -254,7 +254,7 @@
                 "lastname": "Ortega",
                 "position": "TW",
                 "value": 6000000.0,
-                "rating": 6,
+                "rating": 5,
                 "startAge": 32
             },
             {
@@ -408,7 +408,7 @@
                 "lastname": "Upamecano",
                 "position": "IV",
                 "value": 40000000.0,
-                "rating": 4,
+                "rating": 5,
                 "startAge": 26
             },
             {

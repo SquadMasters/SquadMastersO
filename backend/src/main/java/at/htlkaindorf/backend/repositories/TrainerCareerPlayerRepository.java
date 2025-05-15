@@ -22,11 +22,13 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.player.player_Id = ?1 AND p.career.careerName = ?2")
     TrainerCareerPlayer findPlayerById(Long id, String careername);
 
-    @Query("SELECT AVG(p.ratingNow) FROM TrainerCareerPlayer p WHERE p.career.career_id = ?1 AND p.club.club_id = ?2 AND p.positionInLineup != 'B'")
+    @Query("SELECT COALESCE(AVG(p.ratingNow), 0.0) FROM TrainerCareerPlayer p " +
+            "WHERE p.trainerCareerPlayer_pk.trainerCareerPK.careerId = ?1 AND p.trainerCareerPlayer_pk.trainerCareerPK.clubId = ?2 " +
+            "AND p.positionInLineup != at.htlkaindorf.backend.pojos.PositionInLineup.B")
     Double findAvgRatingFromTrainerCareer(Long careerId, Long clubId);
 
     @Query("SELECT p.ratingNow FROM TrainerCareerPlayer p " +
-            "WHERE p.career.careerId = :careerId AND p.club.clubId = :clubId AND p.player.position IN :positions " +
+            "WHERE p.career.career_id = :careerId AND p.club.club_id = :clubId AND p.player.position IN :positions " +
             "ORDER BY p.ratingNow DESC")
     List<Double> findTopRatings(
             @Param("careerId") Long careerId,
@@ -35,4 +37,6 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
             Pageable pageable
     );
 
+    @Query("SELECT COALESCE(count(p), 0) FROM TrainerCareerPlayer p WHERE p.positionInLineup != at.htlkaindorf.backend.pojos.PositionInLineup.B AND p.career.careerName = ?1 AND p.club.clubName = ?2")
+    Integer findPlayersInStartingEleven(String careername, String clubname);
 }

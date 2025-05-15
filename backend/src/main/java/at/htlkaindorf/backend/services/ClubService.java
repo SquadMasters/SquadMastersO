@@ -40,5 +40,7 @@ public class ClubService {
         }
     }
 
-
+    public Integer getClubCount() {
+        return clubRepository.getClubCount();
+    }
 }
