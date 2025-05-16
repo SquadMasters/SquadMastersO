@@ -10,10 +10,12 @@ import at.htlkaindorf.backend.services.GameService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +57,26 @@ public class SimulationController {
         trainerCareerService.setUsersNotReady(careername);
 
         return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
+    }
+
+    // titel mitzählen
+    // Spieler aktualisieren
+    @PostMapping("/endSeason")
+    public ResponseEntity<String> endSeason(@RequestParam String careername) {
+
+        if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
+            return ResponseEntity.ok("User noch nicht ready!");
+        }
+
+        boolean resetGames = gameService.resetGamesFromCareer(careername);
+        boolean resetCareers = trainerCareerService.resetTrainerCareers(careername);
+
+        if (!resetGames || !resetCareers) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Fehler beim Zurücksetzen der Saison!");
+        }
+
+        return ResponseEntity.ok("Season erfolgreich beendet!");
     }
 
     @PatchMapping("/pressReady")

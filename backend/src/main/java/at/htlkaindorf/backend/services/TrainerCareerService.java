@@ -34,6 +34,7 @@ public class TrainerCareerService {
     private final TrainerCareersMapper trainerCareersMapper;
     private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final ClubService clubService;
+    private final CareerRepository careerRepository;
 
     public List<ShowAllTrainerCareersDTO> getAllTrainerCareersByUser(String username) {
         List<TrainerCareer> careers = trainerCareerRepository.findAllByUserName(username);
@@ -204,5 +205,25 @@ public class TrainerCareerService {
         }
 
         trainerCareerRepository.saveAll(careers);
+    }
+
+    public Boolean resetTrainerCareers(String careername) {
+
+        List<TrainerCareer> careers = careerRepository.getTrainerCareersFromCareer(careername);
+
+        if (careers == null || careers.isEmpty()) {
+            return false;
+        }
+
+        for (TrainerCareer career : careers) {
+            career.setReadyForSimulation(false);
+            career.setWins(0);
+            career.setDraws(0);
+            career.setLosses(0);
+            career.setGoalDiff(0);
+        }
+        trainerCareerRepository.saveAll(careers);
+
+        return true;
     }
 }

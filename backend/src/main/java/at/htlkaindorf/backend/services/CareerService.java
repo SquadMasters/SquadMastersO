@@ -2,6 +2,7 @@ package at.htlkaindorf.backend.services;
 
 import at.htlkaindorf.backend.pojos.Career;
 import at.htlkaindorf.backend.pojos.Club;
+import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.repositories.CareerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
