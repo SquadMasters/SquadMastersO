@@ -3,10 +3,7 @@ package at.htlkaindorf.backend.pojos;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.List;
 
@@ -14,11 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player {
 
     @Id
     @SequenceGenerator(sequenceName = "player_sequence", name = "player_sequence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "player_sequence")
+    @EqualsAndHashCode.Include
     private Long player_Id;
 
     @Column(nullable = false)

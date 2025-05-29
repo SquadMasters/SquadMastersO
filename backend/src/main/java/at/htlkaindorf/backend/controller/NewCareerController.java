@@ -121,7 +121,8 @@ public class NewCareerController {
         career.setTrainerCareers(trainerCareers);
         career.setPlayers(allPlayers);
 
-        gameService.generateTrainerCareerGames(trainerCareers);
+        careerService.careerRepository.save(career);
+        gameService.generateTrainerCareerGames(trainerCareers, career.getCareerName());
         careerService.careerRepository.save(career);
 
         log.info("Neue Karriere erstellt!");

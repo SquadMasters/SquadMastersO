@@ -31,9 +31,9 @@ public class GameService {
     private final GameMapper gameMapper;
     private final ClubService clubService;
 
-    public void generateTrainerCareerGames(List<TrainerCareer> trainerCareers) {
+    public void generateTrainerCareerGames(List<TrainerCareer> trainerCareers, String careername) {
         List<Game> games = new ArrayList<>();
-        int year = LocalDate.now().getYear();
+        int year = careerRepository.findCareerByName(careername).getCurrentCareerDate().getYear();
         Random random = new Random();
 
         // Set to keep track of already generated dates
@@ -249,4 +249,25 @@ public class GameService {
     public Integer getNotPlayedGames(String careername) {
         return gameRepository.getNotPlayedGamesCount(careername);
     }
+
+    public boolean resetGamesFromCareer(String careername) {
+        try {
+            Integer clubCount = clubService.getClubCount();
+            Pageable pageable = PageRequest.of(0, clubCount * 2 * (clubCount - 1));
+
+            List<Game> games = gameRepository.getGamesFromCareer(careername, pageable);
+
+            gameRepository.deleteAll(games);
+
+            List<TrainerCareer> careers = careerRepository.getTrainerCareersFromCareer(careername);
+
+            generateTrainerCareerGames(careers, careername);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

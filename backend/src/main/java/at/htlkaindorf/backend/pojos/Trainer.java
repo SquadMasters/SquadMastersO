@@ -11,11 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Trainer {
 
     @Id
     @SequenceGenerator(sequenceName = "trainer_sequence", name = "trainer_sequence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "trainer_sequence")
+    @EqualsAndHashCode.Include
     private Long trainer_id;
 
     private String firstname;

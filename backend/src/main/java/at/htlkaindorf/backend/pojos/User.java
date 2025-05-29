@@ -12,11 +12,13 @@ import java.util.List;
 @Entity
 @Table(name = "app_user")
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
     @Id
     @SequenceGenerator(sequenceName = "user_sequence", name = "user_sequence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
+    @EqualsAndHashCode.Include
     private Long id;
 
     @Column(nullable = false, unique = true)

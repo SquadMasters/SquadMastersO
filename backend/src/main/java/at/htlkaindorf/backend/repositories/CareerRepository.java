@@ -1,6 +1,7 @@
 package at.htlkaindorf.backend.repositories;
 
 import at.htlkaindorf.backend.pojos.Career;
+import at.htlkaindorf.backend.pojos.TrainerCareer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -25,4 +26,7 @@ public interface CareerRepository extends JpaRepository<Career, Long> {
 
     @Query("SELECT c.currentCareerDate FROM Career c WHERE c.careerName = ?1")
     LocalDate getCurrentCareerDate(String careername);
+
+    @Query("SELECT c.trainerCareers FROM Career c WHERE c.careerName = ?1")
+    List<TrainerCareer> getTrainerCareersFromCareer(String careername);
 }

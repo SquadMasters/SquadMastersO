@@ -14,11 +14,13 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Club {
 
     @Id
     @SequenceGenerator(sequenceName = "club_sequence", name = "club_sequence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "club_sequence")
+    @EqualsAndHashCode.Include
     private Long club_id;
 
     @Column(nullable = false)

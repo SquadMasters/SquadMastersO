@@ -34,6 +34,7 @@ public class TrainerCareerService {
     private final TrainerCareersMapper trainerCareersMapper;
     private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final ClubService clubService;
+    private final CareerRepository careerRepository;
 
     public List<ShowAllTrainerCareersDTO> getAllTrainerCareersByUser(String username) {
         List<TrainerCareer> careers = trainerCareerRepository.findAllByUserName(username);
@@ -205,4 +206,44 @@ public class TrainerCareerService {
 
         trainerCareerRepository.saveAll(careers);
     }
+
+    public Boolean resetTrainerCareers(String careername) {
+
+        List<TrainerCareer> careers = careerRepository.getTrainerCareersFromCareer(careername);
+
+        if (careers == null || careers.isEmpty()) {
+            return false;
+        }
+
+        TrainerCareer bestCareer = null;
+        int maxPoints = -1;
+        int goalDiffOfBestTeam = 0;
+
+        for (TrainerCareer career : careers) {
+
+            int points = career.getWins() * 3 + career.getDraws();
+            boolean isBetter = points > maxPoints;
+            boolean isEqualButBetterGoalDiff = points == maxPoints && career.getGoalDiff() > goalDiffOfBestTeam;
+
+            if (isBetter || isEqualButBetterGoalDiff) {
+                maxPoints = points;
+                bestCareer = career;
+                goalDiffOfBestTeam = career.getGoalDiff();
+            }
+
+            career.setReadyForSimulation(false);
+            career.setWins(0);
+            career.setDraws(0);
+            career.setLosses(0);
+            career.setGoalDiff(0);
+        }
+
+        if (bestCareer != null) {
+            bestCareer.setLeagueTitleCount(bestCareer.getLeagueTitleCount() + 1);
+        }
+
+        trainerCareerRepository.saveAll(careers);
+        return true;
+    }
+
 }
