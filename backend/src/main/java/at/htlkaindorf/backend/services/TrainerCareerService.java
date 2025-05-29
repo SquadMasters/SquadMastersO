@@ -215,15 +215,31 @@ public class TrainerCareerService {
             return false;
         }
 
+        TrainerCareer bestCareer = null;
+        int maxPoints = -1;
+
         for (TrainerCareer career : careers) {
+
+
+            int points = career.getWins() * 3 + career.getDraws();
+            if (points > maxPoints) {
+                maxPoints = points;
+                bestCareer = career;
+            }
+
             career.setReadyForSimulation(false);
             career.setWins(0);
             career.setDraws(0);
             career.setLosses(0);
             career.setGoalDiff(0);
         }
-        trainerCareerRepository.saveAll(careers);
 
+        if (bestCareer != null) {
+            bestCareer.setLeagueTitleCount(bestCareer.getLeagueTitleCount() + 1);
+        }
+
+        trainerCareerRepository.saveAll(careers);
         return true;
     }
+
 }

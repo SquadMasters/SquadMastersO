@@ -10,11 +10,13 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Game {
 
     @Id
     @SequenceGenerator(sequenceName = "game_sequence", name = "game_sequence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "game_sequence")
+    @EqualsAndHashCode.Include
     private Long game_id;
 
     @ManyToOne(cascade = CascadeType.PERSIST)

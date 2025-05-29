@@ -12,11 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Builder
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Career {
 
     @Id
     @SequenceGenerator(sequenceName = "career_sequence", name = "career_sequence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "career_sequence")
+    @EqualsAndHashCode.Include
     private Long career_id;
 
     @Column(unique = true)
