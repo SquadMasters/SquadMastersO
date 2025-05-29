@@ -59,13 +59,20 @@ public class SimulationController {
         return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
     }
 
-    // titel mitzählen
     // Spieler aktualisieren
     @PostMapping("/endSeason")
     public ResponseEntity<String> endSeason(@RequestParam String careername) {
 
         if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
-            return ResponseEntity.ok("User noch nicht ready!");
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Nicht alle User sind bereit.");
+        }
+
+        if (gameService.getNotPlayedGames(careername) > 0) {
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body("Es sind noch Spiele offen, die nicht simuliert wurden.");
         }
 
         boolean resetGames = gameService.resetGamesFromCareer(careername);

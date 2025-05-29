@@ -217,14 +217,18 @@ public class TrainerCareerService {
 
         TrainerCareer bestCareer = null;
         int maxPoints = -1;
+        int goalDiffOfBestTeam = 0;
 
         for (TrainerCareer career : careers) {
 
-
             int points = career.getWins() * 3 + career.getDraws();
-            if (points > maxPoints) {
+            boolean isBetter = points > maxPoints;
+            boolean isEqualButBetterGoalDiff = points == maxPoints && career.getGoalDiff() > goalDiffOfBestTeam;
+
+            if (isBetter || isEqualButBetterGoalDiff) {
                 maxPoints = points;
                 bestCareer = career;
+                goalDiffOfBestTeam = career.getGoalDiff();
             }
 
             career.setReadyForSimulation(false);
