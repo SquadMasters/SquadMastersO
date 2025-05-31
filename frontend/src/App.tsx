@@ -14,6 +14,7 @@ import Account from "./components/account/Account.tsx";
 import KarriereErstellen from "./components/karriereerstellen/KarriereErstellen.tsx";
 import KarriereBeitreten from "./components/KarriereBeitreten/KarriereBeitreten.tsx";
 
+
 function AppContent() {
     const location = useLocation();
 
@@ -44,6 +45,7 @@ function AppContent() {
                 <Route path={"/account"} element={<Account/>}/>
                 <Route path={"/karriereerstellen"} element={<KarriereErstellen/>}/>
                 <Route path={"/karrierebeitreten"} element={<KarriereBeitreten/>}/>
+
             </Routes>
         </>
     );

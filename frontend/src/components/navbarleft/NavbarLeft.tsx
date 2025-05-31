@@ -50,10 +50,11 @@ function NavbarLeft() {
 
         const checkStatus = () => {
             const simulationStatus = localStorage.getItem("simulationStatus");
-            const transferWindow = localStorage.getItem("transferWindow");
+            //const transferWindow = localStorage.getItem("transferWindow");
 
-            const shouldDisable = simulationStatus === "active" ||
-                (simulationStatus === "inactive" && transferWindow === "closed");
+            const shouldDisable =
+                simulationStatus === "active"; // Nur wenn Simulation läuft, deaktivieren
+
 
             setIsNavDisabled(shouldDisable);
         };

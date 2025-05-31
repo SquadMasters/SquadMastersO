@@ -33,4 +33,9 @@ public class UserService {
         return user.get(0);
     }
 
+    // In UserService.java
+    public List<String> getAllUsernames() {
+        return userRepository.findAllUsernames(); // Diese Methode muss im Repository erstellt werden
+    }
+
 }

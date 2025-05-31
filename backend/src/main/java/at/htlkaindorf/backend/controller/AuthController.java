@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -21,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserService userService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
@@ -39,6 +43,14 @@ public class AuthController {
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Register fehlgeschlagen!");
         }
+    }
+
+    // Füge dies zu deinem AuthController oder einem neuen UserController hinzu
+    // In AuthController.java
+    @GetMapping("/allUsernames")
+    public ResponseEntity<List<String>> getAllUsernames() {
+        List<String> usernames = userService.getAllUsernames();
+        return ResponseEntity.ok(usernames);
     }
 }
 

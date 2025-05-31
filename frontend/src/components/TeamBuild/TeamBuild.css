@@ -205,4 +205,46 @@
     opacity: 0.7;
 }
 
+.shirt-container {
+    position: relative;
+    width: 40px;
+    height: 40px;
+}
+
+.shirt-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.shirt-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: bold;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+}
+.shirt-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.shirt-icon-image {
+    font-size: 32px;
+    color: white;
+}
+
+.shirt-icon-text {
+    position: absolute;
+    font-size: 12px;
+    font-weight: bold;
+    color: black;
+}
+
+
 

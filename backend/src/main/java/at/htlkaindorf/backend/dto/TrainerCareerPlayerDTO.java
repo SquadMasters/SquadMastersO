@@ -18,4 +18,5 @@ public class TrainerCareerPlayerDTO {
     private Integer rating;
     private String clubname;
     private Integer ageNow;
+    private Integer potential;
 }

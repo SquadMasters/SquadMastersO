@@ -40,6 +40,9 @@ public class Player {
     @Column(nullable = false)
     private Integer startAge;
 
+    @Column(nullable = false)
+    private Integer potential;
+
     @OneToMany(mappedBy = "player", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<TrainerCareerPlayer> trainerCareerPlayerList;

@@ -33,4 +33,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @ToString.Exclude
     private List<TrainerCareer> trainerCareers;
+
+
 }
