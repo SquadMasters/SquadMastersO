@@ -4,10 +4,7 @@ import at.htlkaindorf.backend.dto.NewCareerRequestDTO;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
-import at.htlkaindorf.backend.services.CareerService;
-import at.htlkaindorf.backend.services.ClubService;
-import at.htlkaindorf.backend.services.GameService;
-import at.htlkaindorf.backend.services.TrainerCareerService;
+import at.htlkaindorf.backend.services.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +27,7 @@ public class SimulationController {
     private final CareerService careerService;
     private final GameService gameService;
     private final TrainerCareerService trainerCareerService;
+    private final TrainerCareerPlayerService trainerCareerPlayerService;
     private final ClubService clubService;
 
     // nicht jeder darf aufrufen
@@ -77,6 +75,7 @@ public class SimulationController {
 
         boolean resetGames = gameService.resetGamesFromCareer(careername);
         boolean resetCareers = trainerCareerService.resetTrainerCareers(careername);
+        boolean changePlayerStats = trainerCareerPlayerService.changePlayerStats(careername);
 
         if (!resetGames || !resetCareers) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
