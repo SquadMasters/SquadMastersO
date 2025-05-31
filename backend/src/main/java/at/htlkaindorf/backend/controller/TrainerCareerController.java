@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/trainerCareer")
 @RequiredArgsConstructor
+@Slf4j
 public class TrainerCareerController {
 
     private final TrainerCareerService trainerCareerService;
@@ -64,6 +66,7 @@ public class TrainerCareerController {
             @PathVariable String username,
             @PathVariable String careername) {
 
+        log.info(username+careername);
         HomepageDTO homepageDTO = trainerCareerService.getHomepageInfo(username, careername);
         return ResponseEntity.ok(homepageDTO);
     }

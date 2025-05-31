@@ -18,6 +18,7 @@ public interface TrainerCareerPlayerMapper {
     @Mapping(target = "position", source = "player.position")
     @Mapping(target = "value", source = "valueNow")
     @Mapping(target = "positionInLineup", source = "positionInLineup")
+    @Mapping(target = "potential",source = "player.potential")
     PlayerListDTO toPlayerListDTO(TrainerCareerPlayer trainerCareerPlayer);
 
     @Mapping(target = "playerId", source = "player.player_Id")
@@ -27,5 +28,6 @@ public interface TrainerCareerPlayerMapper {
     @Mapping(target = "position", source = "player.position")
     @Mapping(target = "value", source = "valueNow")
     @Mapping(target = "clubname", source = "club.clubName")
+    @Mapping(target = "potential", source ="player.potential")
     TrainerCareerPlayerDTO toCareerPlayerDTO(TrainerCareerPlayer trainerCareerPlayer);
 }

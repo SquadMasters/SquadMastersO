@@ -255,8 +255,11 @@ const Home = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {tableData.map((team, index) => {
-                            const games = team.wins + team.draws + team.losses;
+                        {[...tableData]
+                            .sort((a, b) => (b.wins * 3 + b.draws) - (a.wins * 3 + a.draws))
+                            .map((team, index) => {
+
+                                const games = team.wins + team.draws + team.losses;
                             const points = team.wins * 3 + team.draws;
 
                             return (

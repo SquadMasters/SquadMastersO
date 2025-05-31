@@ -8,18 +8,15 @@ import at.htlkaindorf.backend.services.CareerService;
 import at.htlkaindorf.backend.services.ClubService;
 import at.htlkaindorf.backend.services.GameService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
+import at.htlkaindorf.backend.websocket.SimulationUpdate;
+import at.htlkaindorf.backend.websocket.SimulationWebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.print.Pageable;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @RestController
 @RequestMapping("/simulation")
@@ -31,6 +28,7 @@ public class SimulationController {
     private final GameService gameService;
     private final TrainerCareerService trainerCareerService;
     private final ClubService clubService;
+    private final SimulationWebSocketService websocketService;
 
     // nicht jeder darf aufrufen
     @PostMapping("/start")
@@ -39,7 +37,7 @@ public class SimulationController {
         Integer countGames = gameService.getNotPlayedGames(careername);
         Integer countClubs = clubService.getClubCount();
 
-        if ((countGames.equals((countClubs-1)*2*countClubs) && !firstHalf) || (countGames.equals((countClubs-1)*countClubs) && firstHalf) || countGames.equals(0)) {
+        if ((countGames.equals((countClubs - 1) * 2 * countClubs) && !firstHalf) || (countGames.equals((countClubs - 1) * countClubs) && firstHalf) || countGames.equals(0)) {
             return ResponseEntity.ok("Fehler beim Spiele simulieren!");
         }
         if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
@@ -55,6 +53,9 @@ public class SimulationController {
         }
 
         trainerCareerService.setUsersNotReady(careername);
+
+        // WebSocket Update senden
+        websocketService.sendUpdate(careername, new SimulationUpdate("SIMULATION_STARTED", firstHalf));
 
         return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
     }
@@ -83,6 +84,9 @@ public class SimulationController {
                     .body("Fehler beim Zurücksetzen der Saison!");
         }
 
+        // WebSocket Update senden
+        websocketService.sendUpdate(careername, new SimulationUpdate("SEASON_ENDED", null));
+
         return ResponseEntity.ok("Season erfolgreich beendet!");
     }
 
@@ -96,6 +100,9 @@ public class SimulationController {
         if (Boolean.FALSE.equals(setReady)) {
             return ResponseEntity.badRequest().body("keine volle Startelf gefunden!");
         }
+
+        // WebSocket Update senden
+        websocketService.sendUpdate(careername, new SimulationUpdate("USER_READY", username));
 
         return ResponseEntity.ok("User ready!");
     }

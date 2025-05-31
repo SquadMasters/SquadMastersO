@@ -35,17 +35,11 @@ public class GameService {
         List<Game> games = new ArrayList<>();
         int year = careerRepository.findCareerByName(careername).getCurrentCareerDate().getYear();
         Random random = new Random();
-
-        // Set to keep track of already generated dates
         Set<LocalDate> generatedDates = new HashSet<>();
 
         for (TrainerCareer tc : trainerCareers) {
-            if (tc.getHomeGames() == null) {
-                tc.setHomeGames(new ArrayList<>());
-            }
-            if (tc.getAwayGames() == null) {
-                tc.setAwayGames(new ArrayList<>());
-            }
+            tc.setHomeGames(new ArrayList<>());
+            tc.setAwayGames(new ArrayList<>());
         }
 
         for (int i = 0; i < trainerCareers.size() - 1; i++) {
@@ -69,8 +63,8 @@ public class GameService {
 
         games.forEach(game -> {
             game.getHomeTeam().addHomeGame(game);
-            game.getAwayTeam().addAwayGame(game);
         });
+
     }
 
     private Game createGame(TrainerCareer home, TrainerCareer away, LocalDate matchDate) {
@@ -98,9 +92,6 @@ public class GameService {
         generatedDates.add(randomDate); // Das generierte Datum zu dem Set hinzufügen
         return randomDate;
     }
-
-
-
 
     public NextGameDTO getNextGame(String username, String careername) {
         String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);

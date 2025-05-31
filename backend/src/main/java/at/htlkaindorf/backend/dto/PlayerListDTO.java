@@ -17,4 +17,5 @@ public class PlayerListDTO {
     private Integer ageNow;
     private Double value;
     private String positionInLineup;
+    private Integer potential;
 }
