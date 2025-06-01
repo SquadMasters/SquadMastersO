@@ -33,7 +33,9 @@ const OverviewScreen:React.FC<OverviewScreenProps> = ({navigation,route}) => {
                 <Text>most potential players</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.buttons} onPress={() => navigation.navigate('ChooseTeamCarrerForTeamStatScreen')}>
+            <TouchableOpacity style={styles.buttons} onPress={() => navigation.navigate('ChooseTeamCarrerForTeamStatScreen',
+                {careername,username}
+                )}>
                 <Text>show stats from team</Text>
             </TouchableOpacity>
 

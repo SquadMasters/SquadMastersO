@@ -21,7 +21,7 @@ const MostTalentPlayersCarrerScreen = ({ route }) => {
         const fetchPlayers = async () => {
             try {
                 const response = await fetch(
-                    `http://192.168.1.8:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
+                    `http://192.168.1.9:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
                 );
                 const data = await response.json();
 
