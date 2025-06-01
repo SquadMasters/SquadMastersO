@@ -18,9 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -215,32 +213,28 @@ public class TrainerCareerService {
             return false;
         }
 
-        TrainerCareer bestCareer = null;
-        int maxPoints = -1;
-        int goalDiffOfBestTeam = 0;
+        careers.sort(Comparator
+                .comparingInt((TrainerCareer c) -> c.getWins() * 3 + c.getDraws())
+                .thenComparingInt(TrainerCareer::getGoalDiff)
+                .reversed()
+        );
+
+        int budget = 50000000;
 
         for (TrainerCareer career : careers) {
 
-            int points = career.getWins() * 3 + career.getDraws();
-            boolean isBetter = points > maxPoints;
-            boolean isEqualButBetterGoalDiff = points == maxPoints && career.getGoalDiff() > goalDiffOfBestTeam;
-
-            if (isBetter || isEqualButBetterGoalDiff) {
-                maxPoints = points;
-                bestCareer = career;
-                goalDiffOfBestTeam = career.getGoalDiff();
-            }
-
+            career.setBudget(career.getBudget()+budget);
             career.setReadyForSimulation(false);
             career.setWins(0);
             career.setDraws(0);
             career.setLosses(0);
             career.setGoalDiff(0);
+
+            budget -= 5000000;
         }
 
-        if (bestCareer != null) {
-            bestCareer.setLeagueTitleCount(bestCareer.getLeagueTitleCount() + 1);
-        }
+        TrainerCareer firstPlace = careers.get(0);
+        firstPlace.setLeagueTitleCount(firstPlace.getLeagueTitleCount()+1);
 
         trainerCareerRepository.saveAll(careers);
         return true;

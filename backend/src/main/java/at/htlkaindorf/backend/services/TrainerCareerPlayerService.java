@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.services;
 import at.htlkaindorf.backend.dto.PlayerListDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
+import at.htlkaindorf.backend.help.PlayerValueCalc;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.Club;
@@ -100,16 +101,18 @@ public class TrainerCareerPlayerService {
             int chance = getChanceIndex(age, random);
             int doubleChange = random.nextInt(6);
 
-            if (age < 32 && rating < potential && rating <= 10) {
+            if (age < 32 && rating < potential && rating < 10) {
                 if (chance == 0) {
-                    player.setRatingNow(rating + (doubleChange == 0 ? 2 : 1));
+                    player.setRatingNow(rating + (doubleChange == 0 && rating < 9 ? 2 : 1));
                 }
             }
-            else if (age > 31 && rating >= 1) {
+            else if (age > 31 && rating > 1) {
                 if (chance == 0) {
-                    player.setRatingNow(rating - (doubleChange == 0 ? 2 : 1));
+                    player.setRatingNow(rating - (doubleChange == 0 && rating > 2 ? 2 : 1));
                 }
             }
+
+            player.setValueNow(PlayerValueCalc.calculateMarketValue(player.getAgeNow(), player.getRatingNow()));
         }
 
         trainerCareerPlayerRepository.saveAll(tcPlayers);
