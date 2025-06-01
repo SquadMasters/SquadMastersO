@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.services;
 import at.htlkaindorf.backend.dto.PlayerListDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
+import at.htlkaindorf.backend.help.PlayerValueCalc;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
 import at.htlkaindorf.backend.pojos.Club;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,5 +81,56 @@ public class TrainerCareerPlayerService {
         }
 
         trainerCareerPlayerRepository.saveAll(tcPlayers);
+    }
+
+    public Boolean changePlayerStats(String careername) {
+
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersFromCareer(careername);
+
+        if (tcPlayers == null || tcPlayers.isEmpty()) {
+            return false;
+        }
+
+        for (TrainerCareerPlayer player : tcPlayers) {
+            player.setAgeNow(player.getAgeNow() + 1);
+
+            int potential = player.getPlayer().getPotential();
+            int age = player.getAgeNow();
+            int rating = player.getRatingNow();
+            Random random = new Random();
+            int chance = getChanceIndex(age, random);
+            int doubleChange = random.nextInt(6);
+
+            if (age < 32 && rating < potential && rating < 10) {
+                if (chance == 0) {
+                    player.setRatingNow(rating + (doubleChange == 0 && rating < 9 ? 2 : 1));
+                }
+            }
+            else if (age > 31 && rating > 1) {
+                if (chance == 0) {
+                    player.setRatingNow(rating - (doubleChange == 0 && rating > 2 ? 2 : 1));
+                }
+            }
+
+            player.setValueNow(PlayerValueCalc.calculateMarketValue(player.getAgeNow(), player.getRatingNow()));
+        }
+
+        trainerCareerPlayerRepository.saveAll(tcPlayers);
+
+        return true;
+    }
+
+    private int getChanceIndex(int age, Random random) {
+        if (age < 23) {
+            return random.nextInt(4);
+        } else if (age < 28) {
+            return random.nextInt(6);
+        } else if (age < 32) {
+            return random.nextInt(10);
+        } else if (age < 36) {
+            return random.nextInt(3);
+        } else {
+            return random.nextInt(2);
+        }
     }
 }

@@ -29,8 +29,8 @@ public class Player {
     @Column(nullable = false)
     private String position;
 
-    @Column(nullable = false)
     @JsonProperty("value")
+    @Transient
     private Double startValue;
 
     @Column(nullable = false)

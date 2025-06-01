@@ -1,6 +1,7 @@
 package at.htlkaindorf.backend.controller;
 
 import at.htlkaindorf.backend.dto.NewCareerRequestDTO;
+import at.htlkaindorf.backend.help.PlayerValueCalc;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
@@ -98,7 +99,7 @@ public class NewCareerController {
                         .movedRecently(false)
                         .positionInLineup(PositionInLineup.B)
                         .salesInquiry(false)
-                        .valueNow(player.getStartValue())
+                        .valueNow(PlayerValueCalc.calculateMarketValue(player.getStartAge(), player.getStartRating()))
                         .ratingNow(player.getStartRating())
                         .club(club)
                         .build();
