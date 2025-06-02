@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.services;
 
+import at.htlkaindorf.backend.dto.BudgetDTO;
 import at.htlkaindorf.backend.dto.HomepageDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TableDataDTO;
@@ -237,6 +238,34 @@ public class TrainerCareerService {
         firstPlace.setLeagueTitleCount(firstPlace.getLeagueTitleCount()+1);
 
         trainerCareerRepository.saveAll(careers);
+        return true;
+    }
+
+    public BudgetDTO getBudgetFromTeam(String clubname, String careername) {
+
+        TrainerCareer career = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
+
+        if (career == null) {
+            log.info("Fehler bei Homepage Info!");
+        }
+
+        return trainerCareersMapper.toBudgetDTO(career);
+    }
+
+    public Boolean changebudget(String clubname, String careername,Integer budget) {
+
+        TrainerCareer career = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
+
+        if (career == null) {
+            return false;
+        }
+
+        career.setBudget(budget);
+
+        trainerCareerRepository.save(career);
+
+
+
         return true;
     }
 

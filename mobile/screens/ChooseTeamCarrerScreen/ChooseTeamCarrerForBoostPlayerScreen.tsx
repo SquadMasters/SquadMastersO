@@ -88,16 +88,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
+        backgroundColor: '#f5f5f7',
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: '600',
         marginBottom: 30,
+        color: '#1c1c1e',
+        textAlign: 'center',
     },
     carouselContainer: {
-        height: 200,
+        height: 220,
         width: '100%',
         marginBottom: 20,
+        backgroundColor: '#ffffff',
+        borderRadius: 18,  // Mehr Rundung
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        elevation: 6,
+        paddingVertical: 10,
     },
     carousel: {
         flexGrow: 0,
@@ -108,26 +119,50 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     teamLogo: {
-        width: 150,
-        height: 150,
+        width: 160,
+        height: 160,
         resizeMode: 'contain',
     },
     teamName: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginVertical: 20,
+        fontSize: 22,
+        fontWeight: '600',
+        marginVertical: 15,
+        color: '#1c1c1e',
     },
+    // NEUE BUTTON STYLES (Apple Modern)
     button: {
-        backgroundColor: '#007AFF',
-        padding: 15,
-        borderRadius: 10,
+        backgroundColor: '#0071e3',  // Intensiveres Apple Blau
+        padding: 18,
+        borderRadius: 14,
         marginTop: 20,
+        width: '80%',
+        alignItems: 'center',
+        shadowColor: '#0071e3',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    buttonPressed: {  // Für Press-Effekt
+        backgroundColor: '#0062c4',
+        transform: [{ scale: 0.98 }],
     },
     buttonText: {
         color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
+        fontWeight: '600',
+        fontSize: 17,
+        letterSpacing: -0.2,  // Apple-typische Buchstabenabstände
     },
+    // NEU: Pulsierender Effekt für ausgewähltes Team
+    selectedTeamIndicator: {
+        position: 'absolute',
+        top: -10,
+        width: 180,
+        height: 180,
+        borderRadius: 90,
+        backgroundColor: 'rgba(10, 132, 255, 0.1)',
+    },
+
 });
 
 export default ChooseTeamCarrerForBoostPlayerScreen;

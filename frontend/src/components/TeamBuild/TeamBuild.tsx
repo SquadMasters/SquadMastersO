@@ -341,7 +341,6 @@ const TeamBuild = () => {
 
     return (
         <div className="teambuild-container">
-            <h1 className="teambuild-title">TeamBuild</h1>
             <div className="club-header">
                 <img src={clubLogo} alt={clubName} className="club-logo" />
                 <h2>{clubName}</h2>

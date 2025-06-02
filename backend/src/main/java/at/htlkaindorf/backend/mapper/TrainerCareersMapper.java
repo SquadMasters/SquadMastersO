@@ -1,5 +1,6 @@
 package at.htlkaindorf.backend.mapper;
 
+import at.htlkaindorf.backend.dto.BudgetDTO;
 import at.htlkaindorf.backend.dto.HomepageDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TableDataDTO;
@@ -26,4 +27,9 @@ public interface TrainerCareersMapper {
     @Mapping(target = "lastname", source = "club.trainer.lastname")
     @Mapping(target = "season", expression = "java(trainerCareer.getCareer().getCurrentCareerDate().getYear())")
     HomepageDTO toHomepageDTO(TrainerCareer trainerCareer);
+
+
+    @Mapping(target = "clubName", source = "club.clubName")
+    @Mapping(target = "careername", source = "career.careerName")
+    BudgetDTO toBudgetDTO(TrainerCareer trainerCareer);
 }

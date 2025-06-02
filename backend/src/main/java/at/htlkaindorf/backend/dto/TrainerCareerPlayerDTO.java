@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TrainerCareerPlayerDTO {
+public class  TrainerCareerPlayerDTO {
 
     private Long playerId;
     private String firstname;

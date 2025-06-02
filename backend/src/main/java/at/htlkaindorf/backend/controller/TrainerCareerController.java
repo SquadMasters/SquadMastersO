@@ -70,4 +70,26 @@ public class TrainerCareerController {
         HomepageDTO homepageDTO = trainerCareerService.getHomepageInfo(username, careername);
         return ResponseEntity.ok(homepageDTO);
     }
+
+    @GetMapping("/budget/{clubname}/{careername}")
+    public ResponseEntity<BudgetDTO> getBudgetFromTeam(
+            @PathVariable String clubname,
+            @PathVariable String careername) {
+
+        BudgetDTO budgetDTO = trainerCareerService.getBudgetFromTeam(clubname, careername);
+        return ResponseEntity.ok(budgetDTO);
+    }
+
+    @PatchMapping("/changebudget/{clubname}/{careername}/{budget}")
+   public ResponseEntity<Boolean> changebbudget(@PathVariable String clubname,
+                                                @PathVariable String careername,
+                                                @PathVariable Integer budget
+
+                                                ) {
+        boolean result = trainerCareerService.changebudget(clubname, careername, budget);
+        return ResponseEntity.ok(result);
+    }
+
+
+
 }
