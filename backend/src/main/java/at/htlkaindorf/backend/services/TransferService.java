@@ -3,10 +3,7 @@ package at.htlkaindorf.backend.services;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
-import at.htlkaindorf.backend.pojos.Club;
-import at.htlkaindorf.backend.pojos.SalesInquiryEntry;
-import at.htlkaindorf.backend.pojos.TrainerCareer;
-import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
+import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.repositories.ClubRepository;
 import at.htlkaindorf.backend.repositories.SalesInquiryRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
@@ -57,6 +54,7 @@ public class TransferService {
 
         player.setClub(newClub);
         player.setMovedRecently(true);
+        player.setPositionInLineup(PositionInLineup.B);
         career.setBudget((int) (career.getBudget()-player.getValueNow()));
 
         List<SalesInquiryEntry> entries = salesInquiryRepository.findAllSalesInquiryFromPlayer(careername, playerId);
