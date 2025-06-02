@@ -47,16 +47,8 @@ public class TrainerCareer {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "wishlist_entry",
-            joinColumns = {
-                    @JoinColumn(name = "club_id", referencedColumnName = "club_id"),
-                    @JoinColumn(name = "career_id", referencedColumnName = "career_id")
-            },
-            inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "player_Id")
-    )
-    private List<Player> wishlistEntries;
+    @OneToMany(mappedBy = "trainerCareer", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private List<SalesInquiryEntry> salesInquiries = new ArrayList<>();
 
     @OneToMany(mappedBy = "homeTeam", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @ToString.Exclude
@@ -69,11 +61,6 @@ public class TrainerCareer {
     public void addHomeGame(Game game) {
         homeGames.add(game);
         game.setHomeTeam(this);
-    }
-
-    public void addAwayGame(Game game) {
-        awayGames.add(game);
-        game.setAwayTeam(this);
     }
 
     public void changeReady() {
