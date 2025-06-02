@@ -24,10 +24,11 @@ public class SalesInquiryController {
 
     @DeleteMapping("/deleteOffer")
     public Boolean deleteOfferToPlayer(
+            @RequestParam String username,
             @RequestParam String careername,
             @RequestParam Long playerId
     ) {
-        return salesInquiryService.deleteOfferToPlayer(careername, playerId);
+        return salesInquiryService.deleteOfferToPlayer(careername, playerId, username);
     }
 
 }
