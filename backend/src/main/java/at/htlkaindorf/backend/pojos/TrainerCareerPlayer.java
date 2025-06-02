@@ -4,6 +4,9 @@ import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,6 +35,9 @@ public class TrainerCareerPlayer {
     @ToString.Exclude
     private Player player;
 
+    @OneToMany(mappedBy = "trainerCareerPlayer", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private List<SalesInquiryEntry> salesInquiries = new ArrayList<>();
+
     private Integer ageNow;
 
     private Double valueNow;
@@ -41,6 +47,4 @@ public class TrainerCareerPlayer {
     private Boolean movedRecently;
 
     private PositionInLineup positionInLineup;
-
-    private Boolean salesInquiry;
 }

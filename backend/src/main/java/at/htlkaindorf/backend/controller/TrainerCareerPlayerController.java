@@ -1,10 +1,13 @@
 package at.htlkaindorf.backend.controller;
 
 import at.htlkaindorf.backend.dto.PlayerListDTO;
+import at.htlkaindorf.backend.dto.SaleOfferDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
+import at.htlkaindorf.backend.services.SalesInquiryService;
 import at.htlkaindorf.backend.services.TrainerCareerPlayerService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
+import at.htlkaindorf.backend.services.TransferService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +26,8 @@ import java.util.Map;
 public class TrainerCareerPlayerController {
 
     private final TrainerCareerPlayerService trainerCareerPlayerService;
+    private final SalesInquiryService salesInquiryService;
+    private final TransferService transferService;
 
     @GetMapping("/allPlayersFromTrainerCareer")
     public ResponseEntity<List<PlayerListDTO>> getAllPlayersByTrainerCareer(
@@ -30,6 +35,13 @@ public class TrainerCareerPlayerController {
             @RequestParam String careername) {
 
         List<PlayerListDTO> players = trainerCareerPlayerService.getAllPlayersByTrainerCareer(username, careername);
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/allPlayersForTransfermarket")
+    public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(@RequestParam String username, @RequestParam String careername) {
+
+        List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersForTransferMarketByCareer(username, careername);
         return ResponseEntity.ok(players);
     }
 
@@ -60,5 +72,34 @@ public class TrainerCareerPlayerController {
             log.error("Fehler beim Ändern der Startelf: {}", e.getMessage());
             return ResponseEntity.status(500).body("{\"error\": \"Fehler beim Ändern der Startelf: " + e.getMessage() + "\"}");
         }
+    }
+
+    @GetMapping("/allPlayersOnWishlist")
+    public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersOnWishlist(
+            @RequestParam String username,
+            @RequestParam String careername) {
+
+        List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByTrainerCareerOnWishlist(username, careername);
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/allPlayersWithOffer")
+    public ResponseEntity<List<SaleOfferDTO>> getAllPlayersWithOffer(
+            @RequestParam String username,
+            @RequestParam String careername) {
+
+        List<SaleOfferDTO> players = salesInquiryService.getAllPlayersByTrainerCareerWithOffer(username, careername);
+        return ResponseEntity.ok(players);
+    }
+
+    @PostMapping("/transferPlayer")
+    public ResponseEntity<Boolean> transferPlayer(
+            @RequestParam String username,
+            @RequestParam String careername,
+            @RequestParam Long playerId,
+            @RequestParam String targetClub) {
+
+        Boolean result = transferService.transferPlayer(username, careername, playerId, targetClub);
+        return ResponseEntity.ok(result);
     }
 }

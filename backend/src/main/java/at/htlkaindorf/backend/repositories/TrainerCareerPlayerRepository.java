@@ -19,6 +19,9 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?1 AND p.movedRecently = false")
     List<TrainerCareerPlayer> findAllPlayersFromCareer(String careername);
 
+    @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?2 AND p.movedRecently = false AND p.club.clubName = ?1")
+    List<TrainerCareerPlayer> findAllForTransfermarket(String clubname, String careername);
+
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.player.player_Id = ?1 AND p.career.careerName = ?2")
     TrainerCareerPlayer findPlayerById(Long id, String careername);
 
@@ -39,4 +42,10 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
 
     @Query("SELECT COALESCE(count(p), 0) FROM TrainerCareerPlayer p WHERE p.positionInLineup != at.htlkaindorf.backend.pojos.PositionInLineup.B AND p.career.careerName = ?1 AND p.club.clubName = ?2")
     Integer findPlayersInStartingEleven(String careername, String clubname);
+
+    @Query("SELECT tcp FROM TrainerCareerPlayer tcp WHERE tcp.player.player_Id IN (SELECT s.trainerCareerPlayer.player.player_Id FROM SalesInquiryEntry s WHERE s.trainerCareer.club.clubName = ?1 AND s.trainerCareer.career.careerName = ?2)")
+    List<TrainerCareerPlayer> findAllPlayersOnWishlist(String clubname, String careername);
+
+    @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?1 AND p.player.player_Id = ?2")
+    TrainerCareerPlayer findPlayerFromCareerById(String careername, Long id);
 }

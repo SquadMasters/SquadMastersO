@@ -98,7 +98,6 @@ public class NewCareerController {
                         .ageNow(player.getStartAge())
                         .movedRecently(false)
                         .positionInLineup(PositionInLineup.B)
-                        .salesInquiry(false)
                         .valueNow(PlayerValueCalc.calculateMarketValue(player.getStartAge(), player.getStartRating()))
                         .ratingNow(player.getStartRating())
                         .club(club)
@@ -109,10 +108,6 @@ public class NewCareerController {
                 List<TrainerCareerPlayer> careerPlayersOfPlayer = player.getTrainerCareerPlayerList();
                 careerPlayersOfPlayer.add(trainerCareerPlayer);
                 player.setTrainerCareerPlayerList(careerPlayersOfPlayer);
-
-                List<TrainerCareer> careersOfPlayer = player.getTrainerCareers();
-                careersOfPlayer.add(trainerCareer);
-                player.setTrainerCareers(careersOfPlayer);
             }
             club.setCareerPlayers(trainerCareerPlayers);
             List<TrainerCareer> careersOfClub = club.getTrainerCareers();

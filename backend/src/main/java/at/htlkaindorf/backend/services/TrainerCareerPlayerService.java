@@ -31,7 +31,6 @@ public class TrainerCareerPlayerService {
     private final TrainerCareerRepository trainerCareerRepository;
     private final TrainerCareerPlayerMapper trainerCareerPlayerMapper;
 
-
     public List<PlayerListDTO> getAllPlayersByTrainerCareer(String username, String careername) {
 
         String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
@@ -39,6 +38,17 @@ public class TrainerCareerPlayerService {
 
         return tcPlayers.stream()
                 .map(trainerCareerPlayerMapper::toPlayerListDTO)
+                .toList();
+    }
+
+
+    public List<TrainerCareerPlayerDTO> getAllPlayersForTransferMarketByCareer(String username, String careername) {
+
+        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllForTransfermarket(clubname, careername);
+
+        return tcPlayers.stream()
+                .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
                 .toList();
     }
 
@@ -93,6 +103,7 @@ public class TrainerCareerPlayerService {
 
         for (TrainerCareerPlayer player : tcPlayers) {
             player.setAgeNow(player.getAgeNow() + 1);
+            player.setMovedRecently(false);
 
             int potential = player.getPlayer().getPotential();
             int age = player.getAgeNow();
@@ -132,5 +143,15 @@ public class TrainerCareerPlayerService {
         } else {
             return random.nextInt(2);
         }
+    }
+
+    public List<TrainerCareerPlayerDTO> getAllPlayersByTrainerCareerOnWishlist(String username, String careername) {
+
+        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersOnWishlist(clubname, careername);
+
+        return tcPlayers.stream()
+                .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
+                .toList();
     }
 }

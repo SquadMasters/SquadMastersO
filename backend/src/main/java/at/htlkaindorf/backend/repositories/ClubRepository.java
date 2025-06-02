@@ -8,4 +8,7 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
 
     @Query("SELECT COALESCE(count(c), 0) FROM Club c")
     Integer getClubCount();
+
+    @Query("SELECT c FROM Club c WHERE c.clubName = ?1")
+    Club getClubByName(String clubname);
 }

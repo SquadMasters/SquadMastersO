@@ -47,9 +47,6 @@ public class Player {
     @ToString.Exclude
     private List<TrainerCareerPlayer> trainerCareerPlayerList;
 
-    @ManyToMany(mappedBy = "wishlistEntries")
-    private List<TrainerCareer> trainerCareers;
-
     @ManyToOne
     @JoinColumn(name = "club_id")
     @JsonBackReference
