@@ -40,9 +40,12 @@ public class TransferService {
         if (oldPlayer == null || newClub == null) return false;
 
         TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(targetClub, careername);
-        if (targetCareer == null || targetCareer.getBudget() < oldPlayer.getValueNow()) return false;
+        TrainerCareer oldCareer = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
+        if (targetCareer == null || targetCareer.getBudget() < oldPlayer.getValueNow() || oldCareer == null)
+            return false;
 
         targetCareer.setBudget((int) (targetCareer.getBudget() - oldPlayer.getValueNow()));
+        oldCareer.setBudget((int) (oldCareer.getBudget() + oldPlayer.getValueNow()));
 
 
         List<SalesInquiryEntry> entries = salesInquiryRepository.findAllSalesInquiryFromPlayer(careername, playerId);
