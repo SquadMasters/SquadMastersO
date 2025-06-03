@@ -155,15 +155,15 @@ const TeamBuild = () => {
         const droppedPlayer = JSON.parse(event.dataTransfer.getData("player"));
         const validPositions: { [key: string]: string[] } = {
             TW: ["TW"],
-            IV: ["IV1", "IV2"],
-            LV: ["LV"],
-            RV: ["RV"],
+            IV: ["IV1", "IV2","LV","RV"],
+            LV: ["LV","RV","IV","IV1","IV2"],
+            RV: ["RV","IV","LV","IV1","IV2"],
             ZM: ["ZM1", "ZM2", "ZDM"],
-            ZDM: ["DZM", "ZM1", "ZM2","ZDM"],
+            ZDM: ["DZM", "ZM1", "ZM2","ZDM","ZM"],
             OM: ["ZM1", "ZM2", "ZDM"],
-            ST: ["ST"],
-            LF: ["LF"],
-            RF: ["RF"],
+            ST: ["ST","LF","RF"],
+            LF: ["LF","ST","RF"],
+            RF: ["RF","LF","ST"],
         };
 
         const allowedPositions = validPositions[droppedPlayer.position] || [];
@@ -226,15 +226,15 @@ const TeamBuild = () => {
             const match = shuffled.find(p => {
                 const validPositions: { [key: string]: string[] } = {
                     TW: ["TW"],
-                    IV: ["IV1", "IV2"],
-                    LV: ["LV"],
-                    RV: ["RV"],
+                    IV: ["IV1", "IV2","LV","RV"],
+                    LV: ["LV","RV","IV","IV1","IV2"],
+                    RV: ["RV","IV","LV","IV1","IV2"],
                     ZM: ["ZM1", "ZM2", "ZDM"],
-                    ZDM: ["ZDM", "ZM1", "ZM2"],
+                    ZDM: ["DZM", "ZM1", "ZM2","ZDM","ZM"],
                     OM: ["ZM1", "ZM2", "ZDM"],
-                    ST: ["ST"],
-                    LF: ["LF"],
-                    RF: ["RF"],
+                    ST: ["ST","LF","RF"],
+                    LF: ["LF","ST","RF"],
+                    RF: ["RF","LF","ST"],
                 };
                 return !usedShorts.has(p.short) &&
                     (validPositions[p.position]?.includes(pos) ?? false);

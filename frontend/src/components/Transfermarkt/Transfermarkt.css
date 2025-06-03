@@ -1,122 +1,227 @@
-.transfermarkt-style .transfermarkt-container {
-    padding: 20px;
+.transfermarkt-container {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #f8f8f8;
 }
 
-.transfermarkt-style .transfermarkt-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.transfermarkt-style .section {
-    background: #f5f5f5;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.transfermarkt-style h1,
-.transfermarkt-style h2 {
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.transfermarkt-style .budget-display {
-    font-size: 1.2em;
-    font-weight: bold;
+.header-section {
+    background-color: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     margin-bottom: 20px;
-    color: #2c3e50;
+    border: 1px solid #e0e0e0;
+    justify-content: center;
 }
 
-.transfermarkt-style .player-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 15px;
+.budget-team-display {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    justify-content: center;
 }
 
-.transfermarkt-style .player-list.scrollable {
-    max-height: 70vh;
+.budget-badge, .team-badge {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 14px;
+    background-color: #f5f5f7;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+    min-width: 120px;
+}
+
+.budget-label, .team-label {
+    font-size: 12px;
+    color: #86868b;
+    font-weight: 500;
+    margin-bottom: 2px;
+}
+
+.budget-value, .team-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.filter-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    color: #515154;
+    font-weight: 500;
+}
+
+.filter-group select,
+.filter-group input {
+    padding: 6px 10px;
+    border: 1px solid #d2d2d7;
+    border-radius: 8px;
+    background-color: white;
+    font-size: 13px;
+    min-width: 100px;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
+    outline: none;
+    border-color: #0071e3;
+    box-shadow: 0 0 0 2px rgba(0, 125, 250, 0.1);
+}
+
+.transfermarkt-grid {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.players-column, .offers-section {
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #e0e0e0;
+}
+
+.players-column {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.players-list, .offers-list {
+    flex: 1;
     overflow-y: auto;
-    padding-right: 10px;
+    padding-right: 5px;
+    margin-top: 12px;
 }
 
-.transfermarkt-style .player-card {
-    background: white;
-    border-radius: 6px;
-    padding: 15px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.transfermarkt-style .player-name {
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.transfermarkt-style .player-position,
-.transfermarkt-style .player-club,
-.transfermarkt-style .player-value,
-.transfermarkt-style .player-rating,
-.transfermarkt-style .player-age,
-.transfermarkt-style .player-potential {
-    margin-bottom: 5px;
-    font-size: 0.9em;
-}
-
-.transfermarkt-style .offer-button,
-.transfermarkt-style .cancel-offer-button {
-    margin-top: 10px;
-    padding: 5px 10px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    width: 100%;
-}
-
-.transfermarkt-style .offer-button {
-    background-color: #4CAF50;
-    color: white;
-}
-
-.transfermarkt-style .offer-button:disabled {
-    background-color: #a5d6a7;
-    cursor: not-allowed;
-}
-
-.transfermarkt-style .cancel-offer-button {
-    background-color: #f44336;
-    color: white;
-}
-
-.transfermarkt-style .cancel-offer-button:disabled {
-    background-color: #ef9a9a;
-    cursor: not-allowed;
-}
-
-.transfermarkt-style .loading-message,
-.transfermarkt-style .error-message,
-.transfermarkt-style .no-data,
-.transfermarkt-style .no-offers {
-    padding: 15px;
-    text-align: center;
-    color: #666;
-}
-
-.transfermarkt-style .error-message {
-    color: #f44336;
-}
-
-.transfermarkt-style .info-text {
-    font-style: italic;
-    color: #666;
+.player-card, .offer-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 14px;
     margin-bottom: 10px;
+    background-color: white;
+    transition: all 0.2s;
 }
 
-.transfermarkt-style .insufficient-budget {
-    color: #f44336;
-    font-size: 0.8em;
+.player-card:hover, .offer-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-color: #d2d2d7;
+}
+
+.player-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 6px;
+    color: #1d1d1f;
+}
+
+.player-details, .offer-details {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    color: #515154;
+    font-size: 13px;
+}
+
+button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 13px;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+
+button:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.disabled-btn {
+    background-color: #e0e0e0 !important;
+    color: #86868b !important;
+}
+
+.budget-warning {
+    color: #ff453a;
+    font-size: 12px;
     margin-top: 5px;
-    text-align: center;
+}
+
+.cancel-btn {
+    background-color: #ff453a;
+    color: white;
+}
+
+.accept-btn {
+    background-color: #30d158;
+    color: white;
+    margin-right: 8px;
+}
+
+.reject-btn {
+    background-color: #ff453a;
+    color: white;
+}
+
+.offer-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.error-message {
+    color: #ff453a;
+    background-color: #ffebe9;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+    font-size: 13px;
+    border: 1px solid #ffd3d0;
+}
+
+/* Apple-like Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.02);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.12);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.24);
 }

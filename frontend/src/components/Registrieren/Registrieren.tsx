@@ -5,40 +5,62 @@ import styles from './Register.module.css';
 const Register: React.FC = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (username && password) {
-            try {
-                const response = await fetch('http://localhost:8080/api/auth/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({username, password}),
-                });
+        if (!username || !password) {
+            setErrorMessage('Bitte Benutzername und Passwort eingeben.');
+            return;
+        }
 
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Registrierung erfolgreich:', data);
-                    navigate('/'); // Weiterleitung auf Login-Seite oder Startseite
-                } else {
-                    const errorData = await response.text();
-                    alert(`Registrierung fehlgeschlagen: ${errorData}`);
-                }
-            } catch (error) {
-                console.error('Fehler bei der Registrierung:', error);
-                alert('Ein Fehler ist aufgetreten.');
+        try {
+            const response = await fetch('http://localhost:8080/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username, password}),
+            });
+
+            if (response.ok) {
+                navigate('/');
+            } else {
+                const errorText = await response.text();
+                const match = errorText.match(/"message"\s*:\s*"([^"]+)"/);
+                const shortMessage = match ? match[1] : 'Registrierung fehlgeschlagen.';
+                setErrorMessage(shortMessage);
             }
-        } else {
-            alert('Bitte Benutzername und Passwort eingeben.');
+        } catch (error) {
+            console.error('Fehler bei der Registrierung:', error);
+            setErrorMessage('Ein Fehler ist aufgetreten.');
         }
     };
 
     return (
         <div className={styles['register-wrapper']}>
+            {errorMessage && (
+                <div className={styles['error-overlay']}>
+                    <div className={styles['error-card']}>
+                        <div className={styles['error-header']}>
+                            <span className={styles['error-icon']}>❗</span>
+                            <span className={styles['error-title']}>Error</span>
+                        </div>
+                        <div className={styles['error-message']}>
+                            {errorMessage}
+                        </div>
+                        <button
+                            className={styles['retry-button']}
+                            onClick={() => window.location.reload()}
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className={styles['register-card']}>
                 <h2 className={styles['register-title']}>Registrieren</h2>
                 <form onSubmit={handleRegister}>
