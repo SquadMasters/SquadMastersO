@@ -35,6 +35,7 @@ public class TrainerCareerPlayer {
     @ToString.Exclude
     private Player player;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "trainerCareerPlayer", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<SalesInquiryEntry> salesInquiries = new ArrayList<>();
 

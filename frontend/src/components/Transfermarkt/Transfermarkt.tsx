@@ -1,270 +1,269 @@
-import "./Transfermarkt.css";
-import api from "../../api.ts";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './Transfermarkt.css';
 
-interface Spieler {
-    id: number;
+interface Player {
+    playerId: number;
     firstname: string;
     lastname: string;
-    position: string;
+    position?: string;
     value: number;
     rating: number;
-    clubname: string;
+    clubname?: string;
     ageNow: number;
+    potential?: number;
 }
 
-const Transfermarkt: React.FC = () => {
-    const [alleSpieler, setAlleSpieler] = useState<Spieler[]>([]);
-    const [wunschliste, setWunschliste] = useState<Spieler[]>([]);
-    const [angebote, setAngebote] = useState<Spieler[]>([]);
-    const [name, setName] = useState("");
-    const [club, setClub] = useState("");
-    const [position, setPosition] = useState("");
-    const [minRating, setMinRating] = useState(1);
-    const [maxRating, setMaxRating] = useState(10);
-    const [minValue, setMinValue] = useState(0);
-    const [maxValue, setMaxValue] = useState(999999999);
-    const [currentPage, setCurrentPage] = useState(1);
-    const playersPerPage = 4;
+interface Offer extends Player {
+    clubWithOffer: string;
+}
 
-    const uniqueClubs = Array.from(new Set(alleSpieler.map(s => s.clubname))).sort();
-    const uniquePositions = Array.from(new Set(alleSpieler.map(s => s.position))).sort();
+interface BudgetDTO {
+    budget: number;
+}
+
+const Transfermarkt = () => {
+    const [availablePlayers, setAvailablePlayers] = useState<Player[]>([]);
+    const [playersWithOffers, setPlayersWithOffers] = useState<Player[]>([]);
+    const [incomingOffers, setIncomingOffers] = useState<Offer[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const [budget, setBudget] = useState<number>(0);
+    const [offerLoading, setOfferLoading] = useState<number | null>(null);
+    const [cancelLoading, setCancelLoading] = useState<number | null>(null);
+    const [filter, setFilter] = useState<string>('');
+
+    const username = localStorage.getItem("username") || "";
+    const careername = localStorage.getItem("careername") || "";
+    const clubname = JSON.parse(localStorage.getItem("selectedTeam") || "{}").name || "";
 
     useEffect(() => {
-        const careername = localStorage.getItem("careername") || "";
-        api
-            .get(`/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`)
-            .then((res) => {
-                if (Array.isArray(res.data)) {
-                    setAlleSpieler(res.data);
-                } else {
-                    console.error("Unerwartetes Datenformat:", res.data);
-                }
-            })
-            .catch((err) => console.error("Fehler beim Laden der Spieler", err));
+        const fetchData = async () => {
+            try {
+                setLoading(true);
 
-        // Hier würden Sie normalerweise die Wunschliste und Angebote vom Server laden
-        // Beispiel:
-        // api.get(`/transfer/wunschliste?careername=${careername}`).then(...)
-        // api.get(`/transfer/angebote?careername=${careername}`).then(...)
-    }, []);
+                const [budgetRes, playersRes, sentOffersRes, receivedOffersRes] = await Promise.all([
+                    axios.get<BudgetDTO>(`http://localhost:8080/trainerCareer/budget/${clubname}/${careername}`),
+                    axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, { params: { username, careername } }),
+                    axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, { params: { username, careername } }),
+                    axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, { params: { username, careername } }),
+                ]);
 
-    const filtered = alleSpieler.filter((s) => {
-        return (
-            (s.firstname + " " + s.lastname).toLowerCase().includes(name.toLowerCase()) &&
-            (club === "" || s.clubname === club) &&
-            (position === "" || s.position === position) &&
-            s.rating >= minRating &&
-            s.rating <= maxRating &&
-            s.value >= minValue &&
-            s.value <= maxValue
-        );
-    });
+                setBudget(budgetRes.data.budget);
+                setAvailablePlayers(playersRes.data);
+                setPlayersWithOffers(sentOffersRes.data);
+                setIncomingOffers(receivedOffersRes.data);
+                setError('');
+            } catch (err) {
+                setError('Fehler beim Laden der Daten.');
+            } finally {
+                setLoading(false);
+            }
+        };
 
-    const indexOfLast = currentPage * playersPerPage;
-    const indexOfFirst = indexOfLast - playersPerPage;
-    const currentPlayers = filtered.slice(indexOfFirst, indexOfLast);
-    const totalPages = Math.ceil(filtered.length / playersPerPage);
+        fetchData();
+    }, [username, careername, clubname]);
 
-    const zurWunschlisteHinzufuegen = (spieler: Spieler) => {
-        if (!wunschliste.some(s => s.id === spieler.id)) {
-            setWunschliste([...wunschliste, spieler]);
-            // Hier würden Sie normalerweise die Änderung an den Server senden
-            // api.post('/transfer/wunschliste', { careername: localStorage.getItem("careername"), spielerId: spieler.id })
+    const formatPlayerName = (player: Player) => `${player.firstname} ${player.lastname}`;
+
+    const formatCurrency = (value: number) => new Intl.NumberFormat('de-DE', {
+        style: 'currency', currency: 'EUR', maximumFractionDigits: 0
+    }).format(value);
+
+    const handleSendOffer = async (playerId: number) => {
+        try {
+            setOfferLoading(playerId);
+
+            const offerResponse = await axios.post<string>(
+                `http://localhost:8080/salesInquiry/sendOffer`,
+                null,
+                { params: { username, careername, playerId } }
+            );
+
+            if (offerResponse.data === "success") {
+                const transferResult = await axios.post<boolean>(
+                    `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
+                    null,
+                    { params: { username, careername, playerId, targetClub: clubname } }
+                );
+
+                if (!transferResult.data) throw new Error("Transfer fehlgeschlagen");
+
+                localStorage.setItem("reloadTeamBuild", "true");
+            }
+
+            const [playersRes, sentOffersRes, budgetRes, receivedOffersRes] = await Promise.all([
+                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, { params: { username, careername } }),
+                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, { params: { username, careername } }),
+                axios.get<BudgetDTO>(`http://localhost:8080/trainerCareer/budget/${clubname}/${careername}`),
+                axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, { params: { username, careername } }),
+            ]);
+
+            setAvailablePlayers(playersRes.data);
+            setPlayersWithOffers(sentOffersRes.data);
+            setBudget(budgetRes.data.budget);
+            setIncomingOffers(receivedOffersRes.data);
+        } catch (err) {
+            setError('Fehler beim Kauf');
+        } finally {
+            setOfferLoading(null);
         }
     };
 
-    const angebotAnnehmen = (spieler: Spieler) => {
-        // Hier würde die Logik für das Annehmen eines Angebots implementiert werden
-        alert(`Angebot für ${spieler.firstname} ${spieler.lastname} angenommen!`);
-        setAngebote(angebote.filter(s => s.id !== spieler.id));
+    const handleDeleteOffer = async (playerId: number) => {
+        try {
+            setCancelLoading(playerId);
+            await axios.delete<boolean>(`http://localhost:8080/salesInquiry/deleteOffer`, {
+                params: { careername, playerId }
+            });
+
+            const [playersRes, sentOffersRes, budgetRes, receivedOffersRes] = await Promise.all([
+                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, { params: { username, careername } }),
+                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, { params: { username, careername } }),
+                axios.get<BudgetDTO>(`http://localhost:8080/trainerCareer/budget/${clubname}/${careername}`),
+                axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, { params: { username, careername } }),
+            ]);
+
+            setAvailablePlayers(playersRes.data);
+            setPlayersWithOffers(sentOffersRes.data);
+            setBudget(budgetRes.data.budget);
+            setIncomingOffers(receivedOffersRes.data);
+        } catch (err) {
+            setError('Angebot konnte nicht gelöscht werden');
+        } finally {
+            setCancelLoading(null);
+        }
     };
 
-    const angebotAblehnen = (spieler: Spieler) => {
-        setAngebote(angebote.filter(s => s.id !== spieler.id));
-        // Hier würden Sie normalerweise die Ablehnung an den Server senden
+    const handleRejectOffer = async (playerId: number) => {
+        try {
+            await axios.delete(`http://localhost:8080/salesInquiry/deleteOffer`, {
+                params: { careername, playerId }
+            });
+
+            const receivedOffersRes = await axios.get<Offer[]>(
+                `http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`,
+                { params: { username, careername } }
+            );
+
+            setIncomingOffers(receivedOffersRes.data);
+        } catch (err) {
+            setError("Angebot konnte nicht abgelehnt werden.");
+        }
     };
+
+    const handleAcceptOffer = async (playerId: number, targetClub: string) => {
+        try {
+            const response = await axios.post<boolean>(
+                `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
+                null,
+                {
+                    params: {
+                        username,
+                        careername,
+                        playerId,
+                        targetClub
+                    }
+                }
+            );
+
+            if (!response.data) throw new Error("Transfer fehlgeschlagen");
+
+            const receivedOffersRes = await axios.get<Offer[]>(
+                `http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`,
+                { params: { username, careername } }
+            );
+
+            setIncomingOffers(receivedOffersRes.data);
+            localStorage.setItem("reloadTeamBuild", "true");
+        } catch (err) {
+            setError("Angebot konnte nicht angenommen werden.");
+        }
+    };
+
+    if (loading) return <div className="loading-message">Daten werden geladen...</div>;
 
     return (
-        <div className="transfermarkt">
-            <h2 className="tm-title">Transfermarkt</h2>
-
-            <div className="three-column-layout">
-                {/* Linke Spalte - Suchfilter und Ergebnisse */}
-                <div className="column search-column">
-                    <div className="filter-grid">
-                        <div className="filter-box">
-                            <label>Spielername</label>
-                            <input
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="Any"
-                            />
-                        </div>
-
-                        <div className="filter-box">
-                            <label>Club</label>
-                            <select value={club} onChange={(e) => setClub(e.target.value)}>
-                                <option value="">Alle</option>
-                                {uniqueClubs.map((c) => (
-                                    <option key={c} value={c}>
-                                        {c}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="filter-box">
-                            <label>Position</label>
-                            <select value={position} onChange={(e) => setPosition(e.target.value)}>
-                                <option value="">Alle</option>
-                                {uniquePositions.map((p) => (
-                                    <option key={p} value={p}>
-                                        {p}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="filter-box">
-                            <label>Min Rating</label>
-                            <select value={minRating} onChange={(e) => setMinRating(Number(e.target.value))}>
-                                {Array.from({length: 10}, (_, i) => i + 1).map((val) => (
-                                    <option key={val} value={val}>
-                                        {val}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="filter-box">
-                            <label>Max Rating</label>
-                            <select value={maxRating} onChange={(e) => setMaxRating(Number(e.target.value))}>
-                                {Array.from({length: 10}, (_, i) => i + 1).map((val) => (
-                                    <option key={val} value={val}>
-                                        {val}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="filter-box">
-                            <label>Min Value</label>
-                            <input
-                                type="number"
-                                value={minValue}
-                                onChange={(e) => setMinValue(Number(e.target.value))}
-                            />
-                        </div>
-
-                        <div className="filter-box">
-                            <label>Max Value</label>
-                            <input
-                                type="number"
-                                value={maxValue}
-                                onChange={(e) => setMaxValue(Number(e.target.value))}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="results">
-                        {filtered.length === 0 && <p className="no-results">Keine Spieler gefunden.</p>}
-                        {currentPlayers.map((s, idx) => (
-                            <div key={idx} className="player-card">
-                                <h3>{s.firstname} {s.lastname}</h3>
-                                <div className="player-info">
-                                    <span><strong>Rating:</strong> {s.rating}</span>
-                                    <span><strong>Wert:</strong> {Math.round(s.value / 1e6)} Mio €</span>
-                                    <span><strong>Position:</strong> {s.position}</span>
-                                    <span><strong>Club:</strong> {s.clubname}</span>
-                                    <span><strong>Alter:</strong> {s.ageNow}</span>
-                                </div>
-                                <button
-                                    className="add-to-wishlist"
-                                    onClick={() => zurWunschlisteHinzufuegen(s)}
-                                >
-                                    Zur Wunschliste hinzufügen
-                                </button>
-                            </div>
-                        ))}
-                        {totalPages > 1 && (
-                            <div className="pagination">
-                                <button
-                                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                >
-                                    ◀
-                                </button>
-                                <span>Seite {currentPage} von {totalPages}</span>
-                                <button
-                                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                >
-                                    ▶
-                                </button>
-                            </div>
-                        )}
-                    </div>
+        <div className="transfermarkt-style">
+            <div className="transfermarkt-container">
+                <h1>Transfermarkt</h1>
+                <div className="budget-display">
+                    Aktuelles Budget: {formatCurrency(budget)}
+                    <div className="team-info">Team: {clubname}</div>
                 </div>
 
-                {/* Mittlere Spalte - Wunschliste */}
-                <div className="column wishlist-column">
-                    <h3>Wunschliste</h3>
-                    {wunschliste.length === 0 ? (
-                        <p className="no-results">Keine Spieler auf der Wunschliste</p>
-                    ) : (
-                        <div className="wishlist-items">
-                            {wunschliste.map((s, idx) => (
-                                <div key={idx} className="player-card">
-                                    <h4>{s.firstname} {s.lastname}</h4>
-                                    <div className="player-info">
-                                        <span><strong>Wert:</strong> {Math.round(s.value / 1e6)} Mio €</span>
-                                        <span><strong>Club:</strong> {s.clubname}</span>
-                                    </div>
-                                    <button
-                                        className="remove-button"
-                                        onClick={() => setWunschliste(wunschliste.filter(p => p.id !== s.id))}
-                                    >
-                                        Entfernen
+                <div className="filter-bar">
+                    <label>Position filtern: </label>
+                    <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+                        <option value="">Alle</option>
+                        {['TW', 'IV', 'LV', 'RV', 'ZM', 'ZDM', 'OM', 'LF', 'RF', 'ST'].map(pos => (
+                            <option key={pos} value={pos}>{pos}</option>
+                        ))}
+                    </select>
+                </div>
+
+                <div className="transfermarkt-grid">
+                    <div className="section">
+                        <h2>Verfügbare Spieler ({availablePlayers.length})</h2>
+                        <div className="player-list scrollable">
+                            {availablePlayers.filter(p => !filter || p.position === filter).map(player => (
+                                <div key={player.playerId} className="player-card">
+                                    <div className="player-name">{formatPlayerName(player)}</div>
+                                    <div className="player-position">{player.position}</div>
+                                    <div className="player-club">{player.clubname}</div>
+                                    <div className="player-value">{formatCurrency(player.value)}</div>
+                                    <div className="player-rating">Bewertung: {player.rating}/10</div>
+                                    <div className="player-age">Alter: {player.ageNow}</div>
+                                    <div className="player-potential">Potenzial: {player.potential}</div>
+                                    <button onClick={() => handleSendOffer(player.playerId)} disabled={offerLoading === player.playerId || player.value > budget}>
+                                        {offerLoading === player.playerId ? 'Wird gesendet...' : 'Kaufen'}
+                                    </button>
+                                    {player.value > budget && <div className="insufficient-budget">Budget zu niedrig</div>}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="section">
+                        <h2>Gesendete Angebote ({playersWithOffers.length})</h2>
+                        <div className="player-list scrollable">
+                            {playersWithOffers.map(player => (
+                                <div key={player.playerId} className="player-card">
+                                    <div className="player-name">{formatPlayerName(player)}</div>
+                                    <div className="player-position">{player.position}</div>
+                                    <div className="player-club">{player.clubname}</div>
+                                    <div className="player-value">{formatCurrency(player.value)}</div>
+                                    <div className="player-rating">Bewertung: {player.rating}/10</div>
+                                    <button onClick={() => handleDeleteOffer(player.playerId)} disabled={cancelLoading === player.playerId}>
+                                        {cancelLoading === player.playerId ? 'Wird zurückgezogen...' : 'Angebot zurückziehen'}
                                     </button>
                                 </div>
                             ))}
                         </div>
-                    )}
-                </div>
+                    </div>
 
-                {/* Rechte Spalte - Empfangene Angebote */}
-                <div className="column offers-column">
-                    <h3>Empfangene Angebote</h3>
-                    {angebote.length === 0 ? (
-                        <p className="no-results">Keine Angebote erhalten</p>
-                    ) : (
-                        <div className="offer-items">
-                            {angebote.map((s, idx) => (
-                                <div key={idx} className="player-card">
-                                    <h4>{s.firstname} {s.lastname}</h4>
-                                    <div className="player-info">
-                                        <span><strong>Angebot:</strong> {Math.round(s.value / 1e6)} Mio €</span>
-                                        <span><strong>Von:</strong> {s.clubname}</span>
-                                    </div>
+                    <div className="section">
+                        <h2>Erhaltene Angebote ({incomingOffers.length})</h2>
+                        <div className="player-list scrollable">
+                            {incomingOffers.map(player => (
+                                <div key={player.playerId} className="player-card">
+                                    <div className="player-name">{formatPlayerName(player)}</div>
+                                    <div className="player-club">Angebot von: {player.clubWithOffer}</div>
+                                    <div className="player-value">{formatCurrency(player.value)}</div>
+                                    <div className="player-rating">Bewertung: {player.rating}/10</div>
+                                    <div className="player-age">Alter: {player.ageNow}</div>
                                     <div className="offer-actions">
-                                        <button
-                                            className="accept-button"
-                                            onClick={() => angebotAnnehmen(s)}
-                                        >
+                                        <button onClick={() => handleAcceptOffer(player.playerId, player.clubWithOffer)}>
                                             Annehmen
                                         </button>
-                                        <button
-                                            className="decline-button"
-                                            onClick={() => angebotAblehnen(s)}
-                                        >
+                                        <button onClick={() => handleRejectOffer(player.playerId)}>
                                             Ablehnen
                                         </button>
                                     </div>
                                 </div>
                             ))}
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>

@@ -49,7 +49,6 @@ const Simulation: React.FC = () => {
     const [spiele, setSpiele] = useState<Spiel[]>([]);
 
     const [halbjahr, setHalbjahr] = useState<"H1" | "H2">("H1");
-    const [isTransferWindow, setIsTransferWindow] = useState(false);
     const [isSimulationActive, setIsSimulationActive] = useState(false);
     const [isUserReady, setIsUserReady] = useState(false);
     const [notReadyUsers, setNotReadyUsers] = useState<string[]>([]);
@@ -174,7 +173,6 @@ const Simulation: React.FC = () => {
                 loadGames();
                 if (update.data) { // firstHalf is true
                     setHalbjahr("H2");
-                    setIsTransferWindow(false);
                 }
                 loadNotReadyUsers();
                 loadUserReadyStatus();
@@ -184,7 +182,6 @@ const Simulation: React.FC = () => {
                 setTimeout(() => setStatusMessage(""), 3000);
                 loadGames();
                 setHalbjahr("H1");
-                setIsTransferWindow(true);
                 setIsFirstHalfSimulated(false);
                 setIsSecondHalfSimulated(false);
                 loadNotReadyUsers();
@@ -203,10 +200,6 @@ const Simulation: React.FC = () => {
             await loadGames();
             await loadNotReadyUsers();
             await loadUserReadyStatus();
-
-            const savedTransferWindow = localStorage.getItem("transferWindow");
-            setIsTransferWindow(savedTransferWindow === "open");
-
             setupWebSocket();
         };
 
@@ -233,11 +226,6 @@ const Simulation: React.FC = () => {
                 params: { careername, firstHalf: halbjahr === "H1" },
             });
 
-            if (halbjahr === "H1") {
-                setIsTransferWindow(false);
-                localStorage.setItem("transferWindow", "closed");
-            }
-
             await loadGames();
         } catch (err: any) {
             console.error("Fehler bei Simulation", err);
@@ -257,8 +245,6 @@ const Simulation: React.FC = () => {
                 params: { careername }
             });
 
-            setIsTransferWindow(true);
-            localStorage.setItem("transferWindow", "open");
             await loadGames();
         } catch (err) {
             console.error("Fehler beim Beenden der Saison", err);
@@ -465,7 +451,6 @@ const Simulation: React.FC = () => {
                 )}
             </div>
 
-
             <div className="simulation-grid">
                 {tageMitSpielen.map((tag, idx) => {
                     const tagString = tag.toDateString();
@@ -509,13 +494,6 @@ const Simulation: React.FC = () => {
                         </div>
                     );
                 })}
-            </div>
-
-            <div className="simulation-cell transferfenster-card">
-                <div className="simulation-title">Transferfenster</div>
-                <div className={`transferfenster-status ${isTransferWindow ? "open" : "closed"}`}>
-                    {isTransferWindow ? "Geöffnet" : "Geschlossen"}
-                </div>
             </div>
         </div>
     );

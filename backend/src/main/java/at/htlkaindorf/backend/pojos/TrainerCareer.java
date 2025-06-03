@@ -48,6 +48,7 @@ public class TrainerCareer {
     private User user;
 
     @OneToMany(mappedBy = "trainerCareer", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ToString.Exclude
     private List<SalesInquiryEntry> salesInquiries = new ArrayList<>();
 
     @OneToMany(mappedBy = "homeTeam", cascade = {CascadeType.MERGE, CascadeType.PERSIST})

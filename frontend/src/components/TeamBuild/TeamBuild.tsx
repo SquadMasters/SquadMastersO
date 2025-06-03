@@ -58,6 +58,7 @@ const TeamBuild = () => {
     const clubLogo = logoMap[parsedTeam?.name] || "/default-logo.png";
     const [teamColors, setTeamColors] = useState<string[]>(['#1e88e5', '#ffffff']);
 
+
     const username = localStorage.getItem("username") || "";
     const careername = localStorage.getItem("careername") || "";
 
@@ -76,19 +77,20 @@ const TeamBuild = () => {
 
 
 
-
     useEffect(() => {
+
 
         const initialField: Record<string, any> = {};
         fieldPositions.forEach(pos => initialField[pos] = null);
         setField(initialField);
 
         const loadData = async () => {
+            const shouldReload = localStorage.getItem("reloadTeamBuild") === "true";
             try {
                 const playersData = await fetchPlayers();
                 setPlayers(playersData);
 
-                const newField = {...initialField};
+                const newField = { ...initialField };
                 const newAssigned = new Set<string>();
 
                 playersData.forEach((player: any) => {
@@ -101,6 +103,11 @@ const TeamBuild = () => {
                 setField(newField);
                 setAssignedPlayers(newAssigned);
                 setIsLoading(false);
+
+                if (shouldReload) {
+                    localStorage.removeItem("reloadTeamBuild");
+                    console.log("🔄 TeamBuild reload triggered!");
+                }
             } catch (err) {
                 console.error("Fehler beim Laden der Daten:", err);
                 setIsLoading(false);
@@ -109,6 +116,8 @@ const TeamBuild = () => {
 
         loadData();
     }, [username, careername]);
+
+
 
     useEffect(() => {
         if (parsedTeam?.name) {
@@ -130,22 +139,7 @@ const TeamBuild = () => {
         }));
     };
 
-    useEffect(() => {
-        const loadData = async () => {
-            try {
-                setIsLoading(true);  // Ladezustand setzen
-                const playersData = await fetchPlayers();
-                setPlayers(playersData);
 
-                setIsLoading(false);  // Ladezustand zurücksetzen
-            } catch (err) {
-                console.error("Fehler beim Laden der Daten:", err);
-                setIsLoading(false);  // Ladezustand zurücksetzen im Fehlerfall
-            }
-        };
-
-        loadData();
-    }, [username, careername]);
 
 
     const getInitials = (first: string, last: string) => {
@@ -356,6 +350,8 @@ const TeamBuild = () => {
 
                 {/* Neuer Button zum Entfernen aller Spieler */}
                 <Button style={{ background: teamColors[0] }} onClick={handleRemoveAllPlayers}>Alle Spieler entfernen</Button>
+
+
             </div>
 
             <div className="teambuild-content">
@@ -421,6 +417,7 @@ const TeamBuild = () => {
 
                 <div className="player-list">
                     <h2>Spielerliste</h2>
+
                     <div style={{ marginBottom: "10px" }}>
                         <label style={{ marginRight: "10px" }}>Position filtern:</label>
                         <select value={selectedPosition} onChange={(e) => setSelectedPosition(e.target.value)}>
@@ -438,48 +435,52 @@ const TeamBuild = () => {
                         </select>
                     </div>
 
-                    <Table>
-                        <thead>
-                        <tr>
-                            <th>Rating</th>
-                            <th>Short</th>
-                            <th>Firstname</th>
-                            <th>Lastname</th>
-                            <th>Position</th>
-                            <th>Alter</th>
-                            <th>Wert</th>
-                           
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {players
-                            .filter(p => selectedPosition === "Alle" || p.position === selectedPosition)
-                            .map((p, idx) => {
-                                const isAssigned = assignedPlayers.has(p.short);
-                                return (
-                                    <tr
-                                        key={idx}
-                                        className={isAssigned ? "assigned-row" : ""}
-                                        draggable={!isAssigned}
-                                        onDragStart={(event) => !isAssigned && handleDragStart(event, p)}
-                                        style={{
-                                            opacity: isAssigned ? 0.5 : 1,
-                                            cursor: isAssigned ? "not-allowed" : "grab",
-                                        }}
-                                    >
-                                        <td>{p.rating}</td>
-                                        <td>{p.short}</td>
-                                        <td>{p.firstname}</td>
-                                        <td>{p.lastname}</td>
-                                        <td>{p.position}</td>
-                                        <td>{p.age}</td>
-                                        <td>{p.value}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </Table>
+                    <div className="scroll-wrapper">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Rating</th>
+                                <th>Short</th>
+                                <th>Firstname</th>
+                                <th>Lastname</th>
+                                <th>Position</th>
+                                <th>Alter</th>
+                                <th>Wert</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {players
+                                .filter(p => selectedPosition === "Alle" || p.position === selectedPosition)
+                                .map((p, idx) => {
+                                    const isAssigned = assignedPlayers.has(p.short);
+                                    return (
+                                        <tr
+                                            key={idx}
+                                            className={isAssigned ? "assigned-row" : ""}
+                                            draggable={!isAssigned}
+                                            onDragStart={(event) => !isAssigned && handleDragStart(event, p)}
+                                            style={{
+                                                opacity: isAssigned ? 0.5 : 1,
+                                                cursor: isAssigned ? "not-allowed" : "grab",
+                                            }}
+                                        >
+                                            <td>{p.rating}</td>
+                                            <td>{p.short}</td>
+                                            <td>{p.firstname}</td>
+                                            <td>{p.lastname}</td>
+                                            <td>{p.position}</td>
+                                            <td>{p.age}</td>
+                                            <td>{p.value}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
+
+
             </div>
 
             <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
