@@ -27,8 +27,8 @@ public class TransferService {
     private final SalesInquiryRepository salesInquiryRepository;
     private final ClubRepository clubRepository;
 
-    public Boolean transferPlayer(String username, String careername, Long playerId, String targetClub) {
-        if (username == null || username.trim().isEmpty() ||
+    public Boolean transferPlayer(String clubname, String careername, Long playerId, String targetClub) {
+        if (clubname == null || clubname.trim().isEmpty() ||
                 careername == null || careername.trim().isEmpty() ||
                 playerId == null || playerId <= 0 ||
                 targetClub == null || targetClub.trim().isEmpty()) {
@@ -40,7 +40,7 @@ public class TransferService {
         if (oldPlayer == null || newClub == null) return false;
 
         TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(targetClub, careername);
-        TrainerCareer oldCareer = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
+        TrainerCareer oldCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
         if (targetCareer == null || targetCareer.getBudget() < oldPlayer.getValueNow() || oldCareer == null)
             return false;
 
@@ -71,6 +71,18 @@ public class TransferService {
         return true;
     }
 
+    public Boolean transferRandomPlayer(String careername) {
 
+        if (careername == null || careername.trim().isEmpty()) {
+            return false;
+        }
+
+        List<TrainerCareer> careers = trainerCareerRepository.findAllByCareer(careername);
+
+
+
+
+        return true;
+    }
 
 }

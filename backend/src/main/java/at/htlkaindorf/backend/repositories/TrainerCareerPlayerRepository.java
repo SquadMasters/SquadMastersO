@@ -22,6 +22,9 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?2 AND p.movedRecently = false AND p.club.clubName != ?1")
     List<TrainerCareerPlayer> findAllForTransfermarket(String clubname, String careername);
 
+    @Query("SELECT count(p) FROM TrainerCareerPlayer p WHERE p.career.careerName = ?1 AND p.club.clubName = ?2 AND p.player.position IN ?3")
+    Integer countPlayersFromTeamOnPosition(String careername, String clubname, List<String> positions);
+
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.player.player_Id = ?1 AND p.career.careerName = ?2")
     TrainerCareerPlayer findPlayerById(Long id, String careername);
 

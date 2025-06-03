@@ -94,12 +94,11 @@ public class TrainerCareerPlayerController {
 
     @PostMapping("/transferPlayer")
     public ResponseEntity<Boolean> transferPlayer(
-            @RequestParam String username,
+            @RequestParam String clubname,
             @RequestParam String careername,
             @RequestParam Long playerId,
             @RequestParam String targetClub) {
 
-        Boolean result = transferService.transferPlayer(username, careername, playerId, targetClub);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(transferService.transferPlayer(clubname, careername, playerId, targetClub));
     }
 }

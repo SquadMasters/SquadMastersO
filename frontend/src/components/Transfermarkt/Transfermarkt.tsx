@@ -78,14 +78,14 @@ const Transfermarkt = () => {
             const offerResponse = await axios.post<string>(
                 `http://localhost:8080/salesInquiry/sendOffer`,
                 null,
-                { params: { username, careername, playerId } }
+                { params: { clubname, careername, playerId } }
             );
 
             if (offerResponse.data === "success") {
                 const transferResult = await axios.post<boolean>(
                     `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                     null,
-                    { params: { username, careername, playerId, targetClub: clubname } }
+                    { params: { clubname, careername, playerId, targetClub: clubname } }
                 );
 
                 if (!transferResult.data) throw new Error("Transfer fehlgeschlagen");
@@ -157,7 +157,7 @@ const Transfermarkt = () => {
             const response = await axios.post<boolean>(
                 `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                 null,
-                { params: { username, careername, playerId, targetClub } }
+                { params: { clubname, careername, playerId, targetClub } }
             );
 
             if (!response.data) throw new Error("Transfer fehlgeschlagen");

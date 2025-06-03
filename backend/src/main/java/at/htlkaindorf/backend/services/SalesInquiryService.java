@@ -39,18 +39,17 @@ public class SalesInquiryService {
                 .toList();
     }
 
-    public String sentOfferToPlayer(String username, String careername, Long playerId) {
+    public String sentOfferToPlayer(String clubname, String careername, Long playerId) {
 
-        if (username == null || username.trim().isEmpty() || careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
+        if (clubname == null || clubname.trim().isEmpty() || careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
             return "Übergabewerte fehlerhaft!";
         }
 
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        TrainerCareer tc = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
+        TrainerCareer tc = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
         TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerFromCareerById(careername, playerId);
         TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(player.getClub().getClubName(), player.getCareer().getCareerName());
 
-        if (player == null || tc == null || targetCareer == null || tc.getBudget() < player.getValueNow()) {
+        if (tc == null || targetCareer == null || tc.getBudget() < player.getValueNow()) {
             return "Zu wenig Budget für den Spieler!";
         }
 
@@ -68,7 +67,7 @@ public class SalesInquiryService {
 
             salesInquiryRepository.save(entry);
         } else {
-            Boolean transfer = transferService.transferPlayer(username, careername, playerId, tc.getClub().getClubName());
+            Boolean transfer = transferService.transferPlayer(clubname, careername, playerId, tc.getClub().getClubName());
             if (transfer) {
                 return player.getPlayer().getLastname() + " erfolgreich verpflichtet!";
             }

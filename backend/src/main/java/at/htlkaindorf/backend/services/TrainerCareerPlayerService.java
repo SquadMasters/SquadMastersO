@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -46,8 +47,35 @@ public class TrainerCareerPlayerService {
 
         String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
         List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllForTransfermarket(clubname, careername);
+        List<TrainerCareerPlayer> filteredPlayers = new ArrayList<>();
 
-        return tcPlayers.stream()
+        for (TrainerCareerPlayer player : tcPlayers) {
+            String position = player.getPlayer().getPosition();
+            String clubnamePlayer = player.getClub().getClubName();
+            List<String> group;
+            int minCount;
+
+            if (position.equals("TW")) {
+                group = List.of("TW");
+                minCount = 2;
+            } else if (List.of("IV", "LV", "RV").contains(position)) {
+                group = List.of("IV", "LV", "RV");
+                minCount = 5;
+            } else if (List.of("ZDM", "ZM").contains(position)) {
+                group = List.of("ZDM", "ZM");
+                minCount = 4;
+            } else {
+                group = List.of("ST", "RF", "LF");
+                minCount = 4;
+            }
+
+            int count = trainerCareerPlayerRepository.countPlayersFromTeamOnPosition(careername, clubnamePlayer, group);
+            if (count >= minCount) {
+                filteredPlayers.add(player);
+            }
+        }
+
+        return filteredPlayers.stream()
                 .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
                 .toList();
     }

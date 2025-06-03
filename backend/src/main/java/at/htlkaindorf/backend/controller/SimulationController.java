@@ -52,7 +52,6 @@ public class SimulationController {
 
         trainerCareerService.setUsersNotReady(careername);
 
-        // WebSocket Update senden
         websocketService.sendUpdate(careername, new SimulationUpdate("SIMULATION_STARTED", firstHalf));
 
         return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
