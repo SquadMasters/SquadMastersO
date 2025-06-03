@@ -79,13 +79,13 @@ public class SalesInquiryService {
         return "Angebot erfolgreich gesendet!";
     }
 
-    public Boolean deleteOfferToPlayer(String careername, Long playerId) {
+    public Boolean deleteOfferToPlayer(String careername, Long playerId, String username) {
 
         if (careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
             return false;
         }
 
-        List<SalesInquiryEntry> entries = salesInquiryRepository.findAllSalesInquiryFromPlayer(careername, playerId);
+        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquiryFromPlayer(careername, playerId, username);
 
         salesInquiryRepository.deleteAll(entries);
 
