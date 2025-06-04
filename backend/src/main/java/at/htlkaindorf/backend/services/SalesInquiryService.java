@@ -78,13 +78,26 @@ public class SalesInquiryService {
         return "Angebot erfolgreich gesendet!";
     }
 
-    public Boolean deleteOfferToPlayer(String careername, Long playerId, String username) {
+    public Boolean deleteSentOffers(String careername, Long playerId, String username) {
 
         if (careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
             return false;
         }
 
-        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquiryFromPlayer(careername, playerId, username);
+        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquirySentOffers(careername, playerId, username);
+
+        salesInquiryRepository.deleteAll(entries);
+
+        return true;
+    }
+
+    public Boolean deleteReceivedOffers(String careername, Long playerId, String clubname) {
+
+        if (careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
+            return false;
+        }
+
+        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquiryReceivedOffers(careername, playerId, clubname);
 
         salesInquiryRepository.deleteAll(entries);
 
