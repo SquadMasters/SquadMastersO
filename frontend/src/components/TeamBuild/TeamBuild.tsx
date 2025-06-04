@@ -335,12 +335,14 @@ const TeamBuild = () => {
 
     return (
         <div className="teambuild-container">
-            <div className="club-header">
-                <img src={clubLogo} alt={clubName} className="club-logo" />
-                <h2>{clubName}</h2>
-            </div>
+
 
             <div className="team-info">
+                <div className="club-header">
+                    <img src={clubLogo} alt={clubName} className="club-logo" />
+                    <h2>{clubName}</h2>
+                </div>
+
                 <p>Spieler: <strong>{getSelectedPlayerCount()}</strong> / {fieldPositions.length}</p>
                 <p>Gesamt-Rating: <strong>{getTotalRating()}</strong></p>
                 <p>Gesamt-Marktwert: <strong>{getTotalValue()}</strong></p>
@@ -368,7 +370,7 @@ const TeamBuild = () => {
 
                         {Object.keys(field).map((position, index) => {
                             const player = field[position];
-                            const isRemoveMode = removePlayerPosition === position; // Prüfen, ob der Spieler im "Remove"-Modus ist
+                            const isRemoveMode = removePlayerPosition === position;
 
                             return (
                                 <div
@@ -401,7 +403,7 @@ const TeamBuild = () => {
                                     ) : (
                                         <div className="shirt-icon">
                                             <FontAwesomeIcon icon={faShirt} className="shirt-icon-image" />
-                                            <span className="shirt-icon-text">{position}</span> {/* Position anzeigen, falls kein Spieler */}
+                                            <span className="shirt-icon-text">{position}</span>
                                         </div>
                                     )}
                                 </div>
@@ -428,7 +430,6 @@ const TeamBuild = () => {
                             <option value="IV">IV</option>
                             <option value="ZM">ZM</option>
                             <option value="ZDM">ZDM</option>
-                            <option value="OM">OM</option>
                             <option value="LF">LF</option>
                             <option value="RF">RF</option>
                             <option value="ST">ST</option>

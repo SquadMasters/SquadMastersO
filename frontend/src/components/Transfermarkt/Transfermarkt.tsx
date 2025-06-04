@@ -1,6 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Transfermarkt.css';
+import arsenal from "../../assets/arsenalwappen.png";
+import atletico from "../../assets/atleticowappen.png";
+import barca from "../../assets/barcawappen.png";
+import bayern from "../../assets/bayernwappen.png";
+import city from "../../assets/citywappen.png";
+import inter from "../../assets/interwappen.png";
+import juve from "../../assets/juve.png";
+import liverpool from "../../assets/liverpool.png";
+import milan from "../../assets/milan.png";
+import psg from "../../assets/psgwappen.png";
+import real from "../../assets/reallogo.png";
+
+
+
+const logoMap: { [key: string]: string } = {
+    'Arsenal': arsenal,
+    'Atlético Madrid': atletico,
+    'FC Barcelona': barca,
+    'Bayern München': bayern,
+    'Manchester City': city,
+    'Inter Mailand': inter,
+    'Juventus Turin': juve,
+    'Liverpool': liverpool,
+    'AC Mailand': milan,
+    'Paris Saint-Germain': psg,
+    'Real Madrid': real,
+};
 
 interface Player {
     playerId: number;
@@ -49,6 +76,8 @@ const Transfermarkt: React.FC = () => {
     const [minRating, setMinRating] = useState<number>(0);
     const [maxAge, setMaxAge] = useState<number>(99);
     const [allClubs, setAllClubs] = useState<string[]>([]);
+    const [onlyAffordable, setOnlyAffordable] = useState<boolean>(false);
+
 
     const username = localStorage.getItem('username') || '';
     const careername = localStorage.getItem('careername') || '';
@@ -158,9 +187,11 @@ const Transfermarkt: React.FC = () => {
     };
 
     const handleRejectOffer = async (playerId: number) => {
+        console.log("rejectbutton" + username + careername + playerId)
         try {
             await axios.delete(`http://localhost:8080/salesInquiry/deleteOffer`, {
                 params: { username, careername, playerId },
+
             });
             const receivedOffersRes = await axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
                 params: { username, careername },
@@ -176,7 +207,7 @@ const Transfermarkt: React.FC = () => {
             const response = await axios.post<boolean>(
                 `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                 null,
-                { params: { clubname: buyerClub, careername, playerId, targetClub: clubname } }
+                { params: { clubname: buyerClub, careername, playerId, targetClub: selectedTeamName } }
             );
 
             if (!response.data) throw new Error("Transfer fehlgeschlagen");
@@ -198,8 +229,10 @@ const Transfermarkt: React.FC = () => {
             (!filter || p.position === filter) &&
             (!clubFilter || p.clubname === clubFilter) &&
             p.rating >= minRating &&
-            p.ageNow <= maxAge
+            p.ageNow <= maxAge &&
+            (!onlyAffordable || p.value <= budget)
     );
+
 
     if (loading)
         return (
@@ -229,6 +262,19 @@ const Transfermarkt: React.FC = () => {
 
                 {error && <div className="error-message">{error}</div>}
                 <div className="filter-bar">
+                    <div className="filter-group affordable-toggle">
+                        <label className="checkbox-label">
+                            <input
+                                type="checkbox"
+                                checked={onlyAffordable}
+                                onChange={() => setOnlyAffordable(!onlyAffordable)}
+                            />
+                            <span className="custom-checkbox">{onlyAffordable ? '✕' : ''}</span>
+                            Nur Spieler im Budget
+                        </label>
+                    </div>
+
+
                     <div className="filter-group">
                         <label>Position:</label>
                         <select value={filter} onChange={(e) => setFilter(e.target.value)}>
@@ -259,6 +305,8 @@ const Transfermarkt: React.FC = () => {
                         <label>Max. Alter:</label>
                         <input type="number" min={1} max={99} value={maxAge} onChange={(e) => setMaxAge(Number(e.target.value))} />
                     </div>
+
+
                 </div>
             </div>
             <div className="transfermarkt-grid">
@@ -266,29 +314,44 @@ const Transfermarkt: React.FC = () => {
                     <h2 style={{ color: primaryColor }}>Verfügbare Spieler ({filteredPlayers.length})</h2>
                     <div className="players-list">
                         {filteredPlayers.map((player) => (
-                            <article key={player.playerId} className="player-card">
-                                <div className="player-info">
-                                    <h3 className="player-name" style={{ color: 'inherit' }}>
-                                        {formatPlayerName(player)}
-                                    </h3>
-                                    <div className="player-details" style={{ color: 'inherit' }}>
-                                        <span>{player.position}</span>
-                                        <span>{player.clubname}</span>
-                                        <span>{formatCurrency(player.value)}</span>
-                                        <span>Bewertung: {player.rating}/10</span>
-                                        <span>Alter: {player.ageNow}</span>
+                            <article key={player.playerId} className="player-card upgraded-card">
+                                <div className="player-left">
+                                    <div className="player-name-row">
+                                        <h3 className="player-name">{formatPlayerName(player)}</h3>
+                                        <span className="position-badge">{player.position}</span>
+                                    </div>
+                                    <div className="player-stats">
+                                        <div className="stat-block">
+                                            <label>Verein</label>
+                                            {player.clubname && logoMap[player.clubname] ? (
+                                                <img src={logoMap[player.clubname]} alt={player.clubname} className="club-logo" />
+                                            ) : (
+                                                <span>{player.clubname}</span>
+                                            )}
+                                        </div>
+
+                                        <div className="stat-block"><label>Wert</label><span>{formatCurrency(player.value)}</span></div>
+                                        <div className="stat-block"><label>Bewertung</label><span>{player.rating}/10</span></div>
+                                        <div className="stat-block"><label>Alter</label><span>{player.ageNow}</span></div>
                                     </div>
                                 </div>
-                                <button
-                                    onClick={() => handleSendOffer(player.playerId)}
-                                    disabled={offerLoading === player.playerId || player.value > budget}
-                                    className={player.value > budget ? 'disabled-btn' : ''}
-                                    style={{ backgroundColor: primaryColor, color: '#fff', borderColor: primaryColor, borderRadius: 24 }}
-                                >
-                                    {offerLoading === player.playerId ? 'Wird gesendet...' : 'Kaufen'}
-                                </button>
-                                {player.value > budget && <p className="budget-warning">Budget zu niedrig</p>}
+                                <div className="player-right">
+                                    <button
+                                        onClick={() => handleSendOffer(player.playerId)}
+                                        disabled={offerLoading === player.playerId || player.value > budget}
+                                        className={player.value > budget ? 'disabled-btn' : ''}
+                                        style={{ backgroundColor: primaryColor,  borderRadius:10}}
+                                    >
+                                        {offerLoading === player.playerId ? 'Wird gesendet...' : 'Kaufen'}
+                                    </button>
+                                    {player.value > budget && (
+                                        <p className="budget-warning enhanced-budget-warning">Nicht genug Budget</p>
+                                    )}
+                                </div>
                             </article>
+
+
+
                         ))}
                     </div>
                 </section>

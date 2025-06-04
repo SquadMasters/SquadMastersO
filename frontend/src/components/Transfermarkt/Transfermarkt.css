@@ -85,7 +85,7 @@
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
-    max-width: 900px;
+    max-width: 1080px;
 }
 
 .filter-group {
@@ -294,3 +294,230 @@ button:disabled {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
 }
+.enhanced-player-card {
+    background: linear-gradient(135deg, #fefefe, #f5f7fa);
+    border: 2px solid var(--primary-color-light);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.player-position {
+    background-color: var(--primary-color-light);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    color: white;
+    font-weight: 600;
+}
+
+.player-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    font-size: 13px;
+    justify-content: space-between;
+}
+
+.player-attribute {
+    flex: 1 1 45%;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    padding: 8px 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.player-attribute label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+.horizontal-player-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #ffffff;
+    border: 2px solid var(--border-color);
+    padding: 14px 18px;
+    border-radius: 14px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+}
+
+.player-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.player-position {
+    background-color: var(--primary-color-light);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.player-stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--text-color);
+    justify-content: space-between;
+}
+
+.player-stats-row span {
+    min-width: 120px;
+}
+
+.player-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.enhanced-budget-warning {
+    color: var(--danger-color);
+    font-size: 13px;
+    background-color: #ffecec;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 1px solid #ffcccc;
+}
+.upgraded-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 22px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    transition: box-shadow 0.2s ease;
+}
+
+.upgraded-card:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.player-left {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.player-name-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.player-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0;
+}
+
+.position-badge {
+    background-color: var(--primary-color-light);
+    color: white;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.player-stats {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.stat-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stat-block label {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.stat-block span {
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.player-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.enhanced-budget-warning {
+    color: var(--danger-color);
+    background-color: #fff4f4;
+    border: 1px solid #ffcccc;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 13px;
+}
+.club-logo {
+    height: 32px;
+    width: 32px;
+    object-fit: contain;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.affordable-toggle .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--primary-color);
+    user-select: none;
+}
+
+.custom-checkbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 18px;
+    font-weight: bold;
+    background-color: #fff;
+    color: var(--primary-color);
+}
+
+.checkbox-label input {
+    display: none;
+}
+
+
