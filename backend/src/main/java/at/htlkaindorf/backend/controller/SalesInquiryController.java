@@ -24,13 +24,22 @@ public class SalesInquiryController {
         return salesInquiryService.sentOfferToPlayer(clubname, careername, playerId);
     }
 
-    @DeleteMapping("/deleteOffer")
-    public Boolean deleteOfferToPlayer(
+    @DeleteMapping("/deleteSentOffers")
+    public Boolean deleteSentOfferToPlayer(
             @RequestParam String username,
             @RequestParam String careername,
             @RequestParam Long playerId
     ) {
-        return salesInquiryService.deleteOfferToPlayer(careername, playerId, username);
+        return salesInquiryService.deleteSentOffers(careername, playerId, username);
+    }
+
+    @DeleteMapping("/deleteReceivedOffers")
+    public Boolean deleteReceivedOfferToPlayer(
+            @RequestParam String clubname,
+            @RequestParam String careername,
+            @RequestParam Long playerId
+    ) {
+        return salesInquiryService.deleteReceivedOffers(careername, playerId, clubname);
     }
 
 }
