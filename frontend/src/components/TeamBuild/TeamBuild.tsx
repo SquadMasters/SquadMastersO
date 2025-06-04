@@ -451,6 +451,7 @@ const TeamBuild = () => {
                             <tbody>
                             {players
                                 .filter(p => selectedPosition === "Alle" || p.position === selectedPosition)
+                                .sort((a, b) => b.rating - a.rating)
                                 .map((p, idx) => {
                                     const isAssigned = assignedPlayers.has(p.short);
                                     return (
@@ -474,6 +475,8 @@ const TeamBuild = () => {
                                         </tr>
                                     );
                                 })}
+
+
                             </tbody>
                         </table>
                     </div>

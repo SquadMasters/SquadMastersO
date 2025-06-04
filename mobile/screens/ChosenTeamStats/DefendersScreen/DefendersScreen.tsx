@@ -17,7 +17,7 @@ const DefendersScreen = ({ route, navigation }) => {
     useEffect(() => {
         const fetchDefenders = async () => {
             try {
-                const response = await axios.get(`http://10.151.6.92:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
+                const response = await axios.get(`http://10.151.6.108:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
                 const filteredDefenders = response.data.filter(player =>
                     player.clubname === team &&
                     validPositions.includes(player.position)

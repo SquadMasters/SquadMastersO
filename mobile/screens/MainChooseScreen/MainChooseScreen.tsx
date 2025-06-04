@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 
-const API_BASE_URL = 'http://10.151.6.92:8080';
+const API_BASE_URL = 'http://10.151.6.108:8080';
 
 const MainChooseScreen = ({ navigation }) => {
     const [users, setUsers] = useState([]);

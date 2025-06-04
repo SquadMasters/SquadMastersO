@@ -18,7 +18,7 @@ const MidfieldersScreen = ({ route, navigation }) => {
     useEffect(() => {
         const fetchMidfielders = async () => {
             try {
-                const response = await axios.get(`http://10.151.6.92:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
+                const response = await axios.get(`http://10.151.6.108:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
                 const filteredMidfielders = response.data.filter(player =>
                     player.clubname === team &&
                     validPositions.includes(player.position)

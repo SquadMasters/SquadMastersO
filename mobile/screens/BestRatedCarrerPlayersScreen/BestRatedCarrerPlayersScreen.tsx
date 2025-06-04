@@ -21,7 +21,7 @@ const BestRatedCarrerPlayersScreen = ({ route }) => {
         const fetchPlayers = async () => {
             try {
                 const response = await fetch(
-                    `http://10.151.6.92:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
+                    `http://10.151.6.108:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
                 );
                 const data = await response.json();
 
