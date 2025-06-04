@@ -27,6 +27,7 @@ public class SimulationController {
     private final TrainerCareerPlayerService trainerCareerPlayerService;
     private final ClubService clubService;
     private final SimulationWebSocketService websocketService;
+    private final SalesInquiryService salesInquiryService;
 
     // nicht jeder darf aufrufen
     @PostMapping("/start")
@@ -76,8 +77,9 @@ public class SimulationController {
         boolean resetGames = gameService.resetGamesFromCareer(careername);
         boolean resetCareers = trainerCareerService.resetTrainerCareers(careername);
         boolean changePlayerStats = trainerCareerPlayerService.changePlayerStats(careername);
+        boolean transferRandomPlayer = salesInquiryService.transferRandomPlayer(careername);
 
-        if (!resetGames || !resetCareers) {
+        if (!resetGames || !resetCareers || !changePlayerStats || !transferRandomPlayer) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Fehler beim Zurücksetzen der Saison!");
         }

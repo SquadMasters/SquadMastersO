@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -69,20 +69,6 @@ public class TransferService {
         trainerCareerPlayerRepository.save(newPlayer);
         trainerCareerRepository.save(targetCareer);
         trainerCareerRepository.save(oldCareer);
-
-        return true;
-    }
-
-    public Boolean transferRandomPlayer(String careername) {
-
-        if (careername == null || careername.trim().isEmpty()) {
-            return false;
-        }
-
-        List<TrainerCareer> careers = trainerCareerRepository.findAllByCareer(careername);
-
-
-
 
         return true;
     }

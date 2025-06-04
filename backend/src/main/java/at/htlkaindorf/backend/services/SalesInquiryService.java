@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -87,6 +87,47 @@ public class SalesInquiryService {
         List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquiryFromPlayer(careername, playerId, username);
 
         salesInquiryRepository.deleteAll(entries);
+
+        return true;
+    }
+
+    public Boolean transferRandomPlayer(String careername) {
+
+        if (careername == null || careername.trim().isEmpty()) {
+            return false;
+        }
+
+        List<TrainerCareer> careers = trainerCareerRepository.findAllByCareer(careername);
+
+        Map<TrainerCareer, List<TrainerCareerPlayer>> playerMap = new HashMap<>();
+        for (TrainerCareer career : careers) {
+            List<TrainerCareerPlayer> players = trainerCareerPlayerRepository
+                    .findPlayersByTrainerCareer(career.getClub().getClubName(), careername);
+            playerMap.put(career, players);
+        }
+
+        careers.sort(Comparator.comparingInt(c -> playerMap.get(c).size()));
+
+        int index = 0;
+        for (TrainerCareer career : careers) {
+
+            List<TrainerCareerPlayer> playersOnTransfermarket = trainerCareerPlayerRepository.findAllForTransfermarket(career.getClub().getClubName(), careername);
+            if (!playersOnTransfermarket.isEmpty()) {
+                Random random = new Random();
+                TrainerCareerPlayer randomPlayer = playersOnTransfermarket.get(random.nextInt(playersOnTransfermarket.size()));
+                playersOnTransfermarket.remove(randomPlayer);
+                TrainerCareerPlayer randomPlayer2 = playersOnTransfermarket.get(random.nextInt(playersOnTransfermarket.size()));
+
+                if (index < 3) {
+                    sentOfferToPlayer(career.getClub().getClubName(), careername, randomPlayer.getPlayer().getPlayer_Id());
+                    sentOfferToPlayer(career.getClub().getClubName(), careername, randomPlayer2.getPlayer().getPlayer_Id());
+                } else if (index < 7) {
+                    sentOfferToPlayer(career.getClub().getClubName(), careername, randomPlayer.getPlayer().getPlayer_Id());
+                }
+            }
+            index++;
+        }
+
 
         return true;
     }

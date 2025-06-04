@@ -22,6 +22,9 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?2 AND p.movedRecently = false AND p.club.clubName != ?1")
     List<TrainerCareerPlayer> findAllForTransfermarket(String clubname, String careername);
 
+    @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?2 AND p.movedRecently = false AND p.club.clubName != ?1 AND p.valueNow < ?3")
+    List<TrainerCareerPlayer> findAllForTransfermarketInBudget(String clubname, String careername, Integer budget);
+
     @Query("SELECT count(p) FROM TrainerCareerPlayer p WHERE p.career.careerName = ?1 AND p.club.clubName = ?2 AND p.player.position IN ?3")
     Integer countPlayersFromTeamOnPosition(String careername, String clubname, List<String> positions);
 
@@ -46,7 +49,7 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
     @Query("SELECT COALESCE(count(p), 0) FROM TrainerCareerPlayer p WHERE p.positionInLineup != at.htlkaindorf.backend.pojos.PositionInLineup.B AND p.career.careerName = ?1 AND p.club.clubName = ?2")
     Integer findPlayersInStartingEleven(String careername, String clubname);
 
-    @Query("SELECT tcp FROM TrainerCareerPlayer tcp WHERE tcp.player.player_Id IN (SELECT s.trainerCareerPlayer.player.player_Id FROM SalesInquiryEntry s WHERE s.trainerCareer.club.clubName = ?1 AND s.trainerCareer.career.careerName = ?2)")
+    @Query("SELECT tcp FROM TrainerCareerPlayer tcp WHERE tcp.player.player_Id IN (SELECT s.trainerCareerPlayer.player.player_Id FROM SalesInquiryEntry s WHERE s.trainerCareer.club.clubName = ?1 AND s.trainerCareer.career.careerName = ?2) AND tcp.career.careerName = ?2")
     List<TrainerCareerPlayer> findAllPlayersOnWishlist(String clubname, String careername);
 
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?1 AND p.player.player_Id = ?2")

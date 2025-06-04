@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 public class SalesInquiryController {
 
     private final SalesInquiryService salesInquiryService;
-    private final TrainerCareerRepository trainerCareerRepository;
 
     @PostMapping("/sendOffer")
     public String sendOfferToPlayer(
