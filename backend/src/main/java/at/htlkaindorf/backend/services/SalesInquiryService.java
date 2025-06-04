@@ -67,7 +67,7 @@ public class SalesInquiryService {
 
             salesInquiryRepository.save(entry);
         } else {
-            Boolean transfer = transferService.transferPlayer(clubname, careername, playerId, tc.getClub().getClubName());
+            Boolean transfer = transferService.transferPlayer(clubname, careername, playerId);
             if (transfer) {
                 return player.getPlayer().getLastname() + " erfolgreich verpflichtet!";
             }

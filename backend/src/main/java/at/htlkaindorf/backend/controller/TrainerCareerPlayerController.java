@@ -96,9 +96,8 @@ public class TrainerCareerPlayerController {
     public ResponseEntity<Boolean> transferPlayer(
             @RequestParam String clubname,
             @RequestParam String careername,
-            @RequestParam Long playerId,
-            @RequestParam String targetClub) {
+            @RequestParam Long playerId) {
 
-        return ResponseEntity.ok(transferService.transferPlayer(clubname, careername, playerId, targetClub));
+        return ResponseEntity.ok(transferService.transferPlayer(clubname, careername, playerId));
     }
 }

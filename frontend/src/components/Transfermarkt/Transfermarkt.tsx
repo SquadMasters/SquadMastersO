@@ -56,7 +56,7 @@ const Transfermarkt = () => {
                 setPlayersWithOffers(sentOffersRes.data);
                 setIncomingOffers(receivedOffersRes.data);
                 setAllClubs([...new Set(playersRes.data.map(p => p.clubname).filter(Boolean))] as string[]);
-            } catch (err) {
+            } catch {
                 setError('Fehler beim Laden der Daten.');
             } finally {
                 setLoading(false);
@@ -85,7 +85,7 @@ const Transfermarkt = () => {
                 const transferResult = await axios.post<boolean>(
                     `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                     null,
-                    { params: { clubname, careername, playerId, targetClub: clubname } }
+                    { params: { clubname, careername, playerId } }
                 );
 
                 if (!transferResult.data) throw new Error("Transfer fehlgeschlagen");
@@ -103,7 +103,7 @@ const Transfermarkt = () => {
             setPlayersWithOffers(sentOffersRes.data);
             setBudget(budgetRes.data.budget);
             setIncomingOffers(receivedOffersRes.data);
-        } catch (err) {
+        } catch {
             setError('Fehler beim Kauf');
         } finally {
             setOfferLoading(null);
@@ -114,7 +114,7 @@ const Transfermarkt = () => {
         try {
             setCancelLoading(playerId);
             await axios.delete<boolean>(`http://localhost:8080/salesInquiry/deleteOffer`, {
-                params: { careername, playerId }
+                params: { username, careername, playerId }
             });
 
             const [playersRes, sentOffersRes, budgetRes, receivedOffersRes] = await Promise.all([
@@ -128,7 +128,7 @@ const Transfermarkt = () => {
             setPlayersWithOffers(sentOffersRes.data);
             setBudget(budgetRes.data.budget);
             setIncomingOffers(receivedOffersRes.data);
-        } catch (err) {
+        } catch {
             setError('Angebot konnte nicht gelöscht werden');
         } finally {
             setCancelLoading(null);
@@ -138,7 +138,7 @@ const Transfermarkt = () => {
     const handleRejectOffer = async (playerId: number) => {
         try {
             await axios.delete(`http://localhost:8080/salesInquiry/deleteOffer`, {
-                params: { careername, playerId }
+                params: { username, careername, playerId }
             });
 
             const receivedOffersRes = await axios.get<Offer[]>(
@@ -147,20 +147,21 @@ const Transfermarkt = () => {
             );
 
             setIncomingOffers(receivedOffersRes.data);
-        } catch (err) {
+        } catch {
             setError("Angebot konnte nicht abgelehnt werden.");
         }
     };
 
-    const handleAcceptOffer = async (playerId: number, targetClub: string) => {
+    const handleAcceptOffer = async (playerId: number, buyerClub: string) => {
         try {
             const response = await axios.post<boolean>(
                 `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                 null,
-                { params: { clubname, careername, playerId, targetClub } }
+                { params: { clubname: buyerClub, careername, playerId, targetClub: clubname } }
             );
 
             if (!response.data) throw new Error("Transfer fehlgeschlagen");
+
             const receivedOffersRes = await axios.get<Offer[]>(
                 `http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`,
                 { params: { username, careername } }
@@ -168,7 +169,7 @@ const Transfermarkt = () => {
 
             setIncomingOffers(receivedOffersRes.data);
             localStorage.setItem("reloadTeamBuild", "true");
-        } catch (err) {
+        } catch {
             setError("Angebot konnte nicht angenommen werden.");
         }
     };
@@ -187,7 +188,6 @@ const Transfermarkt = () => {
             <h1>Transfermarkt</h1>
             <div className="header-section">
                 <div className="budget-team-display">
-
                     <div className="team-badge">
                         <span className="team-label">Team</span>
                         <span className="team-value">{clubname}</span>
@@ -197,10 +197,7 @@ const Transfermarkt = () => {
                         <span className="budget-value">{formatCurrency(budget)}</span>
                     </div>
                 </div>
-
-
                 {error && <div className="error-message">{error}</div>}
-
                 <div className="filter-bar">
                     <div className="filter-group">
                         <label>Position: </label>
@@ -211,7 +208,6 @@ const Transfermarkt = () => {
                             ))}
                         </select>
                     </div>
-
                     <div className="filter-group">
                         <label>Verein: </label>
                         <select value={clubFilter} onChange={e => setClubFilter(e.target.value)}>
@@ -221,7 +217,6 @@ const Transfermarkt = () => {
                             ))}
                         </select>
                     </div>
-
                     <div className="filter-group">
                         <label>Min. Bewertung: </label>
                         <input
@@ -232,7 +227,6 @@ const Transfermarkt = () => {
                             onChange={e => setMinRating(Number(e.target.value))}
                         />
                     </div>
-
                     <div className="filter-group">
                         <label>Max. Alter: </label>
                         <input
@@ -245,7 +239,6 @@ const Transfermarkt = () => {
                     </div>
                 </div>
             </div>
-
             <div className="transfermarkt-grid">
                 <div className="players-column">
                     <h2>Verfügbare Spieler ({filteredPlayers.length})</h2>
@@ -274,7 +267,6 @@ const Transfermarkt = () => {
                         ))}
                     </div>
                 </div>
-
                 <div className="offers-column">
                     <div className="offers-section">
                         <h2>Gesendete Angebote ({playersWithOffers.length})</h2>
@@ -300,7 +292,6 @@ const Transfermarkt = () => {
                             ))}
                         </div>
                     </div>
-
                     <div className="offers-section">
                         <h2>Erhaltene Angebote ({incomingOffers.length})</h2>
                         <div className="offers-list">
