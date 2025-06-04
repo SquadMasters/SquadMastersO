@@ -106,7 +106,7 @@ const Transfermarkt: React.FC = () => {
                 const transferResult = await axios.post<boolean>(
                     `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                     null,
-                    { params: { clubname: selectedTeamName, careername, playerId, targetClub: selectedTeamName } }
+                    { params: { clubname, careername, playerId } }
                 );
                 if (!transferResult.data) throw new Error('Transfer fehlgeschlagen');
                 localStorage.setItem('reloadTeamBuild', 'true');
@@ -135,7 +135,7 @@ const Transfermarkt: React.FC = () => {
         try {
             setCancelLoading(playerId);
             await axios.delete<boolean>(`http://localhost:8080/salesInquiry/deleteOffer`, {
-                params: { careername, playerId },
+                params: { username, careername, playerId },
             });
 
             const [playersRes, sentOffersRes, budgetRes, receivedOffersRes] = await Promise.all([
@@ -160,7 +160,7 @@ const Transfermarkt: React.FC = () => {
     const handleRejectOffer = async (playerId: number) => {
         try {
             await axios.delete(`http://localhost:8080/salesInquiry/deleteOffer`, {
-                params: { careername, playerId },
+                params: { username, careername, playerId },
             });
             const receivedOffersRes = await axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
                 params: { username, careername },
@@ -171,15 +171,21 @@ const Transfermarkt: React.FC = () => {
         }
     };
 
-    const handleAcceptOffer = async (playerId: number, targetClub: string) => {
+    const handleAcceptOffer = async (playerId: number, buyerClub: string) => {
         try {
-            const response = await axios.post<boolean>(`http://localhost:8080/trainerCareerPlayer/transferPlayer`, null, {
-                params: { clubname: selectedTeamName, careername, playerId, targetClub },
-            });
-            if (!response.data) throw new Error('Transfer fehlgeschlagen');
-            const receivedOffersRes = await axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
-                params: { username, careername },
-            });
+            const response = await axios.post<boolean>(
+                `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
+                null,
+                { params: { clubname: buyerClub, careername, playerId, targetClub: clubname } }
+            );
+
+            if (!response.data) throw new Error("Transfer fehlgeschlagen");
+
+            const receivedOffersRes = await axios.get<Offer[]>(
+                `http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`,
+                { params: { username, careername } }
+            );
+
             setIncomingOffers(receivedOffersRes.data);
             localStorage.setItem('reloadTeamBuild', 'true');
         } catch {
@@ -222,7 +228,6 @@ const Transfermarkt: React.FC = () => {
                 </div>
 
                 {error && <div className="error-message">{error}</div>}
-
                 <div className="filter-bar">
                     <div className="filter-group">
                         <label>Position:</label>
@@ -235,7 +240,6 @@ const Transfermarkt: React.FC = () => {
                             ))}
                         </select>
                     </div>
-
                     <div className="filter-group">
                         <label>Verein:</label>
                         <select value={clubFilter} onChange={(e) => setClubFilter(e.target.value)}>
@@ -247,19 +251,16 @@ const Transfermarkt: React.FC = () => {
                             ))}
                         </select>
                     </div>
-
                     <div className="filter-group">
                         <label>Min. Bewertung:</label>
                         <input type="number" min={0} max={10} value={minRating} onChange={(e) => setMinRating(Number(e.target.value))} />
                     </div>
-
                     <div className="filter-group">
                         <label>Max. Alter:</label>
                         <input type="number" min={1} max={99} value={maxAge} onChange={(e) => setMaxAge(Number(e.target.value))} />
                     </div>
                 </div>
             </div>
-
             <div className="transfermarkt-grid">
                 <section className="players-column">
                     <h2 style={{ color: primaryColor }}>Verfügbare Spieler ({filteredPlayers.length})</h2>
@@ -291,7 +292,6 @@ const Transfermarkt: React.FC = () => {
                         ))}
                     </div>
                 </section>
-
                 <aside className="offers-column">
                     <div className="offers-section">
                         <h2 style={{ color: primaryColor }}>Gesendete Angebote ({playersWithOffers.length})</h2>
@@ -321,7 +321,6 @@ const Transfermarkt: React.FC = () => {
                             })}
                         </div>
                     </div>
-
                     <div className="offers-section">
                         <h2 style={{ color: primaryColor }}>Erhaltene Angebote ({incomingOffers.length})</h2>
                         <div className="offers-list">

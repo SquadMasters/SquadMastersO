@@ -11,6 +11,7 @@ import at.htlkaindorf.backend.repositories.ClubRepository;
 import at.htlkaindorf.backend.repositories.SalesInquiryRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,20 +28,20 @@ public class TransferService {
     private final SalesInquiryRepository salesInquiryRepository;
     private final ClubRepository clubRepository;
 
-    public Boolean transferPlayer(String clubname, String careername, Long playerId, String targetClub) {
+    @Transactional
+    public Boolean transferPlayer(String clubname, String careername, Long playerId) {
         if (clubname == null || clubname.trim().isEmpty() ||
                 careername == null || careername.trim().isEmpty() ||
-                playerId == null || playerId <= 0 ||
-                targetClub == null || targetClub.trim().isEmpty()) {
+                playerId == null || playerId <= 0) {
             return false;
         }
 
         TrainerCareerPlayer oldPlayer = trainerCareerPlayerRepository.findPlayerFromCareerById(careername, playerId);
-        Club newClub = clubRepository.getClubByName(targetClub);
+        Club newClub = clubRepository.getClubByName(clubname);
         if (oldPlayer == null || newClub == null) return false;
 
-        TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(targetClub, careername);
-        TrainerCareer oldCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
+        TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
+        TrainerCareer oldCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(oldPlayer.getClub().getClubName(), careername);
         if (targetCareer == null || targetCareer.getBudget() < oldPlayer.getValueNow() || oldCareer == null)
             return false;
 
@@ -65,8 +66,9 @@ public class TransferService {
 
 
         trainerCareerPlayerRepository.delete(oldPlayer);
-
         trainerCareerPlayerRepository.save(newPlayer);
+        trainerCareerRepository.save(targetCareer);
+        trainerCareerRepository.save(oldCareer);
 
         return true;
     }
