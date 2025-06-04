@@ -1,3 +1,18 @@
+:root {
+    --primary-color: #1e88e5;
+    --primary-color-light: #66a6ff;
+    --primary-color-dark: #1565c0;
+    --danger-color: #ff453a;
+    --success-color: #30d158;
+    --text-color: #1d1d1f;
+    --text-muted: #515154;
+    --background: #f8f8f8;
+    --card-bg: #fff;
+    --border-color: #e0e0e0;
+    --border-hover: #d2d2d7;
+}
+
+/* Container */
 .transfermarkt-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -5,158 +20,199 @@
     height: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: #f8f8f8;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, sans-serif;
+
 }
 
+/* Header Section */
 .header-section {
-    background-color: white;
+    background-color: var(--card-bg);
     padding: 16px;
     border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     margin-bottom: 20px;
-    border: 1px solid #e0e0e0;
-    justify-content: center;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
 }
 
 .budget-team-display {
     display: flex;
     gap: 12px;
-    margin-bottom: 16px;
     justify-content: center;
+    width: 100%;
+    max-width: 400px;
 }
 
-.budget-badge, .team-badge {
+.budget-badge,
+.team-badge {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 10px 14px;
+    padding: 12px 16px;
     background-color: #f5f5f7;
-    border-radius: 10px;
-    border: 1px solid #e0e0e0;
-    min-width: 120px;
-}
-
-.budget-label, .team-label {
-    font-size: 12px;
-    color: #86868b;
-    font-weight: 500;
-    margin-bottom: 2px;
-}
-
-.budget-value, .team-value {
-    font-size: 16px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    min-width: 140px;
+    text-align: center;
+    color: var(--primary-color);
     font-weight: 600;
-    color: #1d1d1f;
+    font-size: 18px;
 }
 
+.budget-label,
+.team-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.budget-value,
+.team-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* Filter Bar */
 .filter-bar {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+    max-width: 900px;
 }
 
 .filter-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
 .filter-group label {
-    font-size: 13px;
-    color: #515154;
-    font-weight: 500;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--primary-color);
+    white-space: nowrap;
 }
 
 .filter-group select,
 .filter-group input {
-    padding: 6px 10px;
-    border: 1px solid #d2d2d7;
-    border-radius: 8px;
-    background-color: white;
-    font-size: 13px;
-    min-width: 100px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background-color: var(--card-bg);
+    font-size: 14px;
+    color: var(--text-color);
+    min-width: 120px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .filter-group select:focus,
 .filter-group input:focus {
     outline: none;
-    border-color: #0071e3;
-    box-shadow: 0 0 0 2px rgba(0, 125, 250, 0.1);
+    border-color: var(--primary-color-dark);
+    box-shadow: 0 0 6px var(--primary-color-light);
 }
 
+/* Grid Layout */
 .transfermarkt-grid {
     display: flex;
-    gap: 16px;
+    gap: 20px;
     flex: 1;
     min-height: 0;
     overflow: hidden;
 }
 
-.players-column, .offers-section {
-    background-color: white;
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    border: 1px solid #e0e0e0;
+.players-column,
+.offers-section {
+    background-color: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
 }
 
 .players-column {
     flex: 2;
-    display: flex;
-    flex-direction: column;
     overflow: hidden;
 }
 
-.players-list, .offers-list {
+.players-list,
+.offers-list {
     flex: 1;
     overflow-y: auto;
-    padding-right: 5px;
-    margin-top: 12px;
+    padding-right: 8px;
+    margin-top: 16px;
 }
 
-.player-card, .offer-card {
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 10px;
-    background-color: white;
-    transition: all 0.2s;
+/* Headings */
+h1,
+h2 {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 12px;
 }
 
-.player-card:hover, .offer-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border-color: #d2d2d7;
+/* Cards */
+.player-card,
+.offer-card {
+    border: 2px solid var(--border-color);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 14px;
+    background-color: var(--card-bg);
+    transition: all 0.3s ease;
+    cursor: default;
+}
+
+.player-card:hover,
+.offer-card:hover {
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-color);
 }
 
 .player-name {
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 6px;
-    color: #1d1d1f;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: var(--primary-color);
 }
 
-.player-details, .offer-details {
+.player-details,
+.offer-details {
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 10px;
-    color: #515154;
-    font-size: 13px;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 14px;
 }
 
+/* Buttons */
 button {
-    padding: 8px 14px;
+    padding: 10px 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 24px;
     cursor: pointer;
-    font-weight: 500;
-    font-size: 13px;
-    transition: all 0.2s;
-    margin-top: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    user-select: none;
+    display: inline-block;
 }
 
 button:not(:disabled):hover {
-    transform: translateY(-1px);
+    filter: brightness(110%);
+    transform: translateY(-2px);
 }
 
 button:disabled {
@@ -164,31 +220,42 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* Spezielle Buttons */
 .disabled-btn {
     background-color: #e0e0e0 !important;
     color: #86868b !important;
 }
 
 .budget-warning {
-    color: #ff453a;
-    font-size: 12px;
-    margin-top: 5px;
+    color: var(--danger-color);
+    font-size: 13px;
+    margin-top: 6px;
+    font-weight: 600;
 }
 
 .cancel-btn {
-    background-color: #ff453a;
+    background-color: var(--danger-color);
     color: white;
+    border-radius: 24px;
+    padding: 10px 16px;
+    font-weight: 600;
 }
 
 .accept-btn {
-    background-color: #30d158;
+    background-color: var(--success-color);
     color: white;
-    margin-right: 8px;
+    margin-right: 10px;
+    border-radius: 24px;
+    padding: 10px 18px;
+    font-weight: 600;
 }
 
 .reject-btn {
-    background-color: #ff453a;
+    background-color: var(--danger-color);
     color: white;
+    border-radius: 24px;
+    padding: 10px 18px;
+    font-weight: 600;
 }
 
 .offer-actions {
@@ -196,32 +263,34 @@ button:disabled {
     justify-content: flex-end;
 }
 
+/* Error message */
 .error-message {
-    color: #ff453a;
+    color: var(--danger-color);
     background-color: #ffebe9;
-    padding: 10px;
-    border-radius: 8px;
-    margin: 10px 0;
-    font-size: 13px;
+    padding: 12px;
+    border-radius: 12px;
+    margin: 14px 0;
+    font-size: 14px;
     border: 1px solid #ffd3d0;
+    text-align: center;
 }
 
-/* Apple-like Scrollbar */
+/* Scrollbar für Webkit (Apple like) */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(0,0,0,0.02);
-    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.12);
-    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.24);
+    background: rgba(0, 0, 0, 0.3);
 }

@@ -1,11 +1,10 @@
-import React, {useEffect, useState, useCallback} from "react";
-import {parse, format} from "date-fns";
+import React, { useEffect, useState, useCallback } from "react";
+import { parse, format } from "date-fns";
 import SockJS from "sockjs-client";
-import {Client} from "@stomp/stompjs";
+import { Client } from "@stomp/stompjs";
 import api from "../../api";
 import "./Simulation.css";
 
-// Vereinslogos
 import arsenal from "../../assets/arsenalwappen.png";
 import atletico from "../../assets/atleticowappen.png";
 import barca from "../../assets/barcawappen.png";
@@ -47,7 +46,6 @@ interface SimulationUpdate {
 
 const Simulation: React.FC = () => {
     const [spiele, setSpiele] = useState<Spiel[]>([]);
-
     const [halbjahr, setHalbjahr] = useState<"H1" | "H2">("H1");
     const [isSimulationActive, setIsSimulationActive] = useState(false);
     const [isUserReady, setIsUserReady] = useState(false);
@@ -61,8 +59,13 @@ const Simulation: React.FC = () => {
 
     const username = localStorage.getItem("username") || "";
     const careername = localStorage.getItem("careername") || "";
-    const clubname = localStorage.getItem("clubname") || "";
-    const [eigenerVerein, setEigenerVerein] = useState(clubname || "");
+
+
+
+    const storedClub = localStorage.getItem("selectedTeam");
+    const eigenerVereinName = storedClub ? JSON.parse(storedClub).name : "";
+    const [eigenerVerein, setEigenerVerein] = useState(eigenerVereinName);
+
 
     const isCurrentHalfSimulated = halbjahr === "H1" ? isFirstHalfSimulated : isSecondHalfSimulated;
     const allUsersReady = notReadyUsers.length === 0;
@@ -76,13 +79,10 @@ const Simulation: React.FC = () => {
         });
 
         client.onConnect = () => {
-            client.subscribe(
-                `/topic/simulation-updates/${careername}`,
-                (message) => {
-                    const update: SimulationUpdate = JSON.parse(message.body);
-                    handleWebSocketUpdate(update);
-                }
-            );
+            client.subscribe(`/topic/simulation-updates/${careername}`, (message) => {
+                const update: SimulationUpdate = JSON.parse(message.body);
+                handleWebSocketUpdate(update);
+            });
         };
 
         client.activate();
@@ -98,7 +98,7 @@ const Simulation: React.FC = () => {
     const checkAdminStatus = useCallback(async () => {
         try {
             const res = await api.get(`/simulation/isAllowedToSimulate`, {
-                params: { username, careername }
+                params: { username, careername },
             });
             setIsAdmin(res.data);
         } catch (err) {
@@ -108,9 +108,7 @@ const Simulation: React.FC = () => {
 
     const loadNotReadyUsers = useCallback(async () => {
         try {
-            const res = await api.get(`/simulation/notReadyUsers`, {
-                params: { careername }
-            });
+            const res = await api.get(`/simulation/notReadyUsers`, { params: { careername } });
             setNotReadyUsers(res.data);
         } catch (err) {
             console.error("Fehler beim Laden der nicht bereiten Benutzer", err);
@@ -119,9 +117,7 @@ const Simulation: React.FC = () => {
 
     const loadUserReadyStatus = useCallback(async () => {
         try {
-            const res = await api.get(`/simulation/isUserReady`, {
-                params: { username, careername }
-            });
+            const res = await api.get(`/simulation/isUserReady`, { params: { username, careername } });
             setIsUserReady(res.data);
         } catch (err) {
             console.error("Fehler beim Laden des Bereitstatus", err);
@@ -137,60 +133,49 @@ const Simulation: React.FC = () => {
             }));
             setSpiele(parsed);
 
-            // Überprüfe Hinrunde
-            const firstHalfGames = parsed.filter((game: Spiel) =>
-                game.date.getMonth() >= 6
-            );
-            const allFirstHalfPlayed = firstHalfGames.every(
-                (game: Spiel) => game.homeGoals !== null && game.awayGoals !== null
-            );
-            setIsFirstHalfSimulated(allFirstHalfPlayed);
+            const firstHalfGames = parsed.filter((game: Spiel) => game.date.getMonth() >= 6);
+            setIsFirstHalfSimulated(firstHalfGames.every((g) => g.homeGoals !== null && g.awayGoals !== null));
 
-            // Überprüfe Rückrunde
-            const secondHalfGames = parsed.filter((game: Spiel) =>
-                game.date.getMonth() < 6
-            );
-            const allSecondHalfPlayed = secondHalfGames.every(
-                (game: Spiel) => game.homeGoals !== null && game.awayGoals !== null
-            );
-            setIsSecondHalfSimulated(allSecondHalfPlayed);
+            const secondHalfGames = parsed.filter((game: Spiel) => game.date.getMonth() < 6);
+            setIsSecondHalfSimulated(secondHalfGames.every((g) => g.homeGoals !== null && g.awayGoals !== null));
         } catch (err) {
             console.error("Fehler beim Laden der Spiele", err);
         }
     };
 
-    const handleWebSocketUpdate = useCallback((update: SimulationUpdate) => {
-        console.log("WebSocket Update:", update);
-        switch (update.type) {
-            case "USER_READY":
-                setNotReadyUsers(prev => prev.filter(u => u !== update.data));
-                setStatusMessage(`Benutzer ${update.data} ist bereit`);
-                setTimeout(() => setStatusMessage(""), 3000);
-                break;
-            case "SIMULATION_STARTED":
-                setStatusMessage(`Simulation der ${update.data ? "Hinrunde" : "Rückrunde"} gestartet`);
-                setTimeout(() => setStatusMessage(""), 3000);
-                loadGames();
-                if (update.data) { // firstHalf is true
-                    setHalbjahr("H2");
-                }
-                loadNotReadyUsers();
-                loadUserReadyStatus();
-                break;
-            case "SEASON_ENDED":
-                setStatusMessage("Saison erfolgreich beendet");
-                setTimeout(() => setStatusMessage(""), 3000);
-                loadGames();
-                setHalbjahr("H1");
-                setIsFirstHalfSimulated(false);
-                setIsSecondHalfSimulated(false);
-                loadNotReadyUsers();
-                loadUserReadyStatus();
-                break;
-            default:
-                console.warn("Unbekannter Update-Typ:", update.type);
-        }
-    }, [loadGames, loadNotReadyUsers, loadUserReadyStatus]);
+    const handleWebSocketUpdate = useCallback(
+        (update: SimulationUpdate) => {
+            console.log("WebSocket Update:", update);
+            switch (update.type) {
+                case "USER_READY":
+                    setNotReadyUsers((prev) => prev.filter((u) => u !== update.data));
+                    setStatusMessage(`Benutzer ${update.data} ist bereit`);
+                    setTimeout(() => setStatusMessage(""), 3000);
+                    break;
+                case "SIMULATION_STARTED":
+                    setStatusMessage(`Simulation der ${update.data ? "Hinrunde" : "Rückrunde"} gestartet`);
+                    setTimeout(() => setStatusMessage(""), 3000);
+                    loadGames();
+                    if (update.data) setHalbjahr("H2");
+                    loadNotReadyUsers();
+                    loadUserReadyStatus();
+                    break;
+                case "SEASON_ENDED":
+                    setStatusMessage("Saison erfolgreich beendet");
+                    setTimeout(() => setStatusMessage(""), 3000);
+                    loadGames();
+                    setHalbjahr("H1");
+                    setIsFirstHalfSimulated(false);
+                    setIsSecondHalfSimulated(false);
+                    loadNotReadyUsers();
+                    loadUserReadyStatus();
+                    break;
+                default:
+                    console.warn("Unbekannter Update-Typ:", update.type);
+            }
+        },
+        [loadGames, loadNotReadyUsers, loadUserReadyStatus]
+    );
 
     useEffect(() => {
         if (!username || !careername) return;
@@ -206,16 +191,102 @@ const Simulation: React.FC = () => {
         loadInitialData();
 
         return () => {
-            if (stompClient) {
-                stompClient.deactivate();
-            }
+            if (stompClient) stompClient.deactivate();
         };
-    }, [username, careername, clubname, setupWebSocket, stompClient, checkAdminStatus]);
+    }, [username, careername, setupWebSocket, stompClient, checkAdminStatus]);
 
+    // Debug-Ausgabe eigener Verein
+    console.log("Eigener Verein:", eigenerVerein);
+
+    // Debug-Ausgabe aller Spiele mit Toren
     useEffect(() => {
-        console.log('Aktuelle Spiele:', spiele);
-        console.log('Eigener Verein:', eigenerVerein);
-    }, [spiele, eigenerVerein]);
+        console.log("Alle Spiele:", spiele);
+        spiele.forEach((s) => {
+            console.log(
+                `Spiel: ${s.homeTeam} vs ${s.awayTeam} am ${s.date.toDateString()}, Tore: ${s.homeGoals} - ${s.awayGoals}`
+            );
+        });
+    }, [spiele]);
+
+    // Funktion zur Bestimmung der Klasse für das Match-Tag (mit Debug)
+    const getMatchCardClass = (spieleAnTag: Spiel[]): string => {
+        if (!eigenerVerein) {
+            console.log("Kein eigener Verein gesetzt");
+            return "";
+        }
+
+        if (!spieleAnTag || spieleAnTag.length === 0) {
+            console.log("Keine Spiele am Tag");
+            return "";
+        }
+
+        console.log("Spiele am Tag:", spieleAnTag);
+
+        const teamSpiel = spieleAnTag.find(
+            (s) => s.homeTeam === eigenerVerein || s.awayTeam === eigenerVerein
+        );
+
+        if (!teamSpiel) {
+            console.log("Kein Spiel für eigenen Verein am Tag gefunden");
+            return "";
+        }
+
+        if (teamSpiel.homeGoals === null || teamSpiel.awayGoals === null) {
+            console.log("Spiel hat noch kein Ergebnis");
+            return "";
+        }
+
+        const isHomeGame = teamSpiel.homeTeam === eigenerVerein;
+        const myGoals = isHomeGame ? teamSpiel.homeGoals : teamSpiel.awayGoals;
+        const oppGoals = isHomeGame ? teamSpiel.awayGoals : teamSpiel.homeGoals;
+
+        console.log(
+            `Ergebnis für ${teamSpiel.date.toDateString()}: ${myGoals} - ${oppGoals}`
+        );
+
+        if (myGoals > oppGoals) return "match-won";
+        if (myGoals < oppGoals) return "match-lost";
+        return "match-draw";
+    };
+
+    const tageMitSpielen = Array.from(
+        new Set(
+            spiele
+                .filter((spiel) =>
+                    halbjahr === "H1" ? spiel.date.getMonth() >= 6 : spiel.date.getMonth() < 6
+                )
+                .map((s) => s.date.toDateString())
+        )
+    )
+        .map((d) => new Date(d))
+        .sort((a, b) => a.getTime() - b.getTime());
+
+    const spieleMitDatum = (tag: string) =>
+        spiele.filter(
+            (spiel) =>
+                spiel.date.toDateString() === tag &&
+                (halbjahr === "H1" ? spiel.date.getMonth() >= 6 : spiel.date.getMonth() < 6)
+        );
+
+    // Debug Ausgabe Klassen für jeden Tag
+    console.log("MatchCardClasses pro Spieltag:");
+    tageMitSpielen.forEach((tag) => {
+        const klasse = getMatchCardClass(spieleMitDatum(tag.toDateString()));
+        console.log(tag.toDateString(), "->", klasse);
+    });
+
+    const getStatusMessage = () => {
+        if (statusMessage) return statusMessage;
+        if (notReadyUsers.length > 0)
+            return `Warten auf ${notReadyUsers.length} Benutzer: ${notReadyUsers.join(", ")}`;
+        if (isSecondHalfSimulated) return "Alle bereit - Sie können die Saison jetzt beenden";
+        return "Alle bereit - Sie können die Simulation jetzt starten";
+    };
+
+    const handleHalbjahrChange = (newHalbjahr: "H1" | "H2") => {
+        setHalbjahr(newHalbjahr);
+        loadNotReadyUsers();
+    };
 
     const starteSimulation = async () => {
         if (!allUsersReady || isCurrentHalfSimulated) return;
@@ -225,7 +296,6 @@ const Simulation: React.FC = () => {
             await api.post(`/simulation/start`, null, {
                 params: { careername, firstHalf: halbjahr === "H1" },
             });
-
             await loadGames();
         } catch (err: any) {
             console.error("Fehler bei Simulation", err);
@@ -242,9 +312,8 @@ const Simulation: React.FC = () => {
         setIsEndingSeason(true);
         try {
             await api.post(`/simulation/endSeason`, null, {
-                params: { careername }
+                params: { careername },
             });
-
             await loadGames();
         } catch (err) {
             console.error("Fehler beim Beenden der Saison", err);
@@ -261,8 +330,8 @@ const Simulation: React.FC = () => {
             await api.patch(`/simulation/pressReady`, null, {
                 params: {
                     username,
-                    careername
-                }
+                    careername,
+                },
             });
 
             setIsUserReady(true);
@@ -275,101 +344,6 @@ const Simulation: React.FC = () => {
         } finally {
             setIsSimulationActive(false);
         }
-    };
-
-    const getMatchColorClass = useCallback((spiel: Spiel): string => {
-        console.log('Checking match color for:', spiel);
-        console.log('Eigener Verein:', eigenerVerein);
-
-        if (!eigenerVerein) {
-            console.log('No team selected');
-            return "";
-        }
-
-        if (spiel.homeGoals === null || spiel.awayGoals === null) {
-            console.log('No scores yet');
-            return "";
-        }
-
-        const isHomeGame = spiel.homeTeam === eigenerVerein;
-        const isAwayGame = spiel.awayTeam === eigenerVerein;
-
-        if (!isHomeGame && !isAwayGame) {
-            console.log('Not our team playing');
-            return "";
-        }
-
-        const myGoals = isHomeGame ? spiel.homeGoals : spiel.awayGoals;
-        const oppGoals = isHomeGame ? spiel.awayGoals : spiel.homeGoals;
-
-        console.log(`Result: ${myGoals}-${oppGoals}`);
-
-        if (myGoals > oppGoals) {
-            console.log('Team win detected');
-            return "team-win";
-        }
-        if (myGoals < oppGoals) {
-            console.log('Team loss detected');
-            return "team-loss";
-        }
-        console.log('Draw detected');
-        return "team-draw";
-    }, [eigenerVerein]);
-
-    const getMatchCardClass = (spieleAnTag: Spiel[]): string => {
-        if (!eigenerVerein) return "";
-
-        const teamSpiel = spieleAnTag.find(s =>
-            s.homeTeam === eigenerVerein || s.awayTeam === eigenerVerein
-        );
-
-        if (!teamSpiel || teamSpiel.homeGoals === null || teamSpiel.awayGoals === null) {
-            return "";
-        }
-
-        const isHomeGame = teamSpiel.homeTeam === eigenerVerein;
-        const myGoals = isHomeGame ? teamSpiel.homeGoals : teamSpiel.awayGoals;
-        const oppGoals = isHomeGame ? teamSpiel.awayGoals : teamSpiel.homeGoals;
-
-        if (myGoals > oppGoals) return "match-won";
-        if (myGoals < oppGoals) return "match-lost";
-        return "match-draw";
-    };
-
-    const tageMitSpielen = Array.from(
-        new Set(
-            spiele
-                .filter((spiel) => {
-                    const monat = spiel.date.getMonth();
-                    return halbjahr === "H1" ? monat >= 6 : monat < 6;
-                })
-                .map((s) => s.date.toDateString())
-        )
-    )
-        .map((d) => new Date(d))
-        .sort((a, b) => a.getTime() - b.getTime());
-
-    const spieleMitDatum = (tag: string) =>
-        spiele.filter(
-            (spiel) =>
-                spiel.date.toDateString() === tag &&
-                (halbjahr === "H1" ? spiel.date.getMonth() >= 6 : spiel.date.getMonth() < 6)
-        );
-
-    const getStatusMessage = () => {
-        if (statusMessage) return statusMessage;
-        if (notReadyUsers.length > 0) {
-            return `Warten auf ${notReadyUsers.length} Benutzer: ${notReadyUsers.join(", ")}`;
-        }
-        if (isSecondHalfSimulated) {
-            return "Alle bereit - Sie können die Saison jetzt beenden";
-        }
-        return "Alle bereit - Sie können die Simulation jetzt starten";
-    };
-
-    const handleHalbjahrChange = (newHalbjahr: "H1" | "H2") => {
-        setHalbjahr(newHalbjahr);
-        loadNotReadyUsers();
     };
 
     return (
@@ -390,7 +364,6 @@ const Simulation: React.FC = () => {
                     >
                         Rückrunde
                     </button>
-
                     <button
                         onClick={handleReady}
                         disabled={isUserReady}
@@ -407,14 +380,12 @@ const Simulation: React.FC = () => {
                 <div className="user-status-overview">
                     <h4>Benutzerstatus:</h4>
                     <ul>
-                        {notReadyUsers.map(user => (
+                        {notReadyUsers.map((user) => (
                             <li key={user} className="not-ready-user">
                                 {user} ⏳
                             </li>
                         ))}
-                        {notReadyUsers.length === 0 && (
-                            <li className="all-ready">Alle Benutzer bereit ✓</li>
-                        )}
+                        {notReadyUsers.length === 0 && <li className="all-ready">Alle Benutzer bereit ✓</li>}
                     </ul>
                 </div>
 
@@ -433,7 +404,6 @@ const Simulation: React.FC = () => {
                         >
                             {isSimulationActive ? "Simulation läuft..." : "Simulation starten"}
                         </button>
-
                         <button
                             onClick={beendeSaison}
                             disabled={!allUsersReady || !isSecondHalfSimulated || isEndingSeason}
@@ -452,42 +422,37 @@ const Simulation: React.FC = () => {
             </div>
 
             <div className="simulation-grid">
-                {tageMitSpielen.map((tag, idx) => {
+                {tageMitSpielen.map((tag) => {
                     const tagString = tag.toDateString();
                     const spieleAnTag = spieleMitDatum(tagString);
-                    const hasErgebnisse = spieleAnTag.every(
-                        (spiel) => spiel.homeGoals !== null && spiel.awayGoals !== null
-                    );
 
                     return (
-                        <div
-                            className={`simulation-cell ${getMatchCardClass(spieleAnTag)}`}
-                            key={idx}
-                        >
+                        <div className={`simulation-cell ${getMatchCardClass(spieleAnTag)}`} key={tagString}>
                             <div className="simulation-title">Spieltag</div>
-                            <div className="simulation-date">{format(tag, "dd.MM")}</div>
+                            <div className={`simulation-date ${getMatchCardClass(spieleAnTag)}`}>
+                                {format(tag, "dd.MM")}
+                            </div>
                             {spieleAnTag.map((spiel, i) => {
-                                const isUserGame = spiel.homeTeam === eigenerVerein || spiel.awayTeam === eigenerVerein;
                                 const isHomeGame = spiel.homeTeam === eigenerVerein;
-
-                                // Immer: Eigener Verein links, Gegner rechts
                                 const leftTeam = isHomeGame ? spiel.homeTeam : spiel.awayTeam;
                                 const rightTeam = isHomeGame ? spiel.awayTeam : spiel.homeTeam;
                                 const leftLogo = logoMap[leftTeam];
                                 const rightLogo = logoMap[rightTeam];
-
-                                // Ergebnis immer aus eigener Perspektive anzeigen
-                                const ergebnis = spiel.homeGoals !== null && spiel.awayGoals !== null
-                                    ? isHomeGame
-                                        ? `${spiel.homeGoals}:${spiel.awayGoals}`
-                                        : `${spiel.awayGoals}:${spiel.homeGoals}`
-                                    : "vs";
+                                const ergebnis =
+                                    spiel.homeGoals !== null && spiel.awayGoals !== null
+                                        ? isHomeGame
+                                            ? `${spiel.homeGoals}:${spiel.awayGoals}`
+                                            : `${spiel.awayGoals}:${spiel.homeGoals}`
+                                        : "vs";
 
                                 return (
-                                    <div className={`simulation-match ${getMatchColorClass(spiel)}`} key={i}>
-                                        <img src={leftLogo} alt={leftTeam}/>
+                                    <div
+                                        className={`simulation-match`}
+                                        key={i}
+                                    >
+                                        <img src={leftLogo} alt={leftTeam} />
                                         <span>{ergebnis}</span>
-                                        <img src={rightLogo} alt={rightTeam}/>
+                                        <img src={rightLogo} alt={rightTeam} />
                                     </div>
                                 );
                             })}
