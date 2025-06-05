@@ -124,7 +124,7 @@ public class SalesInquiryService {
         int index = 0;
         for (TrainerCareer career : careers) {
 
-            List<TrainerCareerPlayer> playersOnTransfermarket = trainerCareerPlayerRepository.findAllForTransfermarket(career.getClub().getClubName(), careername);
+            List<TrainerCareerPlayer> playersOnTransfermarket = trainerCareerPlayerRepository.findAllForTransfermarketInBudget(career.getClub().getClubName(), careername, career.getBudget());
             if (!playersOnTransfermarket.isEmpty()) {
                 Random random = new Random();
                 TrainerCareerPlayer randomPlayer = playersOnTransfermarket.get(random.nextInt(playersOnTransfermarket.size()));

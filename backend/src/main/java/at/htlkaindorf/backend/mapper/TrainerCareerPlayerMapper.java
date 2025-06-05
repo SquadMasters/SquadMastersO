@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.mapper;
 import at.htlkaindorf.backend.dto.PlayerListDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
+import at.htlkaindorf.backend.dto.TransferPlayerDTO;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
 import org.mapstruct.Mapper;
@@ -30,4 +31,10 @@ public interface TrainerCareerPlayerMapper {
     @Mapping(target = "clubname", source = "club.clubName")
     @Mapping(target = "potential", source ="player.potential")
     TrainerCareerPlayerDTO toCareerPlayerDTO(TrainerCareerPlayer trainerCareerPlayer);
+
+    @Mapping(target = "firstname", source = "player.firstname")
+    @Mapping(target = "lastname", source = "player.lastname")
+    @Mapping(target = "oldClubname", source = "oldClub")
+    @Mapping(target = "newClubname", source = "club.clubName")
+    TransferPlayerDTO toTransferPlayerDTO(TrainerCareerPlayer trainerCareerPlayer);
 }

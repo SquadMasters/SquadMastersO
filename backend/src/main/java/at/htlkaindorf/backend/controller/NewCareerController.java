@@ -101,6 +101,7 @@ public class NewCareerController {
                         .valueNow(PlayerValueCalc.calculateMarketValue(player.getStartAge(), player.getStartRating()))
                         .ratingNow(player.getStartRating())
                         .club(club)
+                        .oldClub("")
                         .build();
                 trainerCareerPlayers.add(trainerCareerPlayer);
                 allPlayers.add(trainerCareerPlayer);

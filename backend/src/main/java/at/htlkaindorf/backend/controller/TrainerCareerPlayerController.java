@@ -1,9 +1,6 @@
 package at.htlkaindorf.backend.controller;
 
-import at.htlkaindorf.backend.dto.PlayerListDTO;
-import at.htlkaindorf.backend.dto.SaleOfferDTO;
-import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
-import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
+import at.htlkaindorf.backend.dto.*;
 import at.htlkaindorf.backend.services.SalesInquiryService;
 import at.htlkaindorf.backend.services.TrainerCareerPlayerService;
 import at.htlkaindorf.backend.services.TrainerCareerService;
@@ -49,6 +46,13 @@ public class TrainerCareerPlayerController {
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(@RequestParam String careername) {
 
         List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByCareer(careername);
+        return ResponseEntity.ok(players);
+    }
+
+    @GetMapping("/allPlayersFromCareerWithTransfer")
+    public ResponseEntity<List<TransferPlayerDTO>> getAllPlayersByCareerWithTransfer(@RequestParam String careername) {
+
+        List<TransferPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByCareerWithTransfer(careername);
         return ResponseEntity.ok(players);
     }
 

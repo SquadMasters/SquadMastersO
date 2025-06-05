@@ -48,4 +48,6 @@ public class TrainerCareerPlayer {
     private Boolean movedRecently;
 
     private PositionInLineup positionInLineup;
+
+    private String oldClub;
 }

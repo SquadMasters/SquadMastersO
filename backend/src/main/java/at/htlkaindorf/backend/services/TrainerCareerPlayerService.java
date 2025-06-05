@@ -3,6 +3,7 @@ package at.htlkaindorf.backend.services;
 import at.htlkaindorf.backend.dto.PlayerListDTO;
 import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
+import at.htlkaindorf.backend.dto.TransferPlayerDTO;
 import at.htlkaindorf.backend.help.PlayerValueCalc;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
@@ -41,7 +42,6 @@ public class TrainerCareerPlayerService {
                 .map(trainerCareerPlayerMapper::toPlayerListDTO)
                 .toList();
     }
-
 
     public List<TrainerCareerPlayerDTO> getAllPlayersForTransferMarketByCareer(String username, String careername) {
 
@@ -86,6 +86,15 @@ public class TrainerCareerPlayerService {
 
         return tcPlayers.stream()
                 .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
+                .toList();
+    }
+
+    public List<TransferPlayerDTO> getAllPlayersByCareerWithTransfer(String careername) {
+
+        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersFromCareerWithTransfer(careername);
+
+        return tcPlayers.stream()
+                .map(trainerCareerPlayerMapper::toTransferPlayerDTO)
                 .toList();
     }
 
