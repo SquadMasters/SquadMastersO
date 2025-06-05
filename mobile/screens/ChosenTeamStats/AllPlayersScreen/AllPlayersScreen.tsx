@@ -8,10 +8,12 @@ const AllPlayersScreen = ({ route, navigation }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const ip = "10.151.6.121";
+
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const response = await axios.get(`http://10.151.6.108:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
+                const response = await axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
                 const filteredPlayers = response.data.filter(player =>
                     player.clubname === team
                 );

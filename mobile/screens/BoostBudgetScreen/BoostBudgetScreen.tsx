@@ -8,12 +8,13 @@ const BoostBudgetScreen = ({route}) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [newBudget, setNewBudget] = useState('');
+    const ip = "10.151.6.121";
 
     useEffect(() => {
         const fetchBudget = async () => {
             try {
                 const response = await axios.get(
-                    `http://10.151.6.108:8080/trainerCareer/budget/${team}/${careername}`
+                    `http://${ip}:8080/trainerCareer/budget/${team}/${careername}`
                 );
                 setBudget(response.data.budget || 0);
                 setLoading(false);
@@ -33,7 +34,7 @@ const BoostBudgetScreen = ({route}) => {
             const value = Number(newBudget).toString()+"000000";
             console.log(value)
             await axios.patch(
-                `http://10.151.6.108:8080/trainerCareer/changebudget/${team}/${careername}/${value}`
+                `http://${ip}:8080/trainerCareer/changebudget/${team}/${careername}/${value}`
             );
 
             setBudget(Number(value));

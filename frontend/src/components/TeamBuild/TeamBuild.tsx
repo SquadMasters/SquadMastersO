@@ -153,32 +153,40 @@ const TeamBuild = () => {
     const handleDrop = (event: React.DragEvent, position: string) => {
         event.preventDefault();
         const droppedPlayer = JSON.parse(event.dataTransfer.getData("player"));
+
         const validPositions: { [key: string]: string[] } = {
             TW: ["TW"],
-            IV: ["IV1", "IV2","LV","RV"],
-            LV: ["LV","RV","IV","IV1","IV2"],
-            RV: ["RV","IV","LV","IV1","IV2"],
+            IV: ["IV1", "IV2", "LV", "RV"],
+            LV: ["LV", "RV", "IV", "IV1", "IV2"],
+            RV: ["RV", "IV", "LV", "IV1", "IV2"],
             ZM: ["ZM1", "ZM2", "ZDM"],
-            ZDM: ["DZM", "ZM1", "ZM2","ZDM","ZM"],
+            ZDM: ["DZM", "ZM1", "ZM2", "ZDM", "ZM"],
             OM: ["ZM1", "ZM2", "ZDM"],
-            ST: ["ST","LF","RF"],
-            LF: ["LF","ST","RF"],
-            RF: ["RF","LF","ST"],
+            ST: ["ST", "LF", "RF"],
+            LF: ["LF", "ST", "RF"],
+            RF: ["RF", "LF", "ST"],
         };
 
         const allowedPositions = validPositions[droppedPlayer.position] || [];
         if (!allowedPositions.includes(position)) return;
 
         setField(prev => {
-            const newField = {...prev};
-            const oldPlayer = newField[position]; // Der Spieler, der aktuell auf der Position steht
-            newField[position] = droppedPlayer; // Der neue Spieler, der abgelegt wurde
+            const newField = { ...prev };
 
-            // Tausche die Positionen der beiden Spieler
-            if (oldPlayer) {
-                newField[oldPlayer.positionInLineup] = oldPlayer;
+            // Alten Spieler auf Zielposition merken
+            const oldPlayer = newField[position];
+
+            // Entferne alten Spieler aus allen Positionen
+            for (const pos of fieldPositions) {
+                if (newField[pos]?.short === droppedPlayer.short || newField[pos]?.short === oldPlayer?.short) {
+                    newField[pos] = null;
+                }
             }
 
+            // Setze neuen Spieler auf die Zielposition
+            newField[position] = droppedPlayer;
+
+            // Aktualisiere zugewiesene Spieler
             setAssignedPlayers(prevAssigned => {
                 const updated = new Set(prevAssigned);
                 updated.add(droppedPlayer.short);

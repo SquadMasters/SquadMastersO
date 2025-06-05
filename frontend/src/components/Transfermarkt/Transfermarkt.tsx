@@ -163,7 +163,7 @@ const Transfermarkt: React.FC = () => {
     const handleDeleteOffer = async (playerId: number) => {
         try {
             setCancelLoading(playerId);
-            await axios.delete<boolean>(`http://localhost:8080/salesInquiry/deleteOffer`, {
+            await axios.delete<boolean>(`http://localhost:8080/salesInquiry/deleteSentOffers`, {
                 params: { username, careername, playerId },
             });
 
@@ -187,11 +187,9 @@ const Transfermarkt: React.FC = () => {
     };
 
     const handleRejectOffer = async (playerId: number) => {
-        console.log("rejectbutton" + username + careername + playerId)
         try {
-            await axios.delete(`http://localhost:8080/salesInquiry/deleteOffer`, {
-                params: { username, careername, playerId },
-
+            await axios.delete(`http://localhost:8080/salesInquiry/deleteReceivedOffers`, {
+                params: { clubname: selectedTeamName, careername, playerId },
             });
             const receivedOffersRes = await axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
                 params: { username, careername },

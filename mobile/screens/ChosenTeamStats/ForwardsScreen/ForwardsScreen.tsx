@@ -7,6 +7,7 @@ const ForwardsScreen = ({ route, navigation }) => {
     const [forwards, setForwards] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const ip = "10.151.6.121";
 
     const validPositions = [
         'lf', 'LF', 'lm', 'LM',
@@ -17,7 +18,7 @@ const ForwardsScreen = ({ route, navigation }) => {
     useEffect(() => {
         const fetchForwards = async () => {
             try {
-                const response = await axios.get(`http://10.151.6.108:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
+                const response = await axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
                 const filteredForwards = response.data.filter(player =>
                     player.clubname === team &&
                     validPositions.includes(player.position)

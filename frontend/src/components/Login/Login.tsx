@@ -29,15 +29,14 @@ const Login: React.FC = () => {
                 } else {
                     const errorText = await response.text();
                     const messageMatch = errorText.match(/"message"\s*:\s*"([^"]+)"/);
-                    const shortMessage = messageMatch ? messageMatch[1] : 'Login fehlgeschlagen.';
+                    const shortMessage = messageMatch ? messageMatch[1] : 'Falscher Username oder Passwort';
                     setErrorMessage(shortMessage);
                 }
             } catch (error) {
-                console.error('Fehler beim Login:', error);
                 setErrorMessage('Ein Fehler ist aufgetreten.');
             }
         } else {
-            setErrorMessage(' Kein User gefunden');
+            setErrorMessage('Falscher Username oder Passwort');
         }
     };
 

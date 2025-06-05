@@ -519,5 +519,60 @@ button:disabled {
 .checkbox-label input {
     display: none;
 }
+.offers-list {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 400px; /* oder 100%, je nach Layout – hier 400px als Beispiel */
+    padding-right: 8px;
+    margin-top: 16px;
+}
+/* Gleichmäßige Höhe für Angebotsspalte */
+.offers-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+/* Jede Angebotssektion nimmt 50% der Höhe ein */
+.offers-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Scrollbare Liste in jeder Sektion */
+.offers-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 8px;
+    margin-top: 12px;
+}
+
+/* Sicherstellen, dass Grid 100% Höhe nutzt */
+.transfermarkt-grid {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    height: 100%;
+}
 
 
+/* Kleinere Schrift in Angebotskarten */
+.offer-card {
+    font-size: 13px;
+}
+
+/* Optional: Name und Details noch kleiner machen */
+.offer-card .player-name {
+    font-size: 15px;
+}
+
+.offer-card .player-details,
+.offer-card .offer-details {
+    font-size: 12px;
+}

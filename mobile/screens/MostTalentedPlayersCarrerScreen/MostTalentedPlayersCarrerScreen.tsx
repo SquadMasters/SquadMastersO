@@ -17,12 +17,13 @@ const MostTalentPlayersCarrerScreen = ({ route }) => {
     const { careername, username } = route.params;
     const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(true);
+    const ip = "10.151.6.121";
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
                 const response = await fetch(
-                    `http://10.151.6.108:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
+                    `http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
                 );
                 const data = await response.json();
 

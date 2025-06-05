@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import styles from "../Login/Login.module.css";
 
 interface Club {
     club_id: number;
@@ -14,6 +15,7 @@ const KarriereErstellen: React.FC = () => {
     const [selectedClubName, setSelectedClubName] = useState<string>('');
     const navigate = useNavigate();
     const username = localStorage.getItem('username');
+    const [errorMessage, setErrorMessage] = useState('');
 
     useEffect(() => {
         axios.get('http://localhost:8080/clubs/all')
@@ -45,13 +47,33 @@ const KarriereErstellen: React.FC = () => {
             });
             navigate('/karriereauswahl');
         } catch (err) {
-            alert('Fehler beim Erstellen der Karriere');
+            setErrorMessage('Fehler beim Erstellen der Karriere');
             console.error(err);
         }
     };
 
     return (
         <div className="container mt-5">
+
+            {errorMessage && (
+                <div className={styles['error-overlay']}>
+                    <div className={styles['error-card']}>
+                        <div className={styles['error-header']}>
+                            <span className={styles['error-icon']}>❗</span>
+                            <span className={styles['error-title']}>Error</span>
+                        </div>
+                        <div className={styles['error-message']}>
+                            {errorMessage}
+                        </div>
+                        <button
+                            className={styles['retry-button']}
+                            onClick={() => window.location.reload()}
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            )}
             <h1 className="text-center mb-4">Eigene Karriere erstellen</h1>
             <div className="card p-4 shadow mx-auto" style={{maxWidth: '600px'}}>
                 <form onSubmit={handleCreate}>
