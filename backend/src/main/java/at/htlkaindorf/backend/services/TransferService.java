@@ -58,6 +58,7 @@ public class TransferService {
         newPlayer.setValueNow(oldPlayer.getValueNow());
         newPlayer.setMovedRecently(true);
         newPlayer.setAgeNow(oldPlayer.getAgeNow());
+        newPlayer.setOldClub(oldCareer.getClub().getClubName());
         newPlayer.setClub(newClub);
         newPlayer.setTrainerCareerPlayer_pk(new TrainerCareerPlayerPK(
                 new TrainerCareerPK(newClub.getClub_id(), oldPlayer.getTrainerCareerPlayer_pk().getTrainerCareerPK().getCareerId()),
