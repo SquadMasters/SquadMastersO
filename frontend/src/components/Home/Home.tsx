@@ -107,9 +107,7 @@ const Home = () => {
                 .then(res => {
                     if (res.data) {
                         const nextGameData = res.data;
-                        const opponentTeamName = nextGameData.homeTeam === career.team.name
-                            ? nextGameData.awayTeam
-                            : nextGameData.homeTeam;
+                        const opponentTeamName = nextGameData.homeTeam === userClubName ? nextGameData.awayTeam : nextGameData.homeTeam;
                         setNextGame({
                             opponentTeamName,
                             gameDate: nextGameData.date
@@ -120,7 +118,6 @@ const Home = () => {
                     console.error("Fehler beim Laden des nächsten Spiels:", err);
                 });
         }
-    }, [userClubName]);
 
         api.get(`/trainerCareer/homepageInfo/${username}/${careerName}`)
             .then(async res => {
@@ -168,7 +165,7 @@ const Home = () => {
                                 {nextGame?.gameDate || "Datum nicht verfügbar"}
                             </h3>
                         </Col>
-                        <Col sm={5} style={{ borderColor: teamColors[0] }}>
+                        <Col sm={5} style={{borderColor: teamColors[0]}}>
                             <h2 className="home-blue_color"
                                 style={{color: teamColors[0]}}>{nextGame?.opponentTeamName || "Kein Gegner"}</h2>
                             {nextGame?.opponentTeamName && logoMap[nextGame.opponentTeamName] ? (

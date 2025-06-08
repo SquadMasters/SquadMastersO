@@ -5,6 +5,7 @@ import at.htlkaindorf.backend.services.SalesInquiryService;
 import at.htlkaindorf.backend.services.TrainerCareerPlayerService;
 import at.htlkaindorf.backend.services.TransferService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/trainerCareerPlayer")
 @RequiredArgsConstructor
+@Slf4j
 public class TrainerCareerPlayerController {
 
     private final TrainerCareerPlayerService trainerCareerPlayerService;
