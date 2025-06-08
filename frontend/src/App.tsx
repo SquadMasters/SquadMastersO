@@ -1,5 +1,5 @@
-import { Route, Routes, BrowserRouter, useLocation } from 'react-router-dom';
-import { useEffect } from "react";
+import {Route, Routes, BrowserRouter, useLocation} from 'react-router-dom';
+import {useEffect} from "react";
 
 import './App.css';
 import NavbarLeft from "./components/navbarleft/NavbarLeft";
@@ -18,29 +18,29 @@ import KarriereBeitreten from "./components/KarriereBeitreten/KarriereBeitreten.
 function AppContent() {
     const location = useLocation();
 
-    const hideNavbarRoutes = ['/','/karriereauswahl','/registrieren','/karriereerstellen'];
+    const hideNavbarRoutes = ['/', '/karriereauswahl', '/registrieren', '/karriereerstellen', '/karrierebeitreten'];
     const shouldHideNavbar = hideNavbarRoutes.includes(location.pathname);
 
-    // Löscht den localStorage, wenn die Seite frisch geladen wird (Projekt-Neustart)
+
     useEffect(() => {
         const isFirstLoad = !sessionStorage.getItem("isFirstLoad");
 
         if (isFirstLoad) {
-            localStorage.clear(); // localStorage löschen
-            sessionStorage.setItem("isFirstLoad", "true"); // Setze das Flag, dass die Seite schon geladen wurde
+            localStorage.clear();
+            sessionStorage.setItem("isFirstLoad", "true");
         }
     }, []);
 
     return (
         <>
-            {!shouldHideNavbar && <NavbarLeft />}
+            {!shouldHideNavbar && <NavbarLeft/>}
             <Routes>
-                <Route path="/karriereauswahl" element={<Karriereauswahl />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/market" element={<Transfermarkt />} />
-                <Route path="/team_builder" element={<TeamBuild />} />
-                <Route path="/simulation" element={<Simulation />} />
-                <Route path="/" element={<Login />} />
+                <Route path="/karriereauswahl" element={<Karriereauswahl/>}/>
+                <Route path="/home" element={<Home/>}/>
+                <Route path="/market" element={<Transfermarkt/>}/>
+                <Route path="/team_builder" element={<TeamBuild/>}/>
+                <Route path="/simulation" element={<Simulation/>}/>
+                <Route path="/" element={<Login/>}/>
                 <Route path={"/registrieren"} element={<Registrieren/>}/>
                 <Route path={"/account"} element={<Account/>}/>
                 <Route path={"/karriereerstellen"} element={<KarriereErstellen/>}/>
@@ -54,7 +54,7 @@ function AppContent() {
 function App() {
     return (
         <BrowserRouter>
-            <AppContent />
+            <AppContent/>
         </BrowserRouter>
     );
 }

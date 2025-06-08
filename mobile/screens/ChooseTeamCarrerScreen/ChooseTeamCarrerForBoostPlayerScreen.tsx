@@ -22,9 +22,11 @@ const teamLogos = [
     { id: 11, name: 'Real Madrid', logo: require('../../assets/reallogo.png') }
 ];
 
-const ChooseTeamCarrerForBoostPlayerScreen: React.FC<ChooseTeamCarrerBoostPlayerProps> = ({ navigation }) => {
+const ChooseTeamCarrerForBoostPlayerScreen: React.FC<ChooseTeamCarrerBoostPlayerProps> = ({ navigation,route }) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
+
+    const { careername } = route.params;
 
     const handleScroll = (event: any) => {
         const contentOffset = event.nativeEvent.contentOffset.x;
@@ -74,6 +76,7 @@ const ChooseTeamCarrerForBoostPlayerScreen: React.FC<ChooseTeamCarrerBoostPlayer
                 style={styles.button}
                 onPress={() => navigation.navigate('BoostPlayerScreen', {
                     team: teamLogos[selectedIndex].name,
+                    careername
                 })}
             >
                 <Text style={styles.buttonText}>Select {teamLogos[selectedIndex].name} and boost player</Text>

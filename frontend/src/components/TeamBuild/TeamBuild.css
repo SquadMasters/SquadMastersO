@@ -199,9 +199,18 @@
 }
 
 @keyframes glow {
-    0% { transform: scale(1); box-shadow: 0 0 0px rgba(0, 170, 255, 0); }
-    50% { transform: scale(1.1); box-shadow: 0 0 20px 10px rgba(0, 170, 255, 0.5); }
-    100% { transform: scale(1); box-shadow: 0 0 0px rgba(0, 170, 255, 0); }
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(0, 170, 255, 0);
+    }
+    50% {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px 10px rgba(0, 170, 255, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0px rgba(0, 170, 255, 0);
+    }
 }
 
 .player.occupied {
@@ -211,19 +220,63 @@
 }
 
 /* Spielerpositionen */
-.TW { bottom: 50px; left: 50%; transform: translateX(-50%); }
-.LV { bottom: 140px; left: 30px; }
-.IV1 { bottom: 140px; left: 120px; }
-.IV2 { bottom: 140px; right: 120px; }
-.RV { bottom: 140px; right: 30px; }
+.TW {
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+}
 
-.ZDM { bottom: 230px; left: 50%; transform: translateX(-50%); }
-.ZM1 { bottom: 280px; left: 120px; }
-.ZM2 { bottom: 280px; right: 120px; }
+.LV {
+    bottom: 140px;
+    left: 30px;
+}
 
-.LF { bottom: 370px; left: 100px; }
-.ST { bottom: 420px; left: 50%; transform: translateX(-50%); }
-.RF { bottom: 370px; right: 100px; }
+.IV1 {
+    bottom: 140px;
+    left: 120px;
+}
+
+.IV2 {
+    bottom: 140px;
+    right: 120px;
+}
+
+.RV {
+    bottom: 140px;
+    right: 30px;
+}
+
+.ZDM {
+    bottom: 230px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.ZM1 {
+    bottom: 280px;
+    left: 120px;
+}
+
+.ZM2 {
+    bottom: 280px;
+    right: 120px;
+}
+
+.LF {
+    bottom: 370px;
+    left: 100px;
+}
+
+.ST {
+    bottom: 420px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.RF {
+    bottom: 370px;
+    right: 100px;
+}
 
 /* Spieler-Liste - Apple Style */
 .player-list {
@@ -380,13 +433,20 @@
 
 /* Animationen */
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .team-field, .player-list {
     animation: fadeIn 0.6s ease-out forwards;
 }
+
 /* Aktualisierter CSS-Code für die Spielertabelle */
 .player-list {
     position: relative;
@@ -430,19 +490,39 @@
 
 /* Sicherstellen, dass die Spaltenbreiten gleich bleiben */
 .player-list th:nth-child(1),
-.player-list td:nth-child(1) { width: 10%; }
+.player-list td:nth-child(1) {
+    width: 10%;
+}
+
 .player-list th:nth-child(2),
-.player-list td:nth-child(2) { width: 8%; }
+.player-list td:nth-child(2) {
+    width: 8%;
+}
+
 .player-list th:nth-child(3),
-.player-list td:nth-child(3) { width: 15%; }
+.player-list td:nth-child(3) {
+    width: 15%;
+}
+
 .player-list th:nth-child(4),
-.player-list td:nth-child(4) { width: 15%; }
+.player-list td:nth-child(4) {
+    width: 15%;
+}
+
 .player-list th:nth-child(5),
-.player-list td:nth-child(5) { width: 10%; }
+.player-list td:nth-child(5) {
+    width: 10%;
+}
+
 .player-list th:nth-child(6),
-.player-list td:nth-child(6) { width: 8%; }
+.player-list td:nth-child(6) {
+    width: 8%;
+}
+
 .player-list th:nth-child(7),
-.player-list td:nth-child(7) { width: 12%; }
+.player-list td:nth-child(7) {
+    width: 12%;
+}
 
 .header-container {
     display: flex;
@@ -523,14 +603,16 @@
         margin: 5px 10px 5px 0;
     }
 }
+
 .player-list::-webkit-scrollbar {
     width: 6px;
 }
 
 .player-list::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
+
 .player-list {
     max-height: 500px;
     overflow-y: auto;
@@ -602,9 +684,10 @@
 }
 
 .player-list::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
+
 .table-wrapper {
     width: 100%;
 }
@@ -617,6 +700,7 @@
 .scroll-body table {
     margin: 0;
 }
+
 .scroll-wrapper {
     max-height: 500px;
     overflow-y: auto;
@@ -629,9 +713,10 @@
 }
 
 .scroll-wrapper::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
+
 /* Fixierte Tabellenüberschrift und scrollbar Spielerliste */
 
 .player-list {
@@ -674,7 +759,7 @@
 }
 
 .scroll-wrapper::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
+    background-color: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
 }
 

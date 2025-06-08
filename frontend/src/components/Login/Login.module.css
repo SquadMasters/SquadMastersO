@@ -88,6 +88,7 @@
     margin-top: 1rem;
     text-align: center;
 }
+
 .error-card {
     background-color: #fbe9e9;
     border: 1px solid #f5c2c7;
@@ -137,6 +138,7 @@
 .retry-button:hover {
     background-color: #b71c1c;
 }
+
 .error-overlay {
     position: absolute;
     top: 0;
@@ -196,6 +198,7 @@
 .retry-button:hover {
     background-color: #b71c1c;
 }
+
 .login-wrapper {
     position: relative;
     min-height: 100vh;

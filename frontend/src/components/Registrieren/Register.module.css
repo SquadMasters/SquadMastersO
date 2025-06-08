@@ -92,6 +92,7 @@
         transform: translateY(0);
     }
 }
+
 /* Error Overlay */
 .error-overlay {
     position: fixed;

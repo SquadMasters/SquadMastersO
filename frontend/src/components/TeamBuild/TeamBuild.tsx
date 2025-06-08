@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Table } from "react-bootstrap";
+import {useEffect, useState} from "react";
+
 import "./TeamBuild.css";
 import arsenal from '../../assets/arsenalwappen.png';
 import atletico from '../../assets/atleticowappen.png';
@@ -12,11 +12,10 @@ import liverpool from '../../assets/liverpool.png';
 import milan from '../../assets/milan.png';
 import psg from '../../assets/psgwappen.png';
 import real from '../../assets/reallogo.png';
-import { Modal, Button } from 'react-bootstrap';
+import {Modal, Button} from 'react-bootstrap';
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faShirt } from '@fortawesome/free-solid-svg-icons';
-
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faShirt} from '@fortawesome/free-solid-svg-icons';
 
 
 const logoMap: { [key: string]: string } = {
@@ -50,7 +49,6 @@ const teamColorMap: { [key: string]: string[] } = {
 const fieldPositions = ["TW", "LV", "RV", "IV1", "IV2", "ZDM", "ZM1", "ZM2", "LF", "RF", "ST"];
 
 
-
 const TeamBuild = () => {
     const savedTeam = localStorage.getItem("selectedTeam");
     const parsedTeam = savedTeam ? JSON.parse(savedTeam) : null;
@@ -67,14 +65,10 @@ const TeamBuild = () => {
     const [highlighted, setHighlighted] = useState<Record<string, boolean>>({});
     const [assignedPlayers, setAssignedPlayers] = useState<Set<string>>(new Set());
     const [selectedPosition, setSelectedPosition] = useState("Alle");
-    const [,setIsLoading] = useState(true);
+    const [, setIsLoading] = useState(true);
     const [removePlayerPosition, setRemovePlayerPosition] = useState<string | null>(null);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-
-
-
-
 
 
     useEffect(() => {
@@ -90,7 +84,7 @@ const TeamBuild = () => {
                 const playersData = await fetchPlayers();
                 setPlayers(playersData);
 
-                const newField = { ...initialField };
+                const newField = {...initialField};
                 const newAssigned = new Set<string>();
 
                 playersData.forEach((player: any) => {
@@ -106,7 +100,7 @@ const TeamBuild = () => {
 
                 if (shouldReload) {
                     localStorage.removeItem("reloadTeamBuild");
-                    console.log("🔄 TeamBuild reload triggered!");
+
                 }
             } catch (err) {
                 console.error("Fehler beim Laden der Daten:", err);
@@ -116,7 +110,6 @@ const TeamBuild = () => {
 
         loadData();
     }, [username, careername]);
-
 
 
     useEffect(() => {
@@ -138,8 +131,6 @@ const TeamBuild = () => {
             value: `€${(p.value / 1_000_000).toFixed(1)}M`,
         }));
     };
-
-
 
 
     const getInitials = (first: string, last: string) => {
@@ -171,22 +162,18 @@ const TeamBuild = () => {
         if (!allowedPositions.includes(position)) return;
 
         setField(prev => {
-            const newField = { ...prev };
+            const newField = {...prev};
 
-            // Alten Spieler auf Zielposition merken
             const oldPlayer = newField[position];
 
-            // Entferne alten Spieler aus allen Positionen
             for (const pos of fieldPositions) {
                 if (newField[pos]?.short === droppedPlayer.short || newField[pos]?.short === oldPlayer?.short) {
                     newField[pos] = null;
                 }
             }
 
-            // Setze neuen Spieler auf die Zielposition
             newField[position] = droppedPlayer;
 
-            // Aktualisiere zugewiesene Spieler
             setAssignedPlayers(prevAssigned => {
                 const updated = new Set(prevAssigned);
                 updated.add(droppedPlayer.short);
@@ -197,9 +184,9 @@ const TeamBuild = () => {
             return newField;
         });
 
-        setHighlighted(prev => ({ ...prev, [position]: true }));
+        setHighlighted(prev => ({...prev, [position]: true}));
         setTimeout(() => {
-            setHighlighted(prev => ({ ...prev, [position]: false }));
+            setHighlighted(prev => ({...prev, [position]: false}));
         }, 1000);
     };
 
@@ -234,15 +221,15 @@ const TeamBuild = () => {
             const match = shuffled.find(p => {
                 const validPositions: { [key: string]: string[] } = {
                     TW: ["TW"],
-                    IV: ["IV1", "IV2","LV","RV"],
-                    LV: ["LV","RV","IV","IV1","IV2"],
-                    RV: ["RV","IV","LV","IV1","IV2"],
+                    IV: ["IV1", "IV2", "LV", "RV"],
+                    LV: ["LV", "RV", "IV", "IV1", "IV2"],
+                    RV: ["RV", "IV", "LV", "IV1", "IV2"],
                     ZM: ["ZM1", "ZM2", "ZDM"],
-                    ZDM: ["DZM", "ZM1", "ZM2","ZDM","ZM"],
+                    ZDM: ["DZM", "ZM1", "ZM2", "ZDM", "ZM"],
                     OM: ["ZM1", "ZM2", "ZDM"],
-                    ST: ["ST","LF","RF"],
-                    LF: ["LF","ST","RF"],
-                    RF: ["RF","LF","ST"],
+                    ST: ["ST", "LF", "RF"],
+                    LF: ["LF", "ST", "RF"],
+                    RF: ["RF", "LF", "ST"],
                 };
                 return !usedShorts.has(p.short) &&
                     (validPositions[p.position]?.includes(pos) ?? false);
@@ -259,11 +246,10 @@ const TeamBuild = () => {
     const handleSaveLineup = async () => {
         const lineup = fieldPositions.map(pos => field[pos]?.playerId).filter(id => id !== undefined);
 
-        // Überprüfen, ob 11 Spieler aufgestellt sind
         if (lineup.length !== 11) {
-            setErrorMessage("Bitte stelle 11 Spieler auf!");  // Fehlermeldung setzen
-            setShowErrorModal(true);  // Modal öffnen
-            return; // Frühzeitig aus der Funktion zurückkehren
+            setErrorMessage("Bitte stelle 11 Spieler auf!");
+            setShowErrorModal(true);
+            return;
         }
 
         try {
@@ -273,7 +259,7 @@ const TeamBuild = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: lineup }),  // Spieler-IDs im Body senden
+                body: JSON.stringify({ids: lineup}),
             });
 
             if (!response.ok) {
@@ -281,64 +267,54 @@ const TeamBuild = () => {
                 throw new Error(error || 'Fehler beim Speichern');
             }
 
-            // Entferne alert(), stattdessen ein Erfolgspopup (optional)
             setErrorMessage("Aufstellung erfolgreich gespeichert!");
-            setShowErrorModal(true); // Erfolg im Modal anzeigen
+            setShowErrorModal(true);
         } catch (error) {
             setErrorMessage('Fehler beim Speichern: ' + (error instanceof Error ? error.message : 'Unbekannter Fehler'));
-            setShowErrorModal(true); // Fehler im Modal anzeigen
+            setShowErrorModal(true);
         }
     };
 
 
-
-
     const handleRemoveAllPlayers = () => {
         setField(prev => {
-            const newField = { ...prev };
-            // Alle Positionen auf null setzen, um alle Spieler zu entfernen
+            const newField = {...prev};
+
             fieldPositions.forEach(position => {
                 newField[position] = null;
             });
 
-            setAssignedPlayers(new Set()); // Leere die Liste der zugewiesenen Spieler
+            setAssignedPlayers(new Set());
             return newField;
         });
-        // Keine Fehlermeldung und kein Modal für diese Funktion
-    };
 
+    };
 
 
     const handleRemovePlayer = (position: string) => {
         setField(prev => {
-            const newField = { ...prev };
-            newField[position] = null; // Entferne den Spieler, indem du die Position auf `null` setzt
+            const newField = {...prev};
+            newField[position] = null;
 
             setAssignedPlayers(prevAssigned => {
                 const updated = new Set(prevAssigned);
                 const player = prev[position];
-                if (player) updated.delete(player.short); // Entferne den Spieler aus der Liste der zugewiesenen Spieler
+                if (player) updated.delete(player.short);
                 return updated;
             });
 
             return newField;
         });
 
-        // Entferne den "Remove"-Modus nach dem Entfernen des Spielers
+
         setRemovePlayerPosition(null);
     };
 
 
-
-
-
-
     const handlePlayerClick = (position: string) => {
-        // Toggle für das rote Kreuz - wenn bereits angezeigt, dann entfernen
+
         setRemovePlayerPosition(prevPosition => (prevPosition === position ? null : position));
     };
-
-
 
 
     return (
@@ -347,19 +323,20 @@ const TeamBuild = () => {
 
             <div className="team-info">
                 <div className="club-header">
-                    <img src={clubLogo} alt={clubName} className="club-logo" />
+                    <img src={clubLogo} alt={clubName} className="club-logo"/>
                     <h2>{clubName}</h2>
                 </div>
 
                 <p>Spieler: <strong>{getSelectedPlayerCount()}</strong> / {fieldPositions.length}</p>
                 <p>Gesamt-Rating: <strong>{getTotalRating()}</strong></p>
                 <p>Gesamt-Marktwert: <strong>{getTotalValue()}</strong></p>
-                <Button style={{ background: teamColors[0] }} onClick={generateRandomLineup}>Zufällige Aufstellung</Button>
-                <Button style={{ background: teamColors[0] }} onClick={handleSaveLineup}>Aufstellung speichern</Button>
+                <Button style={{background: teamColors[0]}} onClick={generateRandomLineup}>Zufällige
+                    Aufstellung</Button>
+                <Button style={{background: teamColors[0]}} onClick={handleSaveLineup}>Aufstellung speichern</Button>
 
 
-                {/* Neuer Button zum Entfernen aller Spieler */}
-                <Button style={{ background: teamColors[0] }} onClick={handleRemoveAllPlayers}>Alle Spieler entfernen</Button>
+                <Button style={{background: teamColors[0]}} onClick={handleRemoveAllPlayers}>Alle Spieler
+                    entfernen</Button>
 
 
             </div>
@@ -403,14 +380,14 @@ const TeamBuild = () => {
                 </span>
                                             ) : (
                                                 <div className="shirt-icon">
-                                                    <FontAwesomeIcon icon={faShirt} className="shirt-icon-image" />
+                                                    <FontAwesomeIcon icon={faShirt} className="shirt-icon-image"/>
                                                     <span className="shirt-icon-text">{player.short}</span>
                                                 </div>
                                             )}
                                         </>
                                     ) : (
                                         <div className="shirt-icon">
-                                            <FontAwesomeIcon icon={faShirt} className="shirt-icon-image" />
+                                            <FontAwesomeIcon icon={faShirt} className="shirt-icon-image"/>
                                             <span className="shirt-icon-text">{position}</span>
                                         </div>
                                     )}
@@ -421,15 +398,14 @@ const TeamBuild = () => {
                         })}
 
 
-
                     </div>
                 </div>
 
                 <div className="player-list">
                     <h2>Spielerliste</h2>
 
-                    <div style={{ marginBottom: "10px" }}>
-                        <label style={{ marginRight: "10px" }}>Position filtern:</label>
+                    <div style={{marginBottom: "10px"}}>
+                        <label style={{marginRight: "10px"}}>Position filtern:</label>
                         <select value={selectedPosition} onChange={(e) => setSelectedPosition(e.target.value)}>
                             <option value="Alle">Alle</option>
                             <option value="TW">TW</option>
@@ -492,7 +468,6 @@ const TeamBuild = () => {
                 </div>
 
 
-
             </div>
 
             <Modal show={showErrorModal} onHide={() => setShowErrorModal(false)}>
@@ -506,7 +481,6 @@ const TeamBuild = () => {
                     </Button>
                 </Modal.Footer>
             </Modal>
-
 
 
         </div>

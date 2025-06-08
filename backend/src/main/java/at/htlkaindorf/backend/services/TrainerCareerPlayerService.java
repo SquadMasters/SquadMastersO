@@ -15,12 +15,14 @@ import at.htlkaindorf.backend.repositories.ClubRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
 import at.htlkaindorf.backend.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -191,4 +193,21 @@ public class TrainerCareerPlayerService {
                 .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
                 .toList();
     }
+    @Transactional
+    public void updateAttributes(String careername, Long playerId, Map<String, Object> updates) {
+        TrainerCareerPlayer player = trainerCareerPlayerRepository
+                .findByCareernameAndPlayerId(careername, playerId)
+                .orElseThrow(() -> new RuntimeException("Spieler nicht gefunden"));
+
+        if (updates.containsKey("ratingNow")) {
+            player.setRatingNow(Integer.parseInt(updates.get("ratingNow").toString()));
+        }
+        if (updates.containsKey("valueNow")) {
+            player.setValueNow(Double.parseDouble(updates.get("valueNow").toString()));
+        }
+
+        trainerCareerPlayerRepository.save(player);
+    }
+
+
 }

@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useNavigate } from "react-router-dom";
-import "./Account.css"; // Verlinke die CSS-Datei
-
-
+import {useNavigate} from "react-router-dom";
+import "./Account.css";
 
 
 const teamColorMap: { [key: string]: string[] } = {
@@ -26,7 +24,7 @@ interface Team {
     country: string;
     league: string;
     logoUrl: string;
-    teamColor: string[]; // Teamfarben
+    teamColor: string[];
 }
 
 interface Career {
@@ -51,19 +49,19 @@ const Account: React.FC = () => {
     }, []);
 
     const team = career?.team;
-    const teamColors = team ? teamColorMap[team.name] : ['#1e88e5']; // Default Blau
+    const teamColors = team ? teamColorMap[team.name] : ['#1e88e5'];
     const primaryColor = teamColors[0];
 
 
     return (
-        <div className="account-container" style={{ backgroundColor: '#ffffff' }}>
-            <h1 className="account-title" style={{ color: primaryColor }}>Account Übersicht</h1>
+        <div className="account-container" style={{backgroundColor: '#ffffff'}}>
+            <h1 className="account-title" style={{color: primaryColor}}>Account Übersicht</h1>
 
-            <div className="account-card" style={{ borderColor: primaryColor }}>
+            <div className="account-card" style={{borderColor: primaryColor}}>
                 <h4 className="account-subtitle">Benutzername:</h4>
                 <p className="account-username">{username || 'Kein Benutzer gefunden'}</p>
 
-                <hr className="account-divider" />
+                <hr className="account-divider"/>
 
                 <h4 className="account-subtitle">Gewähltes Team:</h4>
                 {career && career.team ? (
@@ -73,11 +71,11 @@ const Account: React.FC = () => {
                             alt={career.team.name}
                             className="account-team-logo"
                         />
-                        <p className="account-team-name" style={{ color: primaryColor }}>{career.team.name}</p>
+                        <p className="account-team-name" style={{color: primaryColor}}>{career.team.name}</p>
 
-                        <hr className="account-divider" />
+                        <hr className="account-divider"/>
 
-                        <h5 className="account-career-title" style={{ color: primaryColor }}>Karriere-Name:</h5>
+                        <h5 className="account-career-title" style={{color: primaryColor}}>Karriere-Name:</h5>
                         <p className="account-career-name">{career.careerName}</p>
 
                         <small className="account-created-date">
@@ -87,7 +85,7 @@ const Account: React.FC = () => {
                         <button
                             className="account-logout-btn"
                             onClick={() => navigate('/')}
-                            style={{ backgroundColor: primaryColor }}
+                            style={{backgroundColor: primaryColor}}
                         >
                             Log Out
                         </button>

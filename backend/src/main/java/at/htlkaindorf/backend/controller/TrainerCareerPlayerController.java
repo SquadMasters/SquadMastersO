@@ -104,4 +104,19 @@ public class TrainerCareerPlayerController {
 
         return ResponseEntity.ok(transferService.transferPlayer(clubname, careername, playerId));
     }
+
+    @PatchMapping("/updateAttributes")
+    public ResponseEntity<String> updatePlayerAttributes(
+            @RequestParam String careername,
+            @RequestParam Long playerId,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            trainerCareerPlayerService.updateAttributes(careername, playerId, updates);
+            return ResponseEntity.ok("Spielerattribute erfolgreich aktualisiert.");
+        } catch (Exception e) {
+            log.error("Fehler beim Aktualisieren: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Fehler: " + e.getMessage());
+        }
+    }
+
 }

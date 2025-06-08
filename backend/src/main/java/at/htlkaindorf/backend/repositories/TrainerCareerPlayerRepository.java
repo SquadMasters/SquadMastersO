@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCareerPlayer, TrainerCareerPlayerPK> {
 
@@ -57,4 +58,9 @@ public interface TrainerCareerPlayerRepository extends JpaRepository<TrainerCare
 
     @Query("SELECT p FROM TrainerCareerPlayer p WHERE p.career.careerName = ?1 AND p.player.player_Id = ?2")
     TrainerCareerPlayer findPlayerFromCareerById(String careername, Long id);
+
+
+    @Query("SELECT t FROM TrainerCareerPlayer t WHERE t.career.careerName = :careername AND t.player.player_Id = :playerId")
+    Optional<TrainerCareerPlayer> findByCareernameAndPlayerId(@Param("careername") String careername, @Param("playerId") Long playerId);
+
 }

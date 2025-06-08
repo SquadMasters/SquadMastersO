@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useNavigate} from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './Karriereauswahl.css';
 import axios from 'axios';
@@ -19,12 +19,12 @@ import real from '../../assets/reallogo.png';
 interface Team {
     id: number;
     name: string;
-    country: string;
     league: string;
     logoUrl: string;
     careerName: string;
     startUser?: string;
     type?: 'create' | 'join' | 'empty';
+
 }
 
 const logoMap: { [key: string]: string } = {
@@ -46,7 +46,7 @@ const Karriereauswahl: React.FC = () => {
     const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [joinedCareers, setJoinedCareers] = useState<string[]>([]);
-    const [deleteLoading, setDeleteLoading] = useState(false);
+
     const navigate = useNavigate();
     const username = localStorage.getItem('username') ?? '';
 
@@ -90,76 +90,39 @@ const Karriereauswahl: React.FC = () => {
         localStorage.setItem('career', JSON.stringify(career));
         localStorage.setItem('careername', selectedTeam.careerName);
         localStorage.setItem('username', username);
-        localStorage.setItem('selectedTeam', JSON.stringify({ name: selectedTeam.name }));
-
-        const otherClubs = Object.keys(logoMap).filter(name => name !== selectedTeam.name);
-        const randomOpponentName = otherClubs[Math.floor(Math.random() * otherClubs.length)];
-
-        if (randomOpponentName) {
-            localStorage.setItem('opponentTeamName', randomOpponentName);
-            console.log('✅ Gegner gesetzt:', randomOpponentName);
-        }
+        localStorage.setItem('selectedTeam', JSON.stringify({name: selectedTeam.name}));
 
         navigate('/home');
     };
 
-    const deleteCareer = async () => {
-        if (!selectedTeam || deleteLoading) return;
-
-        setDeleteLoading(true);
-        try {
-            await axios.delete(`http://localhost:8080/newCareer/delete/${selectedTeam.careerName}`);
-
-            // LocalStorage säubern
-            localStorage.removeItem('career');
-            localStorage.removeItem('careername');
-            localStorage.removeItem('selectedTeam');
-
-            // Team aus Liste entfernen
-            setTeams(prev => prev.filter(t => t.careerName !== selectedTeam.careerName));
-            setSelectedTeam(null);
-            setCurrentIndex(0);
-
-            alert('Karriere wurde gelöscht.');
-        } catch (error) {
-            console.error('Fehler beim Löschen der Karriere:', error);
-            alert('Fehler beim Löschen.');
-        } finally {
-            setDeleteLoading(false);
-        }
-    };
-
     const allItems: Team[] = [
+        {
+            id: 9001,
+            name: 'Erstellen',
+            league: '',
+            logoUrl: '',
+            careerName: 'Eigene Karriere erstellen',
+            type: 'create',
+        },
+        {
+            id: 9002,
+            name: 'Beitreten',
+            league: '',
+            logoUrl: '',
+            careerName: 'Bestehender Karriere beitreten',
+            type: 'join',
+        },
         ...teams,
         ...Array(Math.max(0, 5 - teams.length))
             .fill(null)
             .map((_, i) => ({
                 id: 10000 + i,
                 name: '',
-                country: '',
                 league: '',
                 logoUrl: '',
                 careerName: '',
-                type: 'empty' as 'empty', // Typ explizit auf 'empty' setzen
+                type: 'empty' as 'empty',
             })),
-        {
-            id: 9001,
-            name: 'Erstellen',
-            country: '',
-            league: '',
-            logoUrl: '',
-            careerName: 'Eigene Karriere erstellen',
-            type: 'create' as 'create',
-        },
-        {
-            id: 9002,
-            name: 'Beitreten',
-            country: '',
-            league: '',
-            logoUrl: '',
-            careerName: 'Bestehender Karriere beitreten',
-            type: 'join' as 'join',
-        },
     ];
 
     const nextSlide = () => setCurrentIndex(prev => (prev + 1) % allItems.length);
@@ -169,68 +132,43 @@ const Karriereauswahl: React.FC = () => {
         <div className="container mt-5">
             <h1 className="text-center mb-5">Wähle dein Team für die Karriere</h1>
             <div className="carousel-container">
-                <button className="nav-button prev" onClick={prevSlide}>
-                    &lt;
-                </button>
+                <button className="nav-button prev" onClick={prevSlide}>&lt;</button>
                 <div className="carousel-track">
                     {allItems.map((item, index) => {
                         const offset = (index - currentIndex + allItems.length) % allItems.length;
-                        const visible = offset >= 0 && offset < 5;
-                        const scale = offset === 2 ? 1 : 0.9;
-                        const zIndex = 10 - Math.abs(2 - offset);
-                        const translate = (offset - 2) * 160;
+
+                        const isActive = offset === 2;
 
                         return (
                             <div
                                 key={item.id}
-                                className={`carousel-card ${offset === 2 ? 'active' : ''}`}
-                                style={{
-                                    transform: `translateX(${translate}px) scale(${scale})`,
-                                    zIndex,
-                                    opacity: visible ? 1 : 0,
-                                }}
+                                className={`carousel-card ${isActive ? 'active' : ''}`}
+                                data-offset={offset}
                                 onClick={() => {
-                                    if (item.type === 'empty') {
-                                        navigate('/karriereerstellen');
-                                    } else if (item.type === 'create') {
+                                    if (item.type === 'empty' || item.type === 'create') {
                                         navigate('/karriereerstellen');
                                     } else if (item.type === 'join') {
                                         navigate('/karrierebeitreten');
                                     } else {
                                         setSelectedTeam(item);
-                                        // zentriere die Karte in der Mitte (Index 2 sichtbar = Mitte von 5)
                                         const middleIndex = 2;
                                         const newIndex = (index - middleIndex + allItems.length) % allItems.length;
                                         setCurrentIndex(newIndex);
                                     }
                                 }}
                             >
-                                {item.type === 'create' ? (
+                                {item.type === 'create' || item.type === 'join' ? (
                                     <div className="create-card">
                                         <h3>{item.careerName}</h3>
-                                        <p>Erstelle dein eigenes Team</p>
+                                        <p>{item.type === 'create' ? 'Erstelle dein eigenes Team' : 'Wähle ein Team aus einer bestehenden Karriere'}</p>
                                         <button
-                                            className="btn btn-outline-primary"
+                                            className={`btn ${item.type === 'create' ? 'btn-outline-primary' : 'btn-outline-success'}`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                navigate('/karriereerstellen');
+                                                navigate(item.type === 'create' ? '/karriereerstellen' : '/karrierebeitreten');
                                             }}
                                         >
-                                            Erstellen
-                                        </button>
-                                    </div>
-                                ) : item.type === 'join' ? (
-                                    <div className="create-card">
-                                        <h3>{item.careerName}</h3>
-                                        <p>Wähle ein Team aus einer bestehenden Karriere</p>
-                                        <button
-                                            className="btn btn-outline-success"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                navigate('/karrierebeitreten');
-                                            }}
-                                        >
-                                            Beitreten
+                                            {item.type === 'create' ? 'Erstellen' : 'Beitreten'}
                                         </button>
                                     </div>
                                 ) : item.type === 'empty' ? (
@@ -242,20 +180,12 @@ const Karriereauswahl: React.FC = () => {
                                     <div className="card-body">
                                         <h3>{item.name}</h3>
                                         <h4>{item.careerName}</h4>
-                                        <p style={{ fontSize: '0.85rem' }} className="text-muted">
-                                            Erstellt von: {item.startUser}
-                                        </p>
+                                        <p className="text-muted">Erstellt von: {item.startUser}</p>
                                         {joinedCareers.includes(item.careerName) && (
-                                            <p className="text-muted" style={{ fontSize: '0.9rem' }}>
-                                                Beigetretene Karriere
-                                            </p>
+                                            <p className="text-muted">Beigetretene Karriere</p>
                                         )}
                                         {item.logoUrl && (
-                                            <img
-                                                src={item.logoUrl}
-                                                alt={item.name}
-                                                style={{ width: '80px', marginBottom: '10px' }}
-                                            />
+                                            <img src={item.logoUrl} alt={item.name} className="team-logo"/>
                                         )}
                                     </div>
                                 )}
@@ -263,29 +193,17 @@ const Karriereauswahl: React.FC = () => {
                         );
                     })}
                 </div>
-                <button className="nav-button next" onClick={nextSlide}>
-                    &gt;
-                </button>
+                <button className="nav-button next" onClick={nextSlide}>&gt;</button>
             </div>
 
-            {selectedTeam && (
-                <div className="text-center mt-4 d-flex flex-column align-items-center gap-2">
-                    <button
-                        className="btn btn-primary btn-lg"
-                        onClick={startCareer}
-                        disabled={deleteLoading}
-                    >
+            {selectedTeam && !selectedTeam.type && (
+                <div className="text-center mt-4">
+                    <button className="btn btn-primary start-career-btn" onClick={startCareer}>
                         Karriere starten mit {selectedTeam.name}
-                    </button>
-                    <button
-                        className="btn btn-danger"
-                        onClick={deleteCareer}
-                        disabled={deleteLoading}
-                    >
-                        {deleteLoading ? 'Lösche...' : 'Karriere löschen'}
                     </button>
                 </div>
             )}
+
         </div>
     );
 };

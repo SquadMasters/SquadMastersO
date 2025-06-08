@@ -11,6 +11,7 @@ const Login: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+
         if (username && password) {
             try {
                 const response = await fetch('http://localhost:8080/api/auth/login', {

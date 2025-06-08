@@ -271,3 +271,74 @@
 .home .home-table {
     animation: subtleFadeIn 0.6s ease-out forwards;
 }
+
+.transfer-list-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.transfer-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.transfer-list-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.95rem;
+    color: #1d1d1f;
+}
+
+.transfer-list-item:last-child {
+    border-bottom: none;
+}
+
+.styled-transfer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 0.9rem;
+    transition: background 0.2s ease;
+}
+
+.styled-transfer:hover {
+    background: #f9f9f9;
+}
+
+.transfer-rank {
+    font-weight: bold;
+    color: #aaa;
+    width: 30px;
+}
+
+.transfer-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.transfer-name {
+    font-size: 1rem;
+    color: #1d1d1f;
+    font-weight: 600;
+}
+
+.transfer-clubs {
+    font-size: 0.85rem;
+    color: #777;
+}
+
+.transfer-value {
+    color: green;
+    font-weight: bold;
+    min-width: 80px;
+    text-align: right;
+}

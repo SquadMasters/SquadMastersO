@@ -294,6 +294,7 @@ button:disabled {
 ::-webkit-scrollbar-thumb:hover {
     background: rgba(0, 0, 0, 0.3);
 }
+
 .enhanced-player-card {
     background: linear-gradient(135deg, #fefefe, #f5f7fa);
     border: 2px solid var(--primary-color-light);
@@ -338,7 +339,7 @@ button:disabled {
     flex-direction: column;
     align-items: center;
     font-weight: 500;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .player-attribute label {
@@ -346,6 +347,7 @@ button:disabled {
     color: var(--text-muted);
     margin-bottom: 2px;
 }
+
 .horizontal-player-card {
     display: flex;
     flex-direction: column;
@@ -401,6 +403,7 @@ button:disabled {
     font-weight: 600;
     border: 1px solid #ffcccc;
 }
+
 .upgraded-card {
     display: flex;
     justify-content: space-between;
@@ -485,13 +488,15 @@ button:disabled {
     font-weight: 600;
     font-size: 13px;
 }
+
 .club-logo {
     height: 32px;
     width: 32px;
     object-fit: contain;
     border-radius: 4px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
+
 .affordable-toggle .checkbox-label {
     display: flex;
     align-items: center;
@@ -519,6 +524,7 @@ button:disabled {
 .checkbox-label input {
     display: none;
 }
+
 .offers-list {
     flex: 1;
     overflow-y: auto;
@@ -526,6 +532,7 @@ button:disabled {
     padding-right: 8px;
     margin-top: 16px;
 }
+
 /* Gleichmäßige Höhe für Angebotsspalte */
 .offers-column {
     flex: 1;

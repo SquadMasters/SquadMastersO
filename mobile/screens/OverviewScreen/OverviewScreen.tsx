@@ -49,7 +49,7 @@ const OverviewScreen: React.FC<OverviewScreenProps> = ({navigation, route}) => {
 
                 <TouchableOpacity
                     style={[styles.button, styles.accentButton]}
-                    onPress={() => navigation.navigate('ChooseTeamCarrerForBoostPlayerScreen')}
+                    onPress={() => navigation.navigate('ChooseTeamCarrerForBoostPlayerScreen' ,{careername, username})}
                 >
                     <Text style={[styles.buttonText, styles.accentButtonText]}>Spieler boosten</Text>
                 </TouchableOpacity>

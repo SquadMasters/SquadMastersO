@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import './Transfermarkt.css';
 import arsenal from "../../assets/arsenalwappen.png";
@@ -12,7 +12,6 @@ import liverpool from "../../assets/liverpool.png";
 import milan from "../../assets/milan.png";
 import psg from "../../assets/psgwappen.png";
 import real from "../../assets/reallogo.png";
-
 
 
 const logoMap: { [key: string]: string } = {
@@ -83,7 +82,6 @@ const Transfermarkt: React.FC = () => {
     const careername = localStorage.getItem('careername') || '';
     const selectedTeamName = JSON.parse(localStorage.getItem('selectedTeam') || '{}').name || '';
 
-    // Teamfarbe aus Map oder Default Blau
     const primaryColor = teamColorMap[selectedTeamName]?.[0] || '#1e88e5';
 
     useEffect(() => {
@@ -92,9 +90,24 @@ const Transfermarkt: React.FC = () => {
                 setLoading(true);
                 const [budgetRes, playersRes, sentOffersRes, receivedOffersRes] = await Promise.all([
                     axios.get<BudgetDTO>(`http://localhost:8080/trainerCareer/budget/${selectedTeamName}/${careername}`),
-                    axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, { params: { username, careername } }),
-                    axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, { params: { username, careername } }),
-                    axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, { params: { username, careername } }),
+                    axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, {
+                        params: {
+                            username,
+                            careername
+                        }
+                    }),
+                    axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, {
+                        params: {
+                            username,
+                            careername
+                        }
+                    }),
+                    axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
+                        params: {
+                            username,
+                            careername
+                        }
+                    }),
                 ]);
 
                 setBudget(budgetRes.data.budget);
@@ -114,7 +127,7 @@ const Transfermarkt: React.FC = () => {
     const formatPlayerName = (player: Player) => `${player.firstname} ${player.lastname}`;
 
     const formatCurrency = (value: number) =>
-        new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+        new Intl.NumberFormat('de-DE', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0}).format(value);
 
     const getPrimaryTeamColor = (club: string | undefined): string => {
         if (!club) return primaryColor;
@@ -128,14 +141,14 @@ const Transfermarkt: React.FC = () => {
             const offerResponse = await axios.post<string>(
                 `http://localhost:8080/salesInquiry/sendOffer`,
                 null,
-                { params: { clubname: selectedTeamName, careername, playerId } }
+                {params: {clubname: selectedTeamName, careername, playerId}}
             );
 
             if (offerResponse.data === 'success') {
                 const transferResult = await axios.post<boolean>(
                     `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                     null,
-                    { params: { clubname, careername, playerId } }
+                    {params: {clubname: selectedTeamName, careername, playerId}}
                 );
                 if (!transferResult.data) throw new Error('Transfer fehlgeschlagen');
                 localStorage.setItem('reloadTeamBuild', 'true');
@@ -143,11 +156,21 @@ const Transfermarkt: React.FC = () => {
 
             const [playersRes, sentOffersRes, budgetRes, receivedOffersRes] = await Promise.all([
                 axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, {
-                    params: { username, careername },
+                    params: {username, careername},
                 }),
-                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, { params: { username, careername } }),
+                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, {
+                    params: {
+                        username,
+                        careername
+                    }
+                }),
                 axios.get<BudgetDTO>(`http://localhost:8080/trainerCareer/budget/${selectedTeamName}/${careername}`),
-                axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, { params: { username, careername } }),
+                axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
+                    params: {
+                        username,
+                        careername
+                    }
+                }),
             ]);
             setAvailablePlayers(playersRes.data);
             setPlayersWithOffers(sentOffersRes.data);
@@ -164,16 +187,26 @@ const Transfermarkt: React.FC = () => {
         try {
             setCancelLoading(playerId);
             await axios.delete<boolean>(`http://localhost:8080/salesInquiry/deleteSentOffers`, {
-                params: { username, careername, playerId },
+                params: {username, careername, playerId},
             });
 
             const [playersRes, sentOffersRes, budgetRes, receivedOffersRes] = await Promise.all([
                 axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersForTransfermarket`, {
-                    params: { username, careername },
+                    params: {username, careername},
                 }),
-                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, { params: { username, careername } }),
+                axios.get<Player[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersOnWishlist`, {
+                    params: {
+                        username,
+                        careername
+                    }
+                }),
                 axios.get<BudgetDTO>(`http://localhost:8080/trainerCareer/budget/${selectedTeamName}/${careername}`),
-                axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, { params: { username, careername } }),
+                axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
+                    params: {
+                        username,
+                        careername
+                    }
+                }),
             ]);
             setAvailablePlayers(playersRes.data);
             setPlayersWithOffers(sentOffersRes.data);
@@ -189,10 +222,10 @@ const Transfermarkt: React.FC = () => {
     const handleRejectOffer = async (playerId: number) => {
         try {
             await axios.delete(`http://localhost:8080/salesInquiry/deleteReceivedOffers`, {
-                params: { clubname: selectedTeamName, careername, playerId },
+                params: {clubname: selectedTeamName, careername, playerId},
             });
             const receivedOffersRes = await axios.get<Offer[]>(`http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`, {
-                params: { username, careername },
+                params: {username, careername},
             });
             setIncomingOffers(receivedOffersRes.data);
         } catch {
@@ -205,14 +238,14 @@ const Transfermarkt: React.FC = () => {
             const response = await axios.post<boolean>(
                 `http://localhost:8080/trainerCareerPlayer/transferPlayer`,
                 null,
-                { params: { clubname: buyerClub, careername, playerId, targetClub: selectedTeamName } }
+                {params: {clubname: buyerClub, careername, playerId, targetClub: selectedTeamName}}
             );
 
             if (!response.data) throw new Error("Transfer fehlgeschlagen");
 
             const receivedOffersRes = await axios.get<Offer[]>(
                 `http://localhost:8080/trainerCareerPlayer/allPlayersWithOffer`,
-                { params: { username, careername } }
+                {params: {username, careername}}
             );
 
             setIncomingOffers(receivedOffersRes.data);
@@ -236,15 +269,21 @@ const Transfermarkt: React.FC = () => {
         return (
             <div
                 className="loading-message"
-                style={{ color: primaryColor, fontWeight: '700', fontSize: '18px', textAlign: 'center', marginTop: '40px' }}
+                style={{
+                    color: primaryColor,
+                    fontWeight: '700',
+                    fontSize: '18px',
+                    textAlign: 'center',
+                    marginTop: '40px'
+                }}
             >
                 Daten werden geladen...
             </div>
         );
 
     return (
-        <div className="transfermarkt-container" style={{ ['--primary-color' as any]: primaryColor }}>
-            <h1 style={{color:primaryColor}}>Transfermarkt</h1>
+        <div className="transfermarkt-container" style={{['--primary-color' as string]: primaryColor}}>
+            <h1 style={{color: primaryColor}}>Transfermarkt</h1>
 
             <div className="header-section">
                 <div className="budget-team-display">
@@ -297,11 +336,13 @@ const Transfermarkt: React.FC = () => {
                     </div>
                     <div className="filter-group">
                         <label>Min. Bewertung:</label>
-                        <input type="number" min={0} max={10} value={minRating} onChange={(e) => setMinRating(Number(e.target.value))} />
+                        <input type="number" min={0} max={10} value={minRating}
+                               onChange={(e) => setMinRating(Number(e.target.value))}/>
                     </div>
                     <div className="filter-group">
                         <label>Max. Alter:</label>
-                        <input type="number" min={1} max={99} value={maxAge} onChange={(e) => setMaxAge(Number(e.target.value))} />
+                        <input type="number" min={1} max={99} value={maxAge}
+                               onChange={(e) => setMaxAge(Number(e.target.value))}/>
                     </div>
 
 
@@ -309,7 +350,7 @@ const Transfermarkt: React.FC = () => {
             </div>
             <div className="transfermarkt-grid">
                 <section className="players-column">
-                    <h2 style={{ color: primaryColor }}>Verfügbare Spieler ({filteredPlayers.length})</h2>
+                    <h2 style={{color: primaryColor}}>Verfügbare Spieler ({filteredPlayers.length})</h2>
                     <div className="players-list">
                         {filteredPlayers.map((player) => (
                             <article key={player.playerId} className="player-card upgraded-card">
@@ -322,15 +363,19 @@ const Transfermarkt: React.FC = () => {
                                         <div className="stat-block">
                                             <label>Verein</label>
                                             {player.clubname && logoMap[player.clubname] ? (
-                                                <img src={logoMap[player.clubname]} alt={player.clubname} className="club-logo" />
+                                                <img src={logoMap[player.clubname]} alt={player.clubname}
+                                                     className="club-logo"/>
                                             ) : (
                                                 <span>{player.clubname}</span>
                                             )}
                                         </div>
 
-                                        <div className="stat-block"><label>Wert</label><span>{formatCurrency(player.value)}</span></div>
-                                        <div className="stat-block"><label>Bewertung</label><span>{player.rating}/10</span></div>
-                                        <div className="stat-block"><label>Alter</label><span>{player.ageNow}</span></div>
+                                        <div className="stat-block">
+                                            <label>Wert</label><span>{formatCurrency(player.value)}</span></div>
+                                        <div className="stat-block">
+                                            <label>Bewertung</label><span>{player.rating}/10</span></div>
+                                        <div className="stat-block"><label>Alter</label><span>{player.ageNow}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="player-right">
@@ -338,7 +383,7 @@ const Transfermarkt: React.FC = () => {
                                         onClick={() => handleSendOffer(player.playerId)}
                                         disabled={offerLoading === player.playerId || player.value > budget}
                                         className={player.value > budget ? 'disabled-btn' : ''}
-                                        style={{ backgroundColor: primaryColor,  borderRadius:10}}
+                                        style={{backgroundColor: primaryColor, borderRadius: 10}}
                                     >
                                         {offerLoading === player.playerId ? 'Wird gesendet...' : 'Kaufen'}
                                     </button>
@@ -349,19 +394,18 @@ const Transfermarkt: React.FC = () => {
                             </article>
 
 
-
                         ))}
                     </div>
                 </section>
                 <aside className="offers-column">
                     <div className="offers-section">
-                        <h2 style={{ color: primaryColor }}>Gesendete Angebote ({playersWithOffers.length})</h2>
+                        <h2 style={{color: primaryColor}}>Meine Gebote ({playersWithOffers.length})</h2>
                         <div className="offers-list">
                             {playersWithOffers.map((player) => {
                                 const color = getPrimaryTeamColor(player.clubname);
                                 return (
-                                    <article key={player.playerId} className="offer-card" style={{ borderColor: color }}>
-                                        <div className="player-info" style={{ color }}>
+                                    <article key={player.playerId} className="offer-card" style={{borderColor: color}}>
+                                        <div className="player-info" style={{color}}>
                                             <h3 className="player-name">{formatPlayerName(player)}</h3>
                                             <div className="player-details">
                                                 <span>{player.position}</span>
@@ -373,7 +417,7 @@ const Transfermarkt: React.FC = () => {
                                             onClick={() => handleDeleteOffer(player.playerId)}
                                             disabled={cancelLoading === player.playerId}
                                             className="cancel-btn"
-                                            style={{ borderRadius: 24 }}
+                                            style={{borderRadius: 24}}
                                         >
                                             {cancelLoading === player.playerId ? 'Wird zurückgezogen...' : 'Angebot zurückziehen'}
                                         </button>
@@ -383,13 +427,13 @@ const Transfermarkt: React.FC = () => {
                         </div>
                     </div>
                     <div className="offers-section">
-                        <h2 style={{ color: primaryColor }}>Erhaltene Angebote ({incomingOffers.length})</h2>
+                        <h2 style={{color: primaryColor}}>Erhaltene Gebote ({incomingOffers.length})</h2>
                         <div className="offers-list">
                             {incomingOffers.map((offer) => {
                                 const color = getPrimaryTeamColor(offer.clubWithOffer);
                                 return (
-                                    <article key={offer.playerId} className="offer-card" style={{ borderColor: color }}>
-                                        <div className="player-info" style={{ color }}>
+                                    <article key={offer.playerId} className="offer-card" style={{borderColor: color}}>
+                                        <div className="player-info" style={{color}}>
                                             <h3 className="player-name">{formatPlayerName(offer)}</h3>
                                             <div className="offer-details">
                                                 <span>Von: {offer.clubWithOffer}</span>
@@ -401,14 +445,14 @@ const Transfermarkt: React.FC = () => {
                                             <button
                                                 onClick={() => handleAcceptOffer(offer.playerId, offer.clubWithOffer)}
                                                 className="accept-btn"
-                                                style={{ backgroundColor: color, borderRadius: 24 }}
+                                                style={{backgroundColor: color, borderRadius: 24}}
                                             >
                                                 Annehmen
                                             </button>
                                             <button
                                                 onClick={() => handleRejectOffer(offer.playerId)}
                                                 className="reject-btn"
-                                                style={{ borderRadius: 24 }}
+                                                style={{borderRadius: 24}}
                                             >
                                                 Ablehnen
                                             </button>
