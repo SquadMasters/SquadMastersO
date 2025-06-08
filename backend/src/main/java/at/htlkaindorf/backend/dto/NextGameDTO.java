@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+/**
+ * Data Transfer Object representing the next scheduled game,
+ * including teams, date, and optional result information.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

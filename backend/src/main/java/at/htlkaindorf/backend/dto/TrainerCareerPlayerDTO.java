@@ -5,6 +5,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+/**
+ * Data Transfer Object representing a player in a trainer career context,
+ * including club, stats, lineup position, and personal data.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

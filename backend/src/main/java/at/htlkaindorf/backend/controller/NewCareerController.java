@@ -7,15 +7,15 @@ import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
 import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.services.*;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
+/**
+ * Controller to handle creation of new careers.
+ */
 @RestController
 @RequestMapping("/newCareer")
 @RequiredArgsConstructor
@@ -27,9 +27,14 @@ public class NewCareerController {
     private final UserService userService;
     private final GameService gameService;
 
+    /**
+     * Creates a new career for the given user and selected club.
+     *
+     * @param request contains username, career name, and selected club
+     * @return true if creation was successful, otherwise error response
+     */
     @PostMapping("/create")
     public ResponseEntity<Boolean> createNewCareer(@RequestBody CareerClubRequest request) {
-
         if (request.getCareername() == null || request.getCareername().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
@@ -41,56 +46,41 @@ public class NewCareerController {
             return ResponseEntity.notFound().build();
         }
 
+        Career career = Career.builder()
+                .currentCareerDate(LocalDate.of(2025, 6, 1))
+                .startUser(user)
+                .isRunning(false)
+                .careerName(request.getCareername())
+                .build();
+
+        user.getCareers().add(career);
+        List<TrainerCareer> trainerCareers = new ArrayList<>();
+        List<TrainerCareerPlayer> allPlayers = new ArrayList<>();
         Random random = new Random();
 
-        Career career = Career.builder().currentCareerDate(LocalDate.of(2025, 6, 1)).startUser(user).isRunning(false).careerName(request.getCareername()).build();
-        List<Career> careers = user.getCareers();
-        careers.add(career);
-        user.setCareers(careers);
-
-        List<TrainerCareer> trainerCareers = new ArrayList<>();
-        List<TrainerCareerPlayer> trainerCareerPlayers;
-        List<TrainerCareerPlayer> allPlayers = new ArrayList<>();
-        List<Player> players;
-
-        List<Club> clubs = clubsService.getAllClubs();
-        for (Club club : clubs) {
-            players = playerService.getPlayersFromClub(club.getClub_id());
+        for (Club club : clubsService.getAllClubs()) {
+            List<Player> players = playerService.getPlayersFromClub(club.getClub_id());
             int budget = 10_000_000 + random.nextInt(90_000_000);
 
-            TrainerCareerPK trainerCareerPK = new TrainerCareerPK(club.getClub_id(), career.getCareer_id());
             TrainerCareer trainerCareer = TrainerCareer.builder()
-                    .trainerCareer_pk(trainerCareerPK)
+                    .trainerCareer_pk(new TrainerCareerPK(club.getClub_id(), career.getCareer_id()))
                     .career(career)
                     .budget(budget)
                     .club(club)
-                    .wins(0)
-                    .losses(0)
-                    .draws(0)
-                    .goalDiff(0)
+                    .wins(0).losses(0).draws(0).goalDiff(0)
                     .leagueTitleCount(0)
                     .readyForSimulation(false)
                     .build();
 
             if (club.getClubName().equals(request.getClubname())) {
                 trainerCareer.setUser(user);
-                List<TrainerCareer> careersOfUser = user.getTrainerCareers();
-                careersOfUser.add(trainerCareer);
-                user.setTrainerCareers(careersOfUser);
+                user.getTrainerCareers().add(trainerCareer);
             }
 
-            trainerCareers.add(trainerCareer);
-
-            trainerCareerPlayers = new ArrayList<>();
+            List<TrainerCareerPlayer> trainerCareerPlayers = new ArrayList<>();
             for (Player player : players) {
-
-                TrainerCareerPlayerPK pk = new TrainerCareerPlayerPK(
-                        trainerCareerPK,
-                        player.getPlayer_Id()
-                );
-
                 TrainerCareerPlayer trainerCareerPlayer = TrainerCareerPlayer.builder()
-                        .trainerCareerPlayer_pk(pk)
+                        .trainerCareerPlayer_pk(new TrainerCareerPlayerPK(trainerCareer.getTrainerCareer_pk(), player.getPlayer_Id()))
                         .career(career)
                         .player(player)
                         .ageNow(player.getStartAge())
@@ -101,18 +91,17 @@ public class NewCareerController {
                         .club(club)
                         .oldClub("")
                         .build();
+
                 trainerCareerPlayers.add(trainerCareerPlayer);
                 allPlayers.add(trainerCareerPlayer);
-
-                List<TrainerCareerPlayer> careerPlayersOfPlayer = player.getTrainerCareerPlayerList();
-                careerPlayersOfPlayer.add(trainerCareerPlayer);
-                player.setTrainerCareerPlayerList(careerPlayersOfPlayer);
+                player.getTrainerCareerPlayerList().add(trainerCareerPlayer);
             }
+
+            trainerCareers.add(trainerCareer);
             club.setCareerPlayers(trainerCareerPlayers);
-            List<TrainerCareer> careersOfClub = club.getTrainerCareers();
-            careersOfClub.add(trainerCareer);
-            club.setTrainerCareers(careersOfClub);
+            club.getTrainerCareers().add(trainerCareer);
         }
+
         career.setTrainerCareers(trainerCareers);
         career.setPlayers(allPlayers);
 
@@ -122,5 +111,4 @@ public class NewCareerController {
 
         return ResponseEntity.ok(true);
     }
-
 }

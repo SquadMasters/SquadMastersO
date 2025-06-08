@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object representing a trainer's career assignment,
+ * including club, career, and user information.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

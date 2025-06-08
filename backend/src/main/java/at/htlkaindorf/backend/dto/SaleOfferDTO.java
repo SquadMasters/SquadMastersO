@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object representing a sale offer for a player,
+ * including basic player info and the club that made the offer.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

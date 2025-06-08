@@ -4,12 +4,14 @@ import at.htlkaindorf.backend.services.*;
 import at.htlkaindorf.backend.websocket.SimulationUpdate;
 import at.htlkaindorf.backend.websocket.SimulationWebSocketService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller for managing simulation lifecycle and readiness states.
+ */
 @RestController
 @RequestMapping("/simulation")
 @RequiredArgsConstructor
@@ -23,6 +25,13 @@ public class SimulationController {
     private final SimulationWebSocketService websocketService;
     private final SalesInquiryService salesInquiryService;
 
+    /**
+     * Starts the simulation for the current half of the season.
+     *
+     * @param careername name of the career
+     * @param firstHalf  true if simulating first half, false for second
+     * @return success message
+     */
     @PostMapping("/start")
     public ResponseEntity<String> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
 
@@ -49,6 +58,12 @@ public class SimulationController {
         return ResponseEntity.ok("Simulation " + (firstHalf ? "first half" : "second half") + " completed successfully!");
     }
 
+    /**
+     * Ends the current season if all games are played and all users are ready.
+     *
+     * @param careername name of the career
+     * @return success message
+     */
     @PostMapping("/endSeason")
     public ResponseEntity<String> endSeason(@RequestParam String careername) {
 
@@ -70,6 +85,13 @@ public class SimulationController {
         return ResponseEntity.ok("Season ended successfully!");
     }
 
+    /**
+     * Marks a user as ready for simulation.
+     *
+     * @param username   user's name
+     * @param careername career name
+     * @return confirmation message
+     */
     @PatchMapping("/pressReady")
     public ResponseEntity<String> pressReadyForSimulation(
             @RequestParam String username,
@@ -80,16 +102,25 @@ public class SimulationController {
         return ResponseEntity.ok("User is now ready.");
     }
 
+    /**
+     * Checks whether the given user is marked as ready.
+     */
     @GetMapping("/isUserReady")
     public ResponseEntity<Boolean> isUserReady(@RequestParam String username, @RequestParam String careername) {
         return ResponseEntity.ok(trainerCareerService.isUserReady(username, careername));
     }
 
+    /**
+     * Returns a list of users who have not yet marked themselves as ready.
+     */
     @GetMapping("/notReadyUsers")
     public ResponseEntity<List<String>> getNotReadyUsers(@RequestParam String careername) {
         return ResponseEntity.ok(trainerCareerService.getNotReadyUsers(careername));
     }
 
+    /**
+     * Checks whether the user is allowed to start the simulation.
+     */
     @GetMapping("/isAllowedToSimulate")
     public ResponseEntity<Boolean> isAllowedToSimulate(
             @RequestParam String username,

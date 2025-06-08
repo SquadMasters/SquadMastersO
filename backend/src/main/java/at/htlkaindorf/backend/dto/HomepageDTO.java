@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Data Transfer Object for transferring user and club information
+ * displayed on the homepage of the career mode.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

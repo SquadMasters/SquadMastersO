@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller for managing players in a trainer career.
+ */
 @RestController
 @RequestMapping("/trainerCareerPlayer")
 @RequiredArgsConstructor
@@ -22,6 +25,9 @@ public class TrainerCareerPlayerController {
     private final SalesInquiryService salesInquiryService;
     private final TransferService transferService;
 
+    /**
+     * Returns all players for the current user in a given career.
+     */
     @GetMapping("/allPlayersFromTrainerCareer")
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByTrainerCareer(
             @RequestParam String username,
@@ -29,6 +35,9 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByTrainerCareer(username, careername));
     }
 
+    /**
+     * Returns all players that could be shown on the transfer market.
+     */
     @GetMapping("/allPlayersForTransfermarket")
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(
             @RequestParam String username,
@@ -36,16 +45,25 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersForTransferMarketByCareer(username, careername));
     }
 
+    /**
+     * Returns all players from a career.
+     */
     @GetMapping("/allPlayersFromCareer")
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(@RequestParam String careername) {
         return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByCareer(careername));
     }
 
+    /**
+     * Returns all players with a recent transfer from a career.
+     */
     @GetMapping("/allPlayersFromCareerWithTransfer")
     public ResponseEntity<List<TransferPlayerDTO>> getAllPlayersByCareerWithTransfer(@RequestParam String careername) {
         return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByCareerWithTransfer(careername));
     }
 
+    /**
+     * Sets the start eleven for the user in a given career.
+     */
     @PostMapping("/changeStartElevenPlayers")
     public ResponseEntity<Void> changeStartElevenPlayers(
             @RequestBody Map<String, List<Long>> requestBody,
@@ -61,6 +79,9 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Returns all players that the user has placed on the wishlist.
+     */
     @GetMapping("/allPlayersOnWishlist")
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersOnWishlist(
             @RequestParam String username,
@@ -68,6 +89,9 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByTrainerCareerOnWishlist(username, careername));
     }
 
+    /**
+     * Returns all players for whom the user has received offers.
+     */
     @GetMapping("/allPlayersWithOffer")
     public ResponseEntity<List<SaleOfferDTO>> getAllPlayersWithOffer(
             @RequestParam String username,
@@ -75,6 +99,9 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok(salesInquiryService.getAllPlayersByTrainerCareerWithOffer(username, careername));
     }
 
+    /**
+     * Executes a transfer for a player to the specified club.
+     */
     @PostMapping("/transferPlayer")
     public ResponseEntity<String> transferPlayer(
             @RequestParam String clubname,
@@ -84,6 +111,9 @@ public class TrainerCareerPlayerController {
         return ResponseEntity.ok("Transfer completed successfully!");
     }
 
+    /**
+     * Updates certain attributes of a player.
+     */
     @PatchMapping("/updateAttributes")
     public ResponseEntity<String> updatePlayerAttributes(
             @RequestParam String careername,
@@ -97,5 +127,4 @@ public class TrainerCareerPlayerController {
             return ResponseEntity.status(500).body("Fehler: " + e.getMessage());
         }
     }
-
 }
