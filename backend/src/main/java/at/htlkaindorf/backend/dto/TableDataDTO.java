@@ -8,16 +8,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TableDataDTO {
-
-    private String clubName;
-
-    private Integer wins;
-
-    private Integer draws;
-
-    private Integer losses;
-
-    private Integer goalDiff;
-
     private String username;
+    private String clubname;
+    private Integer wins;
+    private Integer draws;
+    private Integer losses;
+    private Integer goalDiff;
 }

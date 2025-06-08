@@ -1,15 +1,10 @@
 package at.htlkaindorf.backend.controller;
 
-import at.htlkaindorf.backend.dto.NewCareerRequestDTO;
-import at.htlkaindorf.backend.pk.TrainerCareerPK;
-import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
-import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.services.*;
 import at.htlkaindorf.backend.websocket.SimulationUpdate;
 import at.htlkaindorf.backend.websocket.SimulationWebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/simulation")
 @RequiredArgsConstructor
-@Slf4j
 public class SimulationController {
 
     private final CareerService careerService;
@@ -29,65 +23,51 @@ public class SimulationController {
     private final SimulationWebSocketService websocketService;
     private final SalesInquiryService salesInquiryService;
 
-    // nicht jeder darf aufrufen
     @PostMapping("/start")
     public ResponseEntity<String> startSimulation(@RequestParam String careername, @RequestParam Boolean firstHalf) {
 
-        Integer countGames = gameService.getNotPlayedGames(careername);
-        Integer countClubs = clubService.getClubCount();
+        int countGames = gameService.getNotPlayedGames(careername);
+        int countClubs = clubService.getClubCount();
 
-        if ((countGames.equals((countClubs - 1) * 2 * countClubs) && !firstHalf) || (countGames.equals((countClubs - 1) * countClubs) && firstHalf) || countGames.equals(0)) {
-            return ResponseEntity.ok("Fehler beim Spiele simulieren!");
+        if ((countGames == (countClubs - 1) * 2 * countClubs && !firstHalf)
+                || (countGames == (countClubs - 1) * countClubs && firstHalf)
+                || countGames == 0) {
+            throw new IllegalStateException("Simulation cannot be started. Invalid game state.");
         }
+
         if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
-            return ResponseEntity.ok("User noch nicht ready!");
+            throw new IllegalStateException("Not all users are ready for simulation.");
         }
 
-        Boolean changeCareer = careerService.changeCareerAfterFirstHalfSimulation(careername, firstHalf);
-        Boolean simulateSeason = gameService.simulateSeason(careername, firstHalf);
-        Boolean changeTable = trainerCareerService.changeTable(careername, firstHalf);
-
-        if (!changeCareer || !simulateSeason || !changeTable) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Fehler beim simulieren!");
-        }
-
+        careerService.changeCareerAfterSimulation(careername, firstHalf);
+        gameService.simulateSeason(careername, firstHalf);
+        trainerCareerService.changeTable(careername, firstHalf);
         trainerCareerService.setUsersNotReady(careername);
 
         websocketService.sendUpdate(careername, new SimulationUpdate("SIMULATION_STARTED", firstHalf));
 
-        return ResponseEntity.ok("Simulation " + (firstHalf ? "Hinrunde" : "Rückrunde") + " erfolgreich!");
+        return ResponseEntity.ok("Simulation " + (firstHalf ? "first half" : "second half") + " completed successfully!");
     }
 
-    // Spieler aktualisieren
     @PostMapping("/endSeason")
     public ResponseEntity<String> endSeason(@RequestParam String careername) {
 
         if (!trainerCareerService.getNotReadyUsers(careername).isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Nicht alle User sind bereit.");
+            throw new IllegalStateException("Not all users are ready to end the season.");
         }
 
         if (gameService.getNotPlayedGames(careername) > 0) {
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body("Es sind noch Spiele offen, die nicht simuliert wurden.");
+            throw new IllegalStateException("There are still unplayed games.");
         }
 
-        boolean resetGames = gameService.resetGamesFromCareer(careername);
-        boolean resetCareers = trainerCareerService.resetTrainerCareers(careername);
-        boolean changePlayerStats = trainerCareerPlayerService.changePlayerStats(careername);
-        boolean transferRandomPlayer = salesInquiryService.transferRandomPlayer(careername);
+        gameService.resetGamesFromCareer(careername);
+        trainerCareerService.resetTrainerCareers(careername);
+        trainerCareerPlayerService.changePlayerStats(careername);
+        salesInquiryService.transferRandomPlayer(careername);
 
-        if (!resetGames || !resetCareers || !changePlayerStats || !transferRandomPlayer) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Fehler beim Zurücksetzen der Saison!");
-        }
-
-        // WebSocket Update senden
         websocketService.sendUpdate(careername, new SimulationUpdate("SEASON_ENDED", null));
 
-        return ResponseEntity.ok("Season erfolgreich beendet!");
+        return ResponseEntity.ok("Season ended successfully!");
     }
 
     @PatchMapping("/pressReady")
@@ -95,16 +75,9 @@ public class SimulationController {
             @RequestParam String username,
             @RequestParam String careername) {
 
-        Boolean setReady = trainerCareerService.userSetReady(username, careername);
-
-        if (Boolean.FALSE.equals(setReady)) {
-            return ResponseEntity.badRequest().body("keine volle Startelf gefunden!");
-        }
-
-        // WebSocket Update senden
+        trainerCareerService.userSetReady(username, careername);
         websocketService.sendUpdate(careername, new SimulationUpdate("USER_READY", username));
-
-        return ResponseEntity.ok("User ready!");
+        return ResponseEntity.ok("User is now ready.");
     }
 
     @GetMapping("/isUserReady")
@@ -121,10 +94,6 @@ public class SimulationController {
     public ResponseEntity<Boolean> isAllowedToSimulate(
             @RequestParam String username,
             @RequestParam String careername) {
-
-        Boolean isAllowed = trainerCareerService.isUserAllowedToSimulate(username, careername);
-
-        return ResponseEntity.ok(isAllowed);
+        return ResponseEntity.ok(trainerCareerService.isUserAllowedToSimulate(username, careername));
     }
-
 }

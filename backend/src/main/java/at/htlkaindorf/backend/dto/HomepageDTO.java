@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class HomepageDTO {
 
+    private String username;
     private String clubname;
     private String firstname;
     private String lastname;
-    private String username;
     private Integer season;
     private Integer leagueTitleCount;
 

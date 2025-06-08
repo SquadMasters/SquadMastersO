@@ -1,47 +1,39 @@
 package at.htlkaindorf.backend.services;
 
-import at.htlkaindorf.backend.dto.UserDTO;
-import at.htlkaindorf.backend.mapper.UserMapper;
 import at.htlkaindorf.backend.pojos.User;
 import at.htlkaindorf.backend.repositories.UserRepository;
+import at.htlkaindorf.backend.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class AuthService {
 
-    public final UserRepository userRepository;
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
 
-    public Boolean validateUser(String userName, String passwd) {
-
-        List<User> users = userRepository.getUsersByUserName(userName);
-
-        if (users.isEmpty()) {
-            return false;
-        }
-
-        return users.get(0).getUserPassword().equals(passwd);
+    public String loginUser(String username, String password) {
+        return userRepository.findUserByName(username)
+                .filter(user -> user.getUserPassword().equals(password))
+                .map(user -> JWTUtils.generateToken(username))
+                .orElseThrow(() -> new IllegalArgumentException("Login failed: Invalid username or password."));
     }
 
-    public UserDTO registerUser(String userName, String passwd) {
-
-        User user = User.builder().userName(userName).trainerCareers(new ArrayList<>()).userPassword(passwd).trainerCareers(new ArrayList<>()).build();
-
-        if (!userRepository.getUsersByUserName(userName).isEmpty()) {
-            log.error("Username schon vorhanden!");
-            throw new RuntimeException("Username schon vorhanden");
+    public String registerUser(String username, String password) {
+        if (userRepository.findUserByName(username).isPresent()) {
+            throw new IllegalStateException("Username is already taken");
         }
+
+        User user = User.builder()
+                .userName(username)
+                .userPassword(password)
+                .trainerCareers(new ArrayList<>())
+                .build();
 
         userRepository.save(user);
-
-        return userMapper.toDTO(user);
+        return user.getUserName();
     }
-
 }

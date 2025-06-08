@@ -1,53 +1,64 @@
 package at.htlkaindorf.backend.services;
 
-import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
+import at.htlkaindorf.backend.exceptions.ResourceNotFoundException;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
-import at.htlkaindorf.backend.pojos.Club;
-import at.htlkaindorf.backend.pojos.SalesInquiryEntry;
-import at.htlkaindorf.backend.pojos.TrainerCareer;
-import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
-import at.htlkaindorf.backend.repositories.ClubRepository;
-import at.htlkaindorf.backend.repositories.SalesInquiryRepository;
-import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
-import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
+import at.htlkaindorf.backend.pojos.*;
+import at.htlkaindorf.backend.repositories.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TransferService {
 
-    public final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
+    private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final TrainerCareerRepository trainerCareerRepository;
     private final SalesInquiryRepository salesInquiryRepository;
     private final ClubRepository clubRepository;
 
     @Transactional
-    public Boolean transferPlayer(String clubname, String careername, Long playerId) {
-        if (clubname == null || clubname.trim().isEmpty() ||
-                careername == null || careername.trim().isEmpty() ||
+    public void transferPlayer(String clubname, String careername, Long playerId) {
+
+        if (clubname == null || clubname.isBlank() ||
+                careername == null || careername.isBlank() ||
                 playerId == null || playerId <= 0) {
-            return false;
+            throw new IllegalArgumentException("Invalid transfer parameters");
         }
 
-        TrainerCareerPlayer oldPlayer = trainerCareerPlayerRepository.findPlayerFromCareerById(careername, playerId);
-        Club newClub = clubRepository.getClubByName(clubname);
-        if (oldPlayer == null || newClub == null) return false;
+        TrainerCareerPlayer oldPlayer = trainerCareerPlayerRepository
+                .findPlayerFromCareerById(playerId, careername);
+        if (oldPlayer == null) {
+            throw new ResourceNotFoundException("Player in career", "id: " + playerId + ", career: " + careername);
+        }
 
-        TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
-        TrainerCareer oldCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(oldPlayer.getClub().getClubName(), careername);
-        if (targetCareer == null || targetCareer.getBudget() < oldPlayer.getValueNow() || oldCareer == null)
-            return false;
+        Club newClub = clubRepository.findClubByName(clubname);
+        if (newClub == null) {
+            throw new ResourceNotFoundException("Club", clubname);
+        }
+
+        TrainerCareer targetCareer = trainerCareerRepository
+                .findTrainerCareerByClubnameAndCareername(clubname, careername);
+        if (targetCareer == null) {
+            throw new ResourceNotFoundException("Target career", "club: " + clubname + ", career: " + careername);
+        }
+
+        if (targetCareer.getBudget() < oldPlayer.getValueNow()) {
+            throw new IllegalStateException("Target club does not have enough budget");
+        }
+
+        TrainerCareer oldCareer = trainerCareerRepository
+                .findTrainerCareerByClubnameAndCareername(oldPlayer.getClub().getClubName(), careername);
+        if (oldCareer == null) {
+            throw new ResourceNotFoundException("Old career", "club: " + oldPlayer.getClub().getClubName() + ", career: " + careername);
+        }
 
         targetCareer.setBudget((int) (targetCareer.getBudget() - oldPlayer.getValueNow()));
         oldCareer.setBudget((int) (oldCareer.getBudget() + oldPlayer.getValueNow()));
-
 
         List<SalesInquiryEntry> entries = salesInquiryRepository.findAllSalesInquiryFromPlayer(careername, playerId);
         salesInquiryRepository.deleteAll(entries);
@@ -65,13 +76,8 @@ public class TransferService {
                 playerId
         ));
 
-
         trainerCareerPlayerRepository.delete(oldPlayer);
         trainerCareerPlayerRepository.save(newPlayer);
-        trainerCareerRepository.save(targetCareer);
-        trainerCareerRepository.save(oldCareer);
-
-        return true;
+        trainerCareerRepository.saveAll(List.of(targetCareer, oldCareer));
     }
-
 }

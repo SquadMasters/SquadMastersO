@@ -11,12 +11,13 @@ import lombok.NoArgsConstructor;
 public class  TrainerCareerPlayerDTO {
 
     private Long playerId;
+    private String clubname;
     private String firstname;
     private String lastname;
     private String position;
     private Double value;
     private Integer rating;
-    private String clubname;
     private Integer ageNow;
+    private String positionInLineup;
     private Integer potential;
 }

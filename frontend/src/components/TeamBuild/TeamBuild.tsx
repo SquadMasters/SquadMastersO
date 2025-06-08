@@ -70,7 +70,6 @@ const TeamBuild = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-
     useEffect(() => {
 
 
@@ -263,8 +262,17 @@ const TeamBuild = () => {
             });
 
             if (!response.ok) {
-                const error = await response.text();
-                throw new Error(error || 'Fehler beim Speichern');
+                const contentType = response.headers.get("content-type");
+                let errorText = "Unknown error";
+
+                if (contentType && contentType.includes("application/json")) {
+                    const errorJson = await response.json();
+                    errorText = errorJson.message || JSON.stringify(errorJson);
+                } else {
+                    errorText = await response.text();
+                }
+
+                throw new Error(errorText);
             }
 
             setErrorMessage("Aufstellung erfolgreich gespeichert!");

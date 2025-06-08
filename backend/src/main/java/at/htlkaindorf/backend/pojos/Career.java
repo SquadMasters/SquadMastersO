@@ -41,6 +41,7 @@ public class Career {
     @ToString.Exclude
     private List<TrainerCareerPlayer> players;
 
+
     public void changeIsRunning() {
         if (!isRunning)
             isRunning = true;

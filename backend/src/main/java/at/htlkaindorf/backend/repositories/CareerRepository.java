@@ -10,6 +10,9 @@ import java.util.List;
 
 public interface CareerRepository extends JpaRepository<Career, Long> {
 
+    @Query("SELECT c FROM Career c WHERE c.careerName = ?1")
+    Career findCareerByName(String careername);
+
     @Query("""
     SELECT c.careerName
     FROM Career c
@@ -19,14 +22,6 @@ public interface CareerRepository extends JpaRepository<Career, Long> {
         WHERE tc.career = c AND tc.user.userName = ?1
         ) AND c.isRunning = false
     """)
-    List<String> getCareersWithoutUser(String username);
+    List<String> findCareersWithoutUser(String username);
 
-    @Query("SELECT c FROM Career c WHERE c.careerName = ?1")
-    Career findCareerByName(String careername);
-
-    @Query("SELECT c.currentCareerDate FROM Career c WHERE c.careerName = ?1")
-    LocalDate getCurrentCareerDate(String careername);
-
-    @Query("SELECT c.trainerCareers FROM Career c WHERE c.careerName = ?1")
-    List<TrainerCareer> getTrainerCareersFromCareer(String careername);
 }
