@@ -1,14 +1,12 @@
 package at.htlkaindorf.backend.services;
 
 import at.htlkaindorf.backend.dto.SaleOfferDTO;
-import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
 import at.htlkaindorf.backend.mapper.SalesInquiryMapper;
 import at.htlkaindorf.backend.pk.SalesInquiryEntryPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
-import at.htlkaindorf.backend.pojos.SalesInquiryEntry;
-import at.htlkaindorf.backend.pojos.TrainerCareer;
-import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
+import at.htlkaindorf.backend.exceptions.ResourceNotFoundException;
+import at.htlkaindorf.backend.pojos.*;
 import at.htlkaindorf.backend.repositories.SalesInquiryRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
@@ -20,7 +18,6 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class SalesInquiryService {
 
     private final TrainerCareerRepository trainerCareerRepository;
@@ -29,120 +26,113 @@ public class SalesInquiryService {
     private final SalesInquiryMapper salesInquiryMapper;
     private final TransferService transferService;
 
-    public List<SaleOfferDTO> getAllPlayersByTrainerCareerWithOffer(String username, String careername) {
-
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        List<SalesInquiryEntry> inquiries = salesInquiryRepository.findAllPlayersWithOffer(clubname, careername);
-
-        return inquiries.stream()
-                .map(salesInquiryMapper::toSaleOfferDTO)
-                .toList();
+    public List<SaleOfferDTO> getAllPlayersByTrainerCareerWithOffer(String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        List<SalesInquiryEntry> inquiries = salesInquiryRepository.findAllPlayersWithOffer(clubName, careerName);
+        return inquiries.stream().map(salesInquiryMapper::toSaleOfferDTO).toList();
     }
 
-    public String sentOfferToPlayer(String clubname, String careername, Long playerId) {
-
-        if (clubname == null || clubname.trim().isEmpty() || careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
-            return "Übergabewerte fehlerhaft!";
+    public String sendOfferToPlayer(String clubName, String careerName, Long playerId) {
+        if (clubName == null || clubName.isBlank() ||
+                careerName == null || careerName.isBlank() ||
+                playerId == null || playerId <= 0) {
+            throw new IllegalArgumentException("Invalid request parameters");
         }
 
-        TrainerCareer tc = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
-        TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerFromCareerById(careername, playerId);
-        TrainerCareer targetCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(player.getClub().getClubName(), player.getCareer().getCareerName());
-
-        if (tc == null || targetCareer == null || tc.getBudget() < player.getValueNow()) {
-            return "Zu wenig Budget für den Spieler!";
+        TrainerCareer buyerCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubName, careerName);
+        if (buyerCareer == null) {
+            throw new ResourceNotFoundException("TrainerCareer", "club: " + clubName + ", career: " + careerName);
         }
 
-        if (targetCareer.getUser() != null) {
-            SalesInquiryEntryPK pk = new SalesInquiryEntryPK();
-            TrainerCareerPK tcPK = new TrainerCareerPK(tc.getClub().getClub_id(), tc.getCareer().getCareer_id());
-            pk.setTrainerCareerPK(tcPK);
-            pk.setTrainerCareerPlayerPK(new TrainerCareerPlayerPK(tcPK, player.getPlayer().getPlayer_Id()));
+        TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerFromCareerById(playerId, careerName);
+        if (player == null) {
+            throw new ResourceNotFoundException("Player", "id: " + playerId + ", career: " + careerName);
+        }
+
+        TrainerCareer sellerCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(
+                player.getClub().getClubName(), player.getCareer().getCareerName());
+        if (sellerCareer == null) {
+            throw new ResourceNotFoundException("TrainerCareer", "seller for player: " + playerId);
+        }
+
+        if (buyerCareer.getBudget() < player.getValueNow()) {
+            throw new IllegalStateException("Not enough budget for player transfer");
+        }
+
+        if (sellerCareer.getUser() != null) {
+            TrainerCareerPK tcPK = new TrainerCareerPK(buyerCareer.getClub().getClub_id(), buyerCareer.getCareer().getCareer_id());
+            TrainerCareerPlayerPK playerPK = new TrainerCareerPlayerPK(tcPK, player.getPlayer().getPlayer_Id());
 
             SalesInquiryEntry entry = SalesInquiryEntry.builder()
-                    .id(pk)
-                    .trainerCareer(tc)
+                    .id(new SalesInquiryEntryPK(tcPK, playerPK))
+                    .trainerCareer(buyerCareer)
                     .trainerCareerPlayer(player)
                     .build();
 
             salesInquiryRepository.save(entry);
+            return "Offer sent successfully!";
         } else {
-            Boolean transfer = transferService.transferPlayer(clubname, careername, playerId);
-            if (transfer) {
-                return player.getPlayer().getLastname() + " erfolgreich verpflichtet!";
-            }
-            return "Fehler beim Transfer!";
+            transferService.transferPlayer(clubName, careerName, playerId);
+            return "Transfer completed successfully!";
         }
-
-
-        return "Angebot erfolgreich gesendet!";
     }
 
-    public Boolean deleteSentOffers(String careername, Long playerId, String username) {
-
-        if (careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
-            return false;
+    public void deleteSentOffers(String careerName, Long playerId, String username) {
+        if (careerName == null || careerName.isBlank() || playerId == null || playerId <= 0) {
+            throw new IllegalArgumentException("Invalid request parameters");
         }
 
-        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquirySentOffers(careername, playerId, username);
-
+        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquirySentOffers(careerName, playerId, username);
         salesInquiryRepository.deleteAll(entries);
-
-        return true;
     }
 
-    public Boolean deleteReceivedOffers(String careername, Long playerId, String clubname) {
-
-        if (careername == null || careername.trim().isEmpty() || playerId == null || playerId <= 0) {
-            return false;
+    public void deleteReceivedOffers(String careerName, Long playerId, String clubName) {
+        if (careerName == null || careerName.isBlank() || playerId == null || playerId <= 0) {
+            throw new IllegalArgumentException("Invalid request parameters");
         }
 
-        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquiryReceivedOffers(careername, playerId, clubname);
-
+        List<SalesInquiryEntry> entries = salesInquiryRepository.findSaleInquiryReceivedOffers(careerName, playerId, clubName);
         salesInquiryRepository.deleteAll(entries);
-
-        return true;
     }
 
-    public Boolean transferRandomPlayer(String careername) {
-
-        if (careername == null || careername.trim().isEmpty()) {
-            return false;
+    public void transferRandomPlayer(String careerName) {
+        if (careerName == null || careerName.isBlank()) {
+            throw new IllegalArgumentException("Career name must not be empty");
         }
 
-        List<TrainerCareer> careers = trainerCareerRepository.findAllByCareer(careername);
-
+        List<TrainerCareer> careers = trainerCareerRepository.findTrainerCareersFromCareer(careerName);
         Map<TrainerCareer, List<TrainerCareerPlayer>> playerMap = new HashMap<>();
+
         for (TrainerCareer career : careers) {
             List<TrainerCareerPlayer> players = trainerCareerPlayerRepository
-                    .findPlayersByTrainerCareer(career.getClub().getClubName(), careername);
+                    .findPlayersFromTrainerCareer(career.getClub().getClubName(), careerName);
             playerMap.put(career, players);
         }
 
         careers.sort(Comparator.comparingInt(c -> playerMap.get(c).size()));
-
         int index = 0;
-        for (TrainerCareer career : careers) {
 
-            List<TrainerCareerPlayer> playersOnTransfermarket = trainerCareerPlayerRepository.findAllForTransfermarketInBudget(career.getClub().getClubName(), careername, career.getBudget());
-            if (!playersOnTransfermarket.isEmpty()) {
+        for (TrainerCareer career : careers) {
+            List<TrainerCareerPlayer> playersOnTransfermarket = trainerCareerPlayerRepository
+                    .findPlayersFromCareerForSale(career.getClub().getClubName(), careerName, career.getBudget());
+
+            if (playersOnTransfermarket.size() >= 2) {
                 Random random = new Random();
-                TrainerCareerPlayer randomPlayer = playersOnTransfermarket.get(random.nextInt(playersOnTransfermarket.size()));
-                playersOnTransfermarket.remove(randomPlayer);
-                TrainerCareerPlayer randomPlayer2 = playersOnTransfermarket.get(random.nextInt(playersOnTransfermarket.size()));
+                TrainerCareerPlayer randomPlayer = playersOnTransfermarket.remove(random.nextInt(playersOnTransfermarket.size()));
 
                 if (index < 3) {
-                    sentOfferToPlayer(career.getClub().getClubName(), careername, randomPlayer.getPlayer().getPlayer_Id());
-                    sentOfferToPlayer(career.getClub().getClubName(), careername, randomPlayer2.getPlayer().getPlayer_Id());
+                    sendOfferToPlayer(career.getClub().getClubName(), careerName, randomPlayer.getPlayer().getPlayer_Id());
+
+                    playersOnTransfermarket = trainerCareerPlayerRepository
+                            .findPlayersFromCareerForSale(career.getClub().getClubName(), careerName, career.getBudget());
+                    TrainerCareerPlayer randomPlayer2 = playersOnTransfermarket.get(random.nextInt(playersOnTransfermarket.size()));
+
+                    sendOfferToPlayer(career.getClub().getClubName(), careerName, randomPlayer2.getPlayer().getPlayer_Id());
                 } else if (index < 7) {
-                    sentOfferToPlayer(career.getClub().getClubName(), careername, randomPlayer.getPlayer().getPlayer_Id());
+                    sendOfferToPlayer(career.getClub().getClubName(), careerName, randomPlayer.getPlayer().getPlayer_Id());
                 }
             }
             index++;
         }
-
-
-        return true;
     }
-
 }

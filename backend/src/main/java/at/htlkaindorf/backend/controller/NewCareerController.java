@@ -1,6 +1,6 @@
 package at.htlkaindorf.backend.controller;
 
-import at.htlkaindorf.backend.dto.NewCareerRequestDTO;
+import at.htlkaindorf.backend.requests.CareerClubRequest;
 import at.htlkaindorf.backend.help.PlayerValueCalc;
 import at.htlkaindorf.backend.pk.TrainerCareerPK;
 import at.htlkaindorf.backend.pk.TrainerCareerPlayerPK;
@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,7 +19,6 @@ import java.util.Random;
 @RestController
 @RequestMapping("/newCareer")
 @RequiredArgsConstructor
-@Slf4j
 public class NewCareerController {
 
     private final CareerService careerService;
@@ -30,22 +28,22 @@ public class NewCareerController {
     private final GameService gameService;
 
     @PostMapping("/create")
-    public ResponseEntity<Boolean> createNewCareer(@RequestBody NewCareerRequestDTO newCareerRequestDTO) {
+    public ResponseEntity<Boolean> createNewCareer(@RequestBody CareerClubRequest request) {
 
-        if (newCareerRequestDTO.getCareerName() == null || newCareerRequestDTO.getCareerName().trim().isEmpty()) {
+        if (request.getCareername() == null || request.getCareername().trim().isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
 
         User user;
         try {
-            user = userService.getUserByUsername(newCareerRequestDTO.getUsername());
+            user = userService.getUserByUsername(request.getUsername());
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
 
         Random random = new Random();
 
-        Career career = Career.builder().currentCareerDate(LocalDate.of(2025, 6, 1)).startUser(user).isRunning(false).careerName(newCareerRequestDTO.getCareerName()).build();
+        Career career = Career.builder().currentCareerDate(LocalDate.of(2025, 6, 1)).startUser(user).isRunning(false).careerName(request.getCareername()).build();
         List<Career> careers = user.getCareers();
         careers.add(career);
         user.setCareers(careers);
@@ -57,7 +55,7 @@ public class NewCareerController {
 
         List<Club> clubs = clubsService.getAllClubs();
         for (Club club : clubs) {
-            players = playerService.getAllPlayersClubs(club.getClub_id());
+            players = playerService.getPlayersFromClub(club.getClub_id());
             int budget = 10_000_000 + random.nextInt(90_000_000);
 
             TrainerCareerPK trainerCareerPK = new TrainerCareerPK(club.getClub_id(), career.getCareer_id());
@@ -74,7 +72,7 @@ public class NewCareerController {
                     .readyForSimulation(false)
                     .build();
 
-            if (club.getClubName().equals(newCareerRequestDTO.getClubName())) {
+            if (club.getClubName().equals(request.getClubname())) {
                 trainerCareer.setUser(user);
                 List<TrainerCareer> careersOfUser = user.getTrainerCareers();
                 careersOfUser.add(trainerCareer);
@@ -121,8 +119,6 @@ public class NewCareerController {
         careerService.careerRepository.save(career);
         gameService.generateTrainerCareerGames(trainerCareers, career.getCareerName());
         careerService.careerRepository.save(career);
-
-        log.info("Neue Karriere erstellt!");
 
         return ResponseEntity.ok(true);
     }

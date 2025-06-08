@@ -3,13 +3,8 @@ package at.htlkaindorf.backend.controller;
 import at.htlkaindorf.backend.dto.*;
 import at.htlkaindorf.backend.services.SalesInquiryService;
 import at.htlkaindorf.backend.services.TrainerCareerPlayerService;
-import at.htlkaindorf.backend.services.TrainerCareerService;
 import at.htlkaindorf.backend.services.TransferService;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +14,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/trainerCareerPlayer")
 @RequiredArgsConstructor
-@Slf4j
 public class TrainerCareerPlayerController {
 
     private final TrainerCareerPlayerService trainerCareerPlayerService;
@@ -27,81 +21,64 @@ public class TrainerCareerPlayerController {
     private final TransferService transferService;
 
     @GetMapping("/allPlayersFromTrainerCareer")
-    public ResponseEntity<List<PlayerListDTO>> getAllPlayersByTrainerCareer(
+    public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByTrainerCareer(
             @RequestParam String username,
             @RequestParam String careername) {
-
-        List<PlayerListDTO> players = trainerCareerPlayerService.getAllPlayersByTrainerCareer(username, careername);
-        return ResponseEntity.ok(players);
+        return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByTrainerCareer(username, careername));
     }
 
     @GetMapping("/allPlayersForTransfermarket")
-    public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(@RequestParam String username, @RequestParam String careername) {
-
-        List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersForTransferMarketByCareer(username, careername);
-        return ResponseEntity.ok(players);
+    public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(
+            @RequestParam String username,
+            @RequestParam String careername) {
+        return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersForTransferMarketByCareer(username, careername));
     }
 
     @GetMapping("/allPlayersFromCareer")
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersByCareer(@RequestParam String careername) {
-
-        List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByCareer(careername);
-        return ResponseEntity.ok(players);
+        return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByCareer(careername));
     }
 
     @GetMapping("/allPlayersFromCareerWithTransfer")
     public ResponseEntity<List<TransferPlayerDTO>> getAllPlayersByCareerWithTransfer(@RequestParam String careername) {
-
-        List<TransferPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByCareerWithTransfer(careername);
-        return ResponseEntity.ok(players);
+        return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByCareerWithTransfer(careername));
     }
 
-
     @PostMapping("/changeStartElevenPlayers")
-    public ResponseEntity<String> changeStartElevenPlayers(
+    public ResponseEntity<Void> changeStartElevenPlayers(
             @RequestBody Map<String, List<Long>> requestBody,
             @RequestParam String username,
             @RequestParam String careername) {
 
         List<Long> ids = requestBody.get("ids");
-
         if (ids == null || ids.size() != 11) {
-            return ResponseEntity.badRequest().body("{\"error\": \"Invalid number of players. Exactly 11 players required.\"}");
+            throw new IllegalArgumentException("Exactly 11 player IDs must be provided.");
         }
 
-        try {
-            trainerCareerPlayerService.changeStartEleven(ids, username, careername);
-            return ResponseEntity.ok("{\"message\": \"Startelf erfolgreich geändert\"}");
-        } catch (Exception e) {
-            log.error("Fehler beim Ändern der Startelf: {}", e.getMessage());
-            return ResponseEntity.status(500).body("{\"error\": \"Fehler beim Ändern der Startelf: " + e.getMessage() + "\"}");
-        }
+        trainerCareerPlayerService.changeStartEleven(ids, username, careername);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/allPlayersOnWishlist")
     public ResponseEntity<List<TrainerCareerPlayerDTO>> getAllPlayersOnWishlist(
             @RequestParam String username,
             @RequestParam String careername) {
-
-        List<TrainerCareerPlayerDTO> players = trainerCareerPlayerService.getAllPlayersByTrainerCareerOnWishlist(username, careername);
-        return ResponseEntity.ok(players);
+        return ResponseEntity.ok(trainerCareerPlayerService.getAllPlayersByTrainerCareerOnWishlist(username, careername));
     }
 
     @GetMapping("/allPlayersWithOffer")
     public ResponseEntity<List<SaleOfferDTO>> getAllPlayersWithOffer(
             @RequestParam String username,
             @RequestParam String careername) {
-
-        List<SaleOfferDTO> players = salesInquiryService.getAllPlayersByTrainerCareerWithOffer(username, careername);
-        return ResponseEntity.ok(players);
+        return ResponseEntity.ok(salesInquiryService.getAllPlayersByTrainerCareerWithOffer(username, careername));
     }
 
     @PostMapping("/transferPlayer")
-    public ResponseEntity<Boolean> transferPlayer(
+    public ResponseEntity<String> transferPlayer(
             @RequestParam String clubname,
             @RequestParam String careername,
             @RequestParam Long playerId) {
-
-        return ResponseEntity.ok(transferService.transferPlayer(clubname, careername, playerId));
+        transferService.transferPlayer(clubname, careername, playerId);
+        return ResponseEntity.ok("Transfer completed successfully!");
     }
 }

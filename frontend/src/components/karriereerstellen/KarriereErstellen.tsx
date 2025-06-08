@@ -1,16 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import {useNavigate} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-interface Club {
-    club_id: number;
-    clubName: string;
-}
-
 const KarriereErstellen: React.FC = () => {
     const [careerName, setCareerName] = useState('');
-    const [clubs, setClubs] = useState<Club[]>([]);
+    const [clubs, setClubs] = useState<string[]>([]);
     const [selectedClubName, setSelectedClubName] = useState<string>('');
     const navigate = useNavigate();
     const username = localStorage.getItem('username');
@@ -20,10 +15,16 @@ const KarriereErstellen: React.FC = () => {
             .then(res => {
                 setClubs(res.data);
                 if (res.data.length > 0) {
-                    setSelectedClubName(res.data[0].clubName);
+                    setSelectedClubName(res.data[0]);
                 }
             })
-            .catch(() => alert('Fehler beim Laden der Clubs'));
+            .catch(err => {
+                if (err.response && err.response.status === 404) {
+                    alert('Keine Clubs vorhanden!');
+                } else {
+                    alert('Fehler beim Laden der Clubs');
+                }
+            });
     }, []);
 
     const handleCreate = async (e: React.FormEvent) => {
@@ -34,14 +35,14 @@ const KarriereErstellen: React.FC = () => {
         }
 
         const request = {
-            careerName,
+            careername: careerName,
             username,
-            clubName: selectedClubName
+            clubname: selectedClubName
         };
 
         try {
             await axios.post('http://localhost:8080/newCareer/create', request, {
-                headers: {'Content-Type': 'application/json'}
+                headers: { 'Content-Type': 'application/json' }
             });
             navigate('/karriereauswahl');
         } catch (err) {
@@ -53,7 +54,7 @@ const KarriereErstellen: React.FC = () => {
     return (
         <div className="container mt-5">
             <h1 className="text-center mb-4">Eigene Karriere erstellen</h1>
-            <div className="card p-4 shadow mx-auto" style={{maxWidth: '600px'}}>
+            <div className="card p-4 shadow mx-auto" style={{ maxWidth: '600px' }}>
                 <form onSubmit={handleCreate}>
                     <div className="mb-3">
                         <label className="form-label">Karriere-Name</label>
@@ -73,17 +74,16 @@ const KarriereErstellen: React.FC = () => {
                             onChange={(e) => setSelectedClubName(e.target.value)}
                             required
                         >
-                            {clubs.map(club => (
-                                <option key={club.club_id} value={club.clubName}>
-                                    {club.clubName}
+                            {clubs.map(clubName => (
+                                <option key={clubName} value={clubName}>
+                                    {clubName}
                                 </option>
                             ))}
                         </select>
                     </div>
                     <div className="d-grid gap-2 mt-4">
                         <button type="submit" className="btn btn-primary">Karriere erstellen</button>
-                        <button type="button" className="btn btn-outline-secondary"
-                                onClick={() => navigate('/karriereauswahl')}>
+                        <button type="button" className="btn btn-outline-secondary" onClick={() => navigate('/karriereauswahl')}>
                             Zurück
                         </button>
                     </div>

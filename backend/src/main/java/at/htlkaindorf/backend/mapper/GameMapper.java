@@ -1,8 +1,6 @@
 package at.htlkaindorf.backend.mapper;
 
-import at.htlkaindorf.backend.dto.ClubDTO;
 import at.htlkaindorf.backend.dto.NextGameDTO;
-import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.pojos.Game;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

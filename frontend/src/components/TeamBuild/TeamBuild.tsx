@@ -72,11 +72,6 @@ const TeamBuild = () => {
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-
-
-
-
-
     useEffect(() => {
 
 
@@ -251,11 +246,10 @@ const TeamBuild = () => {
     const handleSaveLineup = async () => {
         const lineup = fieldPositions.map(pos => field[pos]?.playerId).filter(id => id !== undefined);
 
-        // Überprüfen, ob 11 Spieler aufgestellt sind
         if (lineup.length !== 11) {
-            setErrorMessage("Bitte stelle 11 Spieler auf!");  // Fehlermeldung setzen
-            setShowErrorModal(true);  // Modal öffnen
-            return; // Frühzeitig aus der Funktion zurückkehren
+            setErrorMessage("Bitte stelle 11 Spieler auf!");
+            setShowErrorModal(true);
+            return;
         }
 
         try {
@@ -265,20 +259,28 @@ const TeamBuild = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ ids: lineup }),  // Spieler-IDs im Body senden
+                body: JSON.stringify({ ids: lineup }),
             });
 
             if (!response.ok) {
-                const error = await response.text();
-                throw new Error(error || 'Fehler beim Speichern');
+                const contentType = response.headers.get("content-type");
+                let errorText = "Unknown error";
+
+                if (contentType && contentType.includes("application/json")) {
+                    const errorJson = await response.json();
+                    errorText = errorJson.message || JSON.stringify(errorJson);
+                } else {
+                    errorText = await response.text();
+                }
+
+                throw new Error(errorText);
             }
 
-            // Entferne alert(), stattdessen ein Erfolgspopup (optional)
             setErrorMessage("Aufstellung erfolgreich gespeichert!");
-            setShowErrorModal(true); // Erfolg im Modal anzeigen
+            setShowErrorModal(true);
         } catch (error) {
             setErrorMessage('Fehler beim Speichern: ' + (error instanceof Error ? error.message : 'Unbekannter Fehler'));
-            setShowErrorModal(true); // Fehler im Modal anzeigen
+            setShowErrorModal(true);
         }
     };
 

@@ -1,4 +1,4 @@
-package at.htlkaindorf.backend.dto;
+package at.htlkaindorf.backend.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JoinClubRequest {
+public class LoginRequest {
     private String username;
-    private String careername;
-    private String clubname;
+    private String password;
 }

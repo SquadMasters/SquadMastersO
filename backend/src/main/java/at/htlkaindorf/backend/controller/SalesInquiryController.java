@@ -1,45 +1,41 @@
 package at.htlkaindorf.backend.controller;
 
-import at.htlkaindorf.backend.repositories.ClubRepository;
-import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
 import at.htlkaindorf.backend.services.SalesInquiryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/salesInquiry")
 @RequiredArgsConstructor
-@Slf4j
 public class SalesInquiryController {
 
     private final SalesInquiryService salesInquiryService;
 
     @PostMapping("/sendOffer")
-    public String sendOfferToPlayer(
+    public ResponseEntity<String> sendOfferToPlayer(
             @RequestParam String clubname,
             @RequestParam String careername,
-            @RequestParam Long playerId
-    ) {
-        return salesInquiryService.sentOfferToPlayer(clubname, careername, playerId);
+            @RequestParam Long playerId) {
+        return ResponseEntity.ok(salesInquiryService.sendOfferToPlayer(clubname, careername, playerId));
     }
 
     @DeleteMapping("/deleteSentOffers")
-    public Boolean deleteSentOfferToPlayer(
+    public ResponseEntity<String> deleteSentOfferToPlayer(
             @RequestParam String username,
             @RequestParam String careername,
-            @RequestParam Long playerId
-    ) {
-        return salesInquiryService.deleteSentOffers(careername, playerId, username);
+            @RequestParam Long playerId) {
+        salesInquiryService.deleteSentOffers(careername, playerId, username);
+        return ResponseEntity.ok("Sent offers deleted successfully.");
     }
 
     @DeleteMapping("/deleteReceivedOffers")
-    public Boolean deleteReceivedOfferToPlayer(
+    public ResponseEntity<String> deleteReceivedOfferToPlayer(
             @RequestParam String clubname,
             @RequestParam String careername,
-            @RequestParam Long playerId
-    ) {
-        return salesInquiryService.deleteReceivedOffers(careername, playerId, clubname);
+            @RequestParam Long playerId) {
+        salesInquiryService.deleteReceivedOffers(careername, playerId, clubname);
+        return ResponseEntity.ok("Received offers deleted successfully.");
     }
-
 }

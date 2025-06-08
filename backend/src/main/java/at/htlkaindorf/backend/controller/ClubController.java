@@ -1,9 +1,6 @@
 package at.htlkaindorf.backend.controller;
 
-import at.htlkaindorf.backend.dto.ClubDTO;
-import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.services.ClubService;
-import at.htlkaindorf.backend.utils.JWTUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -16,18 +13,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/clubs")
 @RequiredArgsConstructor
-@Slf4j
 public class ClubController {
 
     private final ClubService clubsService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<ClubDTO>> getAllClubs() {
-
-        if (!clubsService.getAllClubs().isEmpty()) {
-            return ResponseEntity.ok(clubsService.getAllClubsDTO());
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No clubs available!");
-        }
+    public ResponseEntity<List<String>> getAllClubs() {
+        List<String> clubs = clubsService.getAllClubNames();
+        return ResponseEntity.ok(clubs);
     }
 }

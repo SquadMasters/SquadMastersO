@@ -1,57 +1,42 @@
 package at.htlkaindorf.backend.services;
 
-import at.htlkaindorf.backend.dto.PlayerListDTO;
-import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TrainerCareerPlayerDTO;
 import at.htlkaindorf.backend.dto.TransferPlayerDTO;
+import at.htlkaindorf.backend.exceptions.ResourceNotFoundException;
 import at.htlkaindorf.backend.help.PlayerValueCalc;
 import at.htlkaindorf.backend.mapper.TrainerCareerPlayerMapper;
-import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
-import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.pojos.PositionInLineup;
-import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.TrainerCareerPlayer;
-import at.htlkaindorf.backend.repositories.ClubRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
-import at.htlkaindorf.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TrainerCareerPlayerService {
 
-    public final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
+    private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final TrainerCareerRepository trainerCareerRepository;
     private final TrainerCareerPlayerMapper trainerCareerPlayerMapper;
 
-    public List<PlayerListDTO> getAllPlayersByTrainerCareer(String username, String careername) {
-
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findPlayersByTrainerCareer(clubname, careername);
-
-        return tcPlayers.stream()
-                .map(trainerCareerPlayerMapper::toPlayerListDTO)
-                .toList();
+    public List<TrainerCareerPlayerDTO> getAllPlayersByTrainerCareer(String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        List<TrainerCareerPlayer> players = trainerCareerPlayerRepository.findPlayersFromTrainerCareer(clubName, careerName);
+        return players.stream().map(trainerCareerPlayerMapper::toCareerPlayerDTO).toList();
     }
 
-    public List<TrainerCareerPlayerDTO> getAllPlayersForTransferMarketByCareer(String username, String careername) {
-
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllForTransfermarket(clubname, careername);
+    public List<TrainerCareerPlayerDTO> getAllPlayersForTransferMarketByCareer(String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        List<TrainerCareerPlayer> allPlayers = trainerCareerPlayerRepository.findPlayersFromCareerForSale(clubName, careerName, Integer.MAX_VALUE);
         List<TrainerCareerPlayer> filteredPlayers = new ArrayList<>();
 
-        for (TrainerCareerPlayer player : tcPlayers) {
+        for (TrainerCareerPlayer player : allPlayers) {
             String position = player.getPlayer().getPosition();
-            String clubnamePlayer = player.getClub().getClubName();
+            String playerClub = player.getClub().getClubName();
             List<String> group;
             int minCount;
 
@@ -69,126 +54,88 @@ public class TrainerCareerPlayerService {
                 minCount = 4;
             }
 
-            int count = trainerCareerPlayerRepository.countPlayersFromTeamOnPosition(careername, clubnamePlayer, group);
+            int count = trainerCareerPlayerRepository.getPlayersFromTrainerCareerOnPositionsCount(careerName, playerClub, group);
             if (count >= minCount) {
                 filteredPlayers.add(player);
             }
         }
 
-        return filteredPlayers.stream()
-                .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
-                .toList();
+        return filteredPlayers.stream().map(trainerCareerPlayerMapper::toCareerPlayerDTO).toList();
     }
 
-    public List<TrainerCareerPlayerDTO> getAllPlayersByCareer(String careername) {
-
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersFromCareer(careername);
-
-        return tcPlayers.stream()
-                .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
-                .toList();
+    public List<TrainerCareerPlayerDTO> getAllPlayersByCareer(String careerName) {
+        List<TrainerCareerPlayer> players = trainerCareerPlayerRepository.findPlayersFromCareer(careerName);
+        return players.stream().map(trainerCareerPlayerMapper::toCareerPlayerDTO).toList();
     }
 
-    public List<TransferPlayerDTO> getAllPlayersByCareerWithTransfer(String careername) {
-
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersFromCareerWithTransfer(careername);
-
-        return tcPlayers.stream()
-                .map(trainerCareerPlayerMapper::toTransferPlayerDTO)
-                .toList();
+    public List<TransferPlayerDTO> getAllPlayersByCareerWithTransfer(String careerName) {
+        List<TrainerCareerPlayer> players = trainerCareerPlayerRepository.findPlayersFromCareerWithTransfer(careerName);
+        return players.stream().map(trainerCareerPlayerMapper::toTransferPlayerDTO).toList();
     }
 
-    public void changeStartEleven(List<Long> ids, String username, String careername) {
+    public void changeStartEleven(List<Long> ids, String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        List<TrainerCareerPlayer> players = trainerCareerPlayerRepository.findPlayersFromTrainerCareer(clubName, careerName);
 
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findPlayersByTrainerCareer(clubname, careername);
-
-
-        List<TrainerCareerPlayer> startingEleven = tcPlayers.stream()
-                .filter(player -> player.getPositionInLineup() != PositionInLineup.B)
-                .toList();
-
-        for (TrainerCareerPlayer trainerCareerPlayer : startingEleven) {
-            trainerCareerPlayer.setPositionInLineup(PositionInLineup.B);
-        }
-
-        int index = 0;
+        players.forEach(player -> player.setPositionInLineup(PositionInLineup.B));
 
         PositionInLineup[] positions = PositionInLineup.values();
-
-        for (Long id : ids) {
-
-            TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerById(id, careername);
-
-            if (player != null && index < positions.length) {
-                player.setPositionInLineup(positions[index]);
+        for (int i = 0; i < ids.size() && i < positions.length; i++) {
+            TrainerCareerPlayer player = trainerCareerPlayerRepository.findPlayerFromCareerById(ids.get(i), careerName);
+            if (player == null) {
+                throw new ResourceNotFoundException("Player", "id: " + ids.get(i));
             }
-
-            index++;
+            player.setPositionInLineup(positions[i]);
         }
 
-        trainerCareerPlayerRepository.saveAll(tcPlayers);
+        trainerCareerPlayerRepository.saveAll(players);
     }
 
-    public Boolean changePlayerStats(String careername) {
-
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersFromCareer(careername);
-
-        if (tcPlayers == null || tcPlayers.isEmpty()) {
-            return false;
+    public void changePlayerStats(String careerName) {
+        List<TrainerCareerPlayer> players = trainerCareerPlayerRepository.findPlayersFromCareer(careerName);
+        if (players.isEmpty()) {
+            throw new ResourceNotFoundException("TrainerCareerPlayers", "in career: " + careerName);
         }
 
-        for (TrainerCareerPlayer player : tcPlayers) {
+        Random random = new Random();
+
+        for (TrainerCareerPlayer player : players) {
             player.setAgeNow(player.getAgeNow() + 1);
             player.setMovedRecently(false);
 
-            int potential = player.getPlayer().getPotential();
             int age = player.getAgeNow();
             int rating = player.getRatingNow();
-            Random random = new Random();
+            int potential = player.getPlayer().getPotential();
             int chance = getChanceIndex(age, random);
-            int doubleChange = random.nextInt(6);
+            boolean doubleChange = random.nextInt(6) == 0;
 
             if (age < 32 && rating < potential && rating < 10) {
                 if (chance == 0) {
-                    player.setRatingNow(rating + (doubleChange == 0 && rating < 9 ? 2 : 1));
+                    player.setRatingNow(rating + (doubleChange && rating < 9 ? 2 : 1));
                 }
-            }
-            else if (age > 31 && rating > 1) {
+            } else if (age > 31 && rating > 1) {
                 if (chance == 0) {
-                    player.setRatingNow(rating - (doubleChange == 0 && rating > 2 ? 2 : 1));
+                    player.setRatingNow(rating - (doubleChange && rating > 2 ? 2 : 1));
                 }
             }
 
             player.setValueNow(PlayerValueCalc.calculateMarketValue(player.getAgeNow(), player.getRatingNow()));
         }
 
-        trainerCareerPlayerRepository.saveAll(tcPlayers);
-
-        return true;
+        trainerCareerPlayerRepository.saveAll(players);
     }
 
     private int getChanceIndex(int age, Random random) {
-        if (age < 23) {
-            return random.nextInt(4);
-        } else if (age < 28) {
-            return random.nextInt(6);
-        } else if (age < 32) {
-            return random.nextInt(10);
-        } else if (age < 36) {
-            return random.nextInt(3);
-        } else {
-            return random.nextInt(2);
-        }
+        if (age < 23) return random.nextInt(4);
+        if (age < 28) return random.nextInt(6);
+        if (age < 32) return random.nextInt(10);
+        if (age < 36) return random.nextInt(3);
+        return random.nextInt(2);
     }
 
-    public List<TrainerCareerPlayerDTO> getAllPlayersByTrainerCareerOnWishlist(String username, String careername) {
-
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        List<TrainerCareerPlayer> tcPlayers = trainerCareerPlayerRepository.findAllPlayersOnWishlist(clubname, careername);
-
-        return tcPlayers.stream()
-                .map(trainerCareerPlayerMapper::toCareerPlayerDTO)
-                .toList();
+    public List<TrainerCareerPlayerDTO> getAllPlayersByTrainerCareerOnWishlist(String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        List<TrainerCareerPlayer> players = trainerCareerPlayerRepository.findPlayersOnWishlist(clubName, careerName);
+        return players.stream().map(trainerCareerPlayerMapper::toCareerPlayerDTO).toList();
     }
 }

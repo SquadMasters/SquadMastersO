@@ -7,8 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDTO {
+public class TrainerCareersDTO {
 
-    private String userName;
-
+    private String clubname;
+    private String careername;
+    private String username;
+    private String startUser;
 }

@@ -1,6 +1,7 @@
 package at.htlkaindorf.backend.services;
 
 import at.htlkaindorf.backend.dto.NextGameDTO;
+import at.htlkaindorf.backend.exceptions.ResourceNotFoundException;
 import at.htlkaindorf.backend.mapper.GameMapper;
 import at.htlkaindorf.backend.pojos.Career;
 import at.htlkaindorf.backend.pojos.Game;
@@ -21,50 +22,52 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class GameService {
 
-    public final GameRepository gameRepository;
+    private final GameRepository gameRepository;
     private final TrainerCareerRepository trainerCareerRepository;
     private final CareerRepository careerRepository;
     private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final GameMapper gameMapper;
     private final ClubService clubService;
 
-    public void generateTrainerCareerGames(List<TrainerCareer> trainerCareers, String careername) {
+    public void generateTrainerCareerGames(List<TrainerCareer> trainerCareers, String careerName) {
         List<Game> games = new ArrayList<>();
-        int year = careerRepository.findCareerByName(careername).getCurrentCareerDate().getYear();
+        int year = careerRepository.findCareerByName(careerName).getCurrentCareerDate().getYear();
         Random random = new Random();
         Set<LocalDate> generatedDates = new HashSet<>();
 
-        for (TrainerCareer tc : trainerCareers) {
+        trainerCareers.forEach(tc -> {
             tc.setHomeGames(new ArrayList<>());
             tc.setAwayGames(new ArrayList<>());
-        }
+        });
 
         for (int i = 0; i < trainerCareers.size() - 1; i++) {
             for (int j = i + 1; j < trainerCareers.size(); j++) {
                 TrainerCareer teamA = trainerCareers.get(i);
                 TrainerCareer teamB = trainerCareers.get(j);
 
-                LocalDate date1 = getRandomDate(year, 7, 1, year, 12, 31, random, generatedDates);
-                LocalDate date2 = getRandomDate(year, 7, 1, year, 12, 31, random, generatedDates);
+                games.add(createGame(
+                        teamA,
+                        teamB,
+                        getRandomDate(year, 7, 1, year, 12, 31, random, generatedDates)));
+                games.add(createGame(
+                        teamB,
+                        teamA,
+                        getRandomDate(year, 7, 1, year, 12, 31, random, generatedDates)));
 
-                games.add(createGame(teamA, teamB, date1));
-                games.add(createGame(teamB, teamA, date2));
-
-                LocalDate date3 = getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random, generatedDates);
-                LocalDate date4 = getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random, generatedDates);
-
-                games.add(createGame(teamA, teamB, date3));
-                games.add(createGame(teamB, teamA, date4));
+                games.add(createGame(
+                        teamA,
+                        teamB,
+                        getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random, generatedDates)));
+                games.add(createGame(
+                        teamB,
+                        teamA,
+                        getRandomDate(year + 1, 2, 1, year + 1, 5, 31, random, generatedDates)));
             }
         }
 
-        games.forEach(game -> {
-            game.getHomeTeam().addHomeGame(game);
-        });
-
+        games.forEach(game -> game.getHomeTeam().addHomeGame(game));
     }
 
     private Game createGame(TrainerCareer home, TrainerCareer away, LocalDate matchDate) {
@@ -80,185 +83,122 @@ public class GameService {
     private LocalDate getRandomDate(int yearStart, int monthStart, int dayStart,
                                     int yearEnd, int monthEnd, int dayEnd, Random random,
                                     Set<LocalDate> generatedDates) {
-        LocalDate startDate = LocalDate.of(yearStart, monthStart, dayStart);
-        LocalDate endDate = LocalDate.of(yearEnd, monthEnd, dayEnd);
-        long days = ChronoUnit.DAYS.between(startDate, endDate);
+        LocalDate start = LocalDate.of(yearStart, monthStart, dayStart);
+        LocalDate end = LocalDate.of(yearEnd, monthEnd, dayEnd);
+        long days = ChronoUnit.DAYS.between(start, end);
 
         LocalDate randomDate;
         do {
-            randomDate = startDate.plusDays(random.nextInt((int) days + 1)); // Zufälliges Datum generieren
-        } while (generatedDates.contains(randomDate)); // Prüfen, ob das Datum schon existiert
+            randomDate = start.plusDays(random.nextInt((int) days + 1));
+        } while (generatedDates.contains(randomDate));
 
-        generatedDates.add(randomDate); // Das generierte Datum zu dem Set hinzufügen
+        generatedDates.add(randomDate);
         return randomDate;
     }
 
-    public NextGameDTO getNextGame(String username, String careername) {
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        if (clubname == null) {
-            throw new IllegalArgumentException("No club found for user and career.");
+    public NextGameDTO getNextGame(String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        if (clubName == null) {
+            throw new ResourceNotFoundException("TrainerCareer", "user: " + username + ", career: " + careerName);
         }
 
-        Career career = careerRepository.findCareerByName(careername);
+        Career career = careerRepository.findCareerByName(careerName);
         if (career == null) {
-            throw new IllegalArgumentException("Career not found.");
+            throw new ResourceNotFoundException("Career", careerName);
         }
 
-        Game game = gameRepository.getNextGameForTrainerCareer(clubname, careername, career.getCurrentCareerDate());
+        Game game = gameRepository.findNextGameFromTrainerCareer(clubName, careerName, career.getCurrentCareerDate());
         if (game == null) {
-            return null;
+            throw new ResourceNotFoundException("Game", "next game for " + clubName + " in " + careerName);
         }
 
         return gameMapper.toNextGameDTO(game);
     }
 
-    public List<NextGameDTO> getAllNextGame(String username, String careername) {
-        String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
-        if (clubname == null) {
-            throw new IllegalArgumentException("No club found for user and career.");
+    public List<NextGameDTO> getAllNextGame(String username, String careerName) {
+        String clubName = trainerCareerRepository.findClubNameByUserAndCareer(careerName, username);
+        if (clubName == null) {
+            throw new ResourceNotFoundException("TrainerCareer", "user: " + username + ", career: " + careerName);
         }
 
-        List<Game> games = gameRepository.getAllGamesForTrainerCareer(clubname, careername);
-        if (games.isEmpty()) {
-            return null;
-        }
-
+        List<Game> games = gameRepository.findGamesFromTrainerCareer(clubName, careerName);
         return games.stream().map(gameMapper::toNextGameDTO).toList();
     }
 
-    public Boolean simulateSeason(String careername, Boolean firstHalf) {
-
-        List<Game> games;
-        Integer clubCount = clubService.getClubCount();
-
-        Pageable pageable;
-        if (firstHalf) {
-            pageable = PageRequest.of(0, clubCount*(clubCount-1));
-        } else {
-            pageable = PageRequest.of(1, clubCount*(clubCount-1));
-        }
-
-        games = gameRepository.getGamesFromCareer(careername, pageable);
+    public void simulateSeason(String careerName, boolean firstHalf) {
+        int clubCount = clubService.getClubCount();
+        Pageable pageable = PageRequest.of(firstHalf ? 0 : 1, clubCount * (clubCount - 1));
+        List<Game> games = gameRepository.findGamesFromCareer(careerName, pageable);
 
         if (games.isEmpty()) {
-            log.error("Keine Spiele gefunden für Karriere: {}", careername);
-            return false;
+            throw new ResourceNotFoundException("Games", "for career: " + careerName);
         }
 
         simulateGames(games);
-
-        return true;
     }
 
     private void simulateGames(List<Game> games) {
-
-        for(Game game : games) {
-
+        for (Game game : games) {
             long careerIdHome = game.getHomeTeam().getCareer().getCareer_id();
             long clubIdHome = game.getHomeTeam().getClub().getClub_id();
             long careerIdAway = game.getAwayTeam().getCareer().getCareer_id();
             long clubIdAway = game.getAwayTeam().getClub().getClub_id();
 
-            Double ratingHomeTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(careerIdHome, clubIdHome);
+            double ratingHome = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(careerIdHome, clubIdHome);
+            double ratingAway = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(careerIdAway, clubIdAway);
 
-            Double ratingAwayTeam = trainerCareerPlayerRepository.findAvgRatingFromTrainerCareer(careerIdAway, clubIdAway);
+            ratingHome = ratingHome == 0 ? getFallbackRating(careerIdHome, clubIdHome) : ratingHome;
+            ratingAway = ratingAway == 0 ? getFallbackRating(careerIdAway, clubIdAway) : ratingAway;
 
-            ratingHomeTeam = ratingHomeTeam == 0 ? getRatingForNoStartingEleven(careerIdHome, clubIdHome) : ratingHomeTeam;
-            ratingAwayTeam = ratingAwayTeam == 0 ? getRatingForNoStartingEleven(careerIdAway, clubIdAway) : ratingAwayTeam;
-
-            //log.info(game.getHomeTeam().getClub().getClubName() + "->" + ratingHomeTeam + " - " + game.getAwayTeam().getClub().getClubName() + "->" + ratingAwayTeam);
-
-            double difference = ratingHomeTeam - ratingAwayTeam;
-            boolean homeTeamBetter = true;
-
-            if (difference < 0) {
-                difference *= -1;
-                homeTeamBetter = false;
-            }
-
-            if (difference < 0.1) {
-                int upperLimit = 2 + new Random().nextInt(2);
-                game.setHomeGoals(new Random().nextInt(upperLimit));
-                game.setAwayGoals(new Random().nextInt(upperLimit));
-            } else if (difference < 0.25) {
-                int limit = 3 + new Random().nextInt(2);
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 4 : limit));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 4 : limit));
-            } else if (difference < 0.4) {
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 4 : 3));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 4 : 3));
-            } else if (difference < 0.7) {
-                int upperLimit = 4 + new Random().nextInt(2);
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? upperLimit : 3));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? upperLimit : 3));
-            } else if (difference < 1) {
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 5 : 3));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 5 : 3));
-            } else if (difference < 1.5) {
-                int limit = 2 + new Random().nextInt(2);
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 5 : limit));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 5 : limit));
-            } else if (difference < 2) {
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 5 : 2));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 5 : 2));
-            } else if (difference < 4) {
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 6 : 2));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 6 : 2));
-            } else {
-                game.setHomeGoals(new Random().nextInt(homeTeamBetter ? 6 : 1));
-                game.setAwayGoals(new Random().nextInt(!homeTeamBetter ? 6 : 1));
-            }
-
+            simulateMatch(game, ratingHome, ratingAway);
             gameRepository.save(game);
         }
     }
 
-    private Double getRatingForNoStartingEleven(Long careerId, Long clubId) {
-
-        double avgRatingGoalkeeper = getAverageRating(careerId, clubId, new String[] {"TW"}, 1);
-        double avgRatingDefender = getAverageRating(careerId, clubId, new String[] {"LV", "RV", "IV"}, 4);
-        double avgRatingStriker = getAverageRating(careerId, clubId, new String[] {"LF", "RF", "ST"}, 3);
-        double avgRatingMidfielder = getAverageRating(careerId, clubId, new String[] {"ZDM", "ZM"}, 3);
-
-        return (avgRatingGoalkeeper + avgRatingDefender + avgRatingStriker + avgRatingMidfielder) / 4;
+    private double getFallbackRating(Long careerId, Long clubId) {
+        double gk = getAverageRating(careerId, clubId, new String[]{"TW"}, 1);
+        double def = getAverageRating(careerId, clubId, new String[]{"LV", "RV", "IV"}, 4);
+        double mid = getAverageRating(careerId, clubId, new String[]{"ZDM", "ZM"}, 3);
+        double atk = getAverageRating(careerId, clubId, new String[]{"LF", "RF", "ST"}, 3);
+        return (gk + def + mid + atk) / 4.0;
     }
 
-    private double getAverageRating(Long careerId, Long clubId, String[] roles, int pageSize) {
-        List<Double> ratings = trainerCareerPlayerRepository.findTopRatings(
-                careerId,
-                clubId,
-                new ArrayList<>(Arrays.asList(roles)),
-                PageRequest.of(0, pageSize)
+    private double getAverageRating(Long careerId, Long clubId, String[] roles, int limit) {
+        List<Double> ratings = trainerCareerPlayerRepository.getTopRatingsFromTrainerCareer(
+                careerId, clubId, new ArrayList<>(Arrays.asList(roles)), PageRequest.of(0, limit)
         );
-
-        return ratings.stream()
-                .mapToDouble(Double::doubleValue)
-                .average()
-                .orElse(0.0);
+        return ratings.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
     }
 
-    public Integer getNotPlayedGames(String careername) {
-        return gameRepository.getNotPlayedGamesCount(careername);
+    private void simulateMatch(Game game, double homeRating, double awayRating) {
+        double diff = Math.abs(homeRating - awayRating);
+        boolean homeBetter = homeRating >= awayRating;
+        Random random = new Random();
+
+        int max = switch ((int) (diff * 10)) {
+            case 0, 1 -> 2;
+            case 2 -> 3;
+            case 3 -> 4;
+            case 4, 5, 6 -> 5;
+            case 7, 8, 9 -> 6;
+            default -> 6;
+        };
+
+        game.setHomeGoals(random.nextInt(homeBetter ? max + 1 : 3));
+        game.setAwayGoals(random.nextInt(!homeBetter ? max + 1 : 3));
     }
 
-    public boolean resetGamesFromCareer(String careername) {
-        try {
-            Integer clubCount = clubService.getClubCount();
-            Pageable pageable = PageRequest.of(0, clubCount * 2 * (clubCount - 1));
-
-            List<Game> games = gameRepository.getGamesFromCareer(careername, pageable);
-
-            gameRepository.deleteAll(games);
-
-            List<TrainerCareer> careers = careerRepository.getTrainerCareersFromCareer(careername);
-
-            generateTrainerCareerGames(careers, careername);
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
+    public int getNotPlayedGames(String careerName) {
+        return gameRepository.getNotPlayedGamesCount(careerName);
     }
 
+    public void resetGamesFromCareer(String careerName) {
+        int clubCount = clubService.getClubCount();
+        Pageable pageable = PageRequest.of(0, clubCount * 2 * (clubCount - 1));
+        List<Game> games = gameRepository.findGamesFromCareer(careerName, pageable);
+        gameRepository.deleteAll(games);
+
+        List<TrainerCareer> careers = trainerCareerRepository.findTrainerCareersFromCareer(careerName);
+        generateTrainerCareerGames(careers, careerName);
+    }
 }

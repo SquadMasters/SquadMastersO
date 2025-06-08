@@ -55,14 +55,14 @@ const Karriereauswahl: React.FC = () => {
             try {
                 const response = await axios.get(`http://localhost:8080/trainerCareer/allByUser/${username}`);
                 const fetchedTeams: Team[] = response.data.map((career: any, index: number) => {
-                    const logoUrl = logoMap[career.clubName] || '';
+                    const logoUrl = logoMap[career.clubname] || '';
                     return {
                         id: index + 1,
-                        name: career.clubName,
+                        name: career.clubname,
                         country: 'Unbekannt',
                         league: 'Unbekannt',
                         logoUrl,
-                        careerName: career.careerName,
+                        careerName: career.careername,
                         startUser: career.startUser,
                     };
                 });

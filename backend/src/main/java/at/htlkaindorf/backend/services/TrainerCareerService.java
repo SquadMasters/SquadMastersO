@@ -2,14 +2,13 @@ package at.htlkaindorf.backend.services;
 
 import at.htlkaindorf.backend.dto.BudgetDTO;
 import at.htlkaindorf.backend.dto.HomepageDTO;
-import at.htlkaindorf.backend.dto.ShowAllTrainerCareersDTO;
+import at.htlkaindorf.backend.dto.TrainerCareersDTO;
 import at.htlkaindorf.backend.dto.TableDataDTO;
+import at.htlkaindorf.backend.exceptions.ResourceNotFoundException;
 import at.htlkaindorf.backend.mapper.TrainerCareersMapper;
-import at.htlkaindorf.backend.pojos.Club;
 import at.htlkaindorf.backend.pojos.Game;
 import at.htlkaindorf.backend.pojos.TrainerCareer;
 import at.htlkaindorf.backend.pojos.User;
-import at.htlkaindorf.backend.repositories.CareerRepository;
 import at.htlkaindorf.backend.repositories.GameRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerPlayerRepository;
 import at.htlkaindorf.backend.repositories.TrainerCareerRepository;
@@ -24,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TrainerCareerService {
 
     public final TrainerCareerRepository trainerCareerRepository;
@@ -33,240 +31,163 @@ public class TrainerCareerService {
     private final TrainerCareersMapper trainerCareersMapper;
     private final TrainerCareerPlayerRepository trainerCareerPlayerRepository;
     private final ClubService clubService;
-    private final CareerRepository careerRepository;
 
-    public List<ShowAllTrainerCareersDTO> getAllTrainerCareersByUser(String username) {
-        List<TrainerCareer> careers = trainerCareerRepository.findAllByUserName(username);
-        logIfEmpty(careers, "No TrainerCareers found!");
+    public List<TrainerCareersDTO> getAllTrainerCareersByUser(String username) {
+        List<TrainerCareer> careers = trainerCareerRepository.findTrainerCareersByUserName(username);
+        if (careers.isEmpty()) {
+            throw new ResourceNotFoundException("TrainerCareers", username);
+        }
         return careers.stream().map(trainerCareersMapper::toDTO).collect(Collectors.toList());
     }
 
     public List<TableDataDTO> getAllTeamsFromCareer(String careername) {
-        List<TrainerCareer> careers = trainerCareerRepository.findAllByCareer(careername);
-        logIfEmpty(careers, "No TrainerCareers found!");
+        List<TrainerCareer> careers = trainerCareerRepository.findTrainerCareersFromCareer(careername);
+        if (careers.isEmpty()) {
+            throw new ResourceNotFoundException("TrainerCareers", careername);
+        }
         return careers.stream().map(trainerCareersMapper::toTableDTO).toList();
     }
 
     public List<String> getAllTrainerCareersToJoin(String careername) {
         List<String> careers = trainerCareerRepository.findTrainerCareersToJoin(careername);
-        logIfEmpty(careers, "No TrainerCareers found!");
+        if (careers.isEmpty()) {
+            throw new ResourceNotFoundException("Joinable TrainerCareers", careername);
+        }
         return careers;
     }
 
-    public Boolean joinCareerWithUser(String username, String careername, String clubname) {
+    public void joinCareerWithUser(String username, String careername, String clubname) {
         User user = userService.getUserByUsername(username);
         if (user == null) {
-            log.error("Benutzer" + username +  "nicht gefunden!");
-            return false;
+            throw new ResourceNotFoundException("User", username);
         }
 
         TrainerCareer trainerCareer = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
         if (trainerCareer == null) {
-            log.error("TrainerCareer nicht gefunden");
-            return false;
+            throw new ResourceNotFoundException("TrainerCareer", clubname);
         }
-
 
         trainerCareer.setUser(user);
         user.getTrainerCareers().add(trainerCareer);
         trainerCareerRepository.save(trainerCareer);
-
-        return true;
     }
 
     public HomepageDTO getHomepageInfo(String username, String careername) {
-
         String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
         TrainerCareer career = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
-
         if (career == null) {
-            log.info("Fehler bei Homepage Info!");
+            throw new ResourceNotFoundException("TrainerCareer", clubname);
         }
-
         return trainerCareersMapper.toHomepageDTO(career);
     }
 
-
-    private void logIfEmpty(List<?> list, String message) {
-        if (list.isEmpty()) {
-            log.info(message);
-        }
-    }
-
-    public Boolean userSetReady(String username, String careername) {
-
+    public void userSetReady(String username, String careername) {
         TrainerCareer career = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
         String clubname = trainerCareerRepository.findClubNameByUserAndCareer(careername, username);
         if (!trainerCareerPlayerRepository.findPlayersInStartingEleven(careername, clubname).equals(11)) {
-            return false;
+            throw new IllegalStateException("Not enough players in the starting lineup.");
         }
-
         if (career == null) {
-            log.info("Keine Karriere gefunden!");
-            return false;
+            throw new ResourceNotFoundException("TrainerCareer", username);
         }
-
         career.changeReady();
-
         trainerCareerRepository.save(career);
-
-        return true;
     }
 
     public List<String> getNotReadyUsers(String careername) {
-        return trainerCareerRepository.getNotReadyUsersFromCareer(careername);
+        return trainerCareerRepository.findNotReadyUsersFromCareer(careername);
     }
 
-    public Boolean isUserAllowedToSimulate(String username, String careername) {
-
-        String startuser = trainerCareerRepository.getStartUsername(username, careername);
-        List<String> notReadyUsers = trainerCareerRepository.getNotReadyUsersFromCareer(careername);
-
-        if (notReadyUsers.isEmpty() && startuser.equals(username)) {
-            return true;
-        }
-        return false;
+    public boolean isUserAllowedToSimulate(String username, String careername) {
+        String startuser = trainerCareerRepository.findStartUsernameFromCareer(username, careername);
+        List<String> notReadyUsers = trainerCareerRepository.findNotReadyUsersFromCareer(careername);
+        return notReadyUsers.isEmpty() && startuser.equals(username);
     }
 
-    public Boolean isUserReady(String username, String careername) {
-
+    public boolean isUserReady(String username, String careername) {
         TrainerCareer career = trainerCareerRepository.findTrainerCareerByUsernameAndCareername(username, careername);
-
         if (career == null) {
-            log.error("Keine Karriere gefunden!");
-            return false;
+            throw new ResourceNotFoundException("TrainerCareer", username);
         }
-
         return career.getReadyForSimulation();
     }
 
-    public Boolean changeTable(String careername, Boolean firstHalf) {
-
-        List<Game> games;
+    public void changeTable(String careername, Boolean firstHalf) {
         Integer clubCount = clubService.getClubCount();
-
-        Pageable pageable;
-        if (firstHalf) {
-            pageable = PageRequest.of(0, clubCount*(clubCount-1));
-        } else {
-            pageable = PageRequest.of(1, clubCount*(clubCount-1));
-        }
-
-        games = gameRepository.getGamesFromCareer(careername, pageable);
-
+        Pageable pageable = PageRequest.of(firstHalf ? 0 : 1, clubCount * (clubCount - 1));
+        List<Game> games = gameRepository.findGamesFromCareer(careername, pageable);
         if (games.isEmpty()) {
-            log.error("Keine Spiele gefunden für Karriere: {}", careername);
-            return false;
+            throw new ResourceNotFoundException("Games", careername);
         }
-
         for (Game game : games) {
-
-            TrainerCareer homeTeam = game.getHomeTeam();
-            TrainerCareer awayTeam = game.getAwayTeam();
-            int homeTeamGoals = game.getHomeGoals();
-            int awayTeamGoals = game.getAwayGoals();
-
-            changeTeam(homeTeam, homeTeamGoals, awayTeamGoals);
-            changeTeam(awayTeam, awayTeamGoals, homeTeamGoals);
-
-            trainerCareerRepository.save(homeTeam);
-            trainerCareerRepository.save(awayTeam);
+            changeTeam(game.getHomeTeam(), game.getHomeGoals(), game.getAwayGoals());
+            changeTeam(game.getAwayTeam(), game.getAwayGoals(), game.getHomeGoals());
+            trainerCareerRepository.save(game.getHomeTeam());
+            trainerCareerRepository.save(game.getAwayTeam());
         }
-
-        return true;
     }
 
     private void changeTeam(TrainerCareer team, Integer goals, Integer enemyGoals) {
-
         if (goals > enemyGoals) {
-            int wins = team.getWins();
-            team.setWins(wins+1);
+            team.setWins(team.getWins() + 1);
         } else if (goals.equals(enemyGoals)) {
-            int draws = team.getDraws();
-            team.setDraws(draws+1);
+            team.setDraws(team.getDraws() + 1);
         } else {
-            int losses = team.getLosses();
-            team.setLosses(losses+1);
+            team.setLosses(team.getLosses() + 1);
         }
-        int goalDiff = team.getGoalDiff();
-        team.setGoalDiff(goalDiff + goals - enemyGoals);
+        team.setGoalDiff(team.getGoalDiff() + goals - enemyGoals);
     }
 
     public void setUsersNotReady(String careername) {
-        List<TrainerCareer> careers = trainerCareerRepository.getTrainerCareersWithUserFromCareer(careername);
-
+        List<TrainerCareer> careers = trainerCareerRepository.findTrainerCareersWithUserFromCareer(careername);
         if (careers == null || careers.isEmpty()) {
-            return;
+            throw new ResourceNotFoundException("TrainerCareers", careername);
         }
-
         for (TrainerCareer career : careers) {
             career.setReadyForSimulation(false);
         }
-
         trainerCareerRepository.saveAll(careers);
     }
 
-    public Boolean resetTrainerCareers(String careername) {
-
-        List<TrainerCareer> careers = careerRepository.getTrainerCareersFromCareer(careername);
-
+    public void resetTrainerCareers(String careername) {
+        List<TrainerCareer> careers = trainerCareerRepository.findTrainerCareersFromCareer(careername);
         if (careers == null || careers.isEmpty()) {
-            return false;
+            throw new ResourceNotFoundException("TrainerCareers", careername);
         }
-
         careers.sort(Comparator
                 .comparingInt((TrainerCareer c) -> c.getWins() * 3 + c.getDraws())
                 .thenComparingInt(TrainerCareer::getGoalDiff)
                 .reversed()
         );
-
         int budget = 50000000;
-
         for (TrainerCareer career : careers) {
-
-            career.setBudget(career.getBudget()+budget);
+            career.setBudget(career.getBudget() + budget);
             career.setReadyForSimulation(false);
             career.setWins(0);
             career.setDraws(0);
             career.setLosses(0);
             career.setGoalDiff(0);
-
             budget -= 5000000;
         }
-
         TrainerCareer firstPlace = careers.get(0);
-        firstPlace.setLeagueTitleCount(firstPlace.getLeagueTitleCount()+1);
-
+        firstPlace.setLeagueTitleCount(firstPlace.getLeagueTitleCount() + 1);
         trainerCareerRepository.saveAll(careers);
-        return true;
     }
 
     public BudgetDTO getBudgetFromTeam(String clubname, String careername) {
-
         TrainerCareer career = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
-
         if (career == null) {
-            log.info("Fehler bei Homepage Info!");
+            throw new ResourceNotFoundException("TrainerCareer", clubname);
         }
-
         return trainerCareersMapper.toBudgetDTO(career);
     }
 
-    public Boolean changebudget(String clubname, String careername,Integer budget) {
-
+    public void changeBudget(String clubname, String careername, Integer budget) {
         TrainerCareer career = trainerCareerRepository.findTrainerCareerByClubnameAndCareername(clubname, careername);
-
         if (career == null) {
-            return false;
+            throw new ResourceNotFoundException("TrainerCareer", clubname);
         }
-
         career.setBudget(budget);
-
         trainerCareerRepository.save(career);
-
-
-
-        return true;
     }
-
 }

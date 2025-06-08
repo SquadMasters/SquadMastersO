@@ -36,5 +36,6 @@ public class Game {
     private LocalDate matchDate;
 
     private Integer homeGoals;
+
     private Integer awayGoals;
 }

@@ -268,14 +268,25 @@ const Simulation: React.FC = () => {
             setIsUserReady(true);
             setStatusMessage("Bereit gemeldet");
             setTimeout(() => setStatusMessage(""), 3000);
-        } catch (err) {
-            console.error("Fehler beim Bereitmelden", err);
-            setStatusMessage(err.response?.data || "Fehler beim Bereitmelden");
+        } catch (err: any) {
+            let message = "Unexpected error";
+
+            if (
+                err.response?.status === 400 &&
+                typeof err.response?.data === 'string' &&
+                err.response.data.includes("Not enough players in the starting lineup")
+            ) {
+                message = "Simulieren nur bei voller Startelf möglich!";
+            }
+
+            console.error("Fehler beim Bereitmelden:", message);
+            setStatusMessage(message);
             setTimeout(() => setStatusMessage(""), 3000);
         } finally {
             setIsSimulationActive(false);
         }
     };
+
 
     const getMatchColorClass = useCallback((spiel: Spiel): string => {
         console.log('Checking match color for:', spiel);

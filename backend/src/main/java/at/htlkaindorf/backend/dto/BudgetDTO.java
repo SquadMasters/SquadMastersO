@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BudgetDTO {
-    private String clubName;
+    private String clubname;
     private String careername;
     private Integer budget;
 }

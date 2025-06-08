@@ -10,5 +10,5 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
     Integer getClubCount();
 
     @Query("SELECT c FROM Club c WHERE c.clubName = ?1")
-    Club getClubByName(String clubname);
+    Club findClubByName(String clubname);
 }

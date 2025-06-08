@@ -44,7 +44,7 @@ const teamColorMap: { [key: string]: string[] } = {
 };
 
 interface TableDataDTO {
-    clubName: string;
+    clubname: string;
     wins: number;
     draws: number;
     losses: number;
@@ -68,13 +68,12 @@ const Home = () => {
         season: number;
         leagueTitleCount: number;
     } | null>(null);
-    const [teamColors, setTeamColors] = useState<string[]>(['#ffffff', '#ffffff']); // Default Blau-Weiß
+    const [teamColors, setTeamColors] = useState<string[]>(['#ffffff', '#ffffff']);
 
     useEffect(() => {
         const careerName = localStorage.getItem("careername");
         if (!careerName) return;
 
-        // Lade Tabellendaten
         api.get(`/trainerCareer/tableDataByCareer/${careerName}`)
             .then(res => {
                 setTableData(res.data);
@@ -83,22 +82,21 @@ const Home = () => {
                 console.error("Fehler beim Laden der Tabelle:", err);
             });
 
-        // Lade Career-Daten
         const career = JSON.parse(localStorage.getItem("career") || "{}");
         if (career?.team?.name) {
             setUserClubName(career.team.name);
-            // Setze Teamfarben basierend auf dem Clubnamen
             setTeamColors(teamColorMap[career.team.name] || ['#ffffff', '#ffffff']);
         }
 
-        // Lade nächsten Gegner
         const username = localStorage.getItem("username") || "";
         if (username && careerName) {
             api.get(`/games/nextGame/${username}/${careerName}`)
                 .then(res => {
                     if (res.data) {
                         const nextGameData = res.data;
-                        const opponentTeamName = nextGameData.homeTeam === userClubName ? nextGameData.awayTeam : nextGameData.homeTeam;
+                        const opponentTeamName = nextGameData.homeTeam === career.team.name
+                            ? nextGameData.awayTeam
+                            : nextGameData.homeTeam;
                         setNextGame({
                             opponentTeamName,
                             gameDate: nextGameData.date
@@ -109,7 +107,7 @@ const Home = () => {
                     console.error("Fehler beim Laden des nächsten Spiels:", err);
                 });
         }
-    }, [userClubName]); // Abhängig von userClubName
+    }, [userClubName]);
 
     useEffect(() => {
         const username = localStorage.getItem("username") || "";
@@ -151,14 +149,13 @@ const Home = () => {
                                 {nextGame?.gameDate || "Datum nicht verfügbar"}
                             </h3>
                         </Col>
-                        <Col sm={5} style={{borderColor: teamColors[0]}}>
+                        <Col sm={5} style={{ borderColor: teamColors[0] }}>
                             <h2 className="home-blue_color" style={{ color: teamColors[0] }}>{nextGame?.opponentTeamName || "Kein Gegner"}</h2>
                             {nextGame?.opponentTeamName && logoMap[nextGame.opponentTeamName] ? (
                                 <img
                                     src={logoMap[nextGame.opponentTeamName]}
                                     alt={nextGame.opponentTeamName}
                                     className="team-logo"
-
                                 />
                             ) : (
                                 <p className="text-muted">Kein Gegner-Logo verfügbar</p>
@@ -208,7 +205,7 @@ const Home = () => {
                                     />
                                     <Carousel.Caption className="home-carousel-caption">
                                         <h3 style={{ color: "white" }}>Jude Bellingham</h3>
-                                        <p >From Dortmund to Real Madrid</p>
+                                        <p>From Dortmund to Real Madrid</p>
                                     </Carousel.Caption>
                                 </Carousel.Item>
                                 <Carousel.Item>
@@ -258,33 +255,31 @@ const Home = () => {
                         {[...tableData]
                             .sort((a, b) => (b.wins * 3 + b.draws) - (a.wins * 3 + a.draws))
                             .map((team, index) => {
-
                                 const games = team.wins + team.draws + team.losses;
-                            const points = team.wins * 3 + team.draws;
+                                const points = team.wins * 3 + team.draws;
 
-                            return (
-                                <tr key={index}>
-                                    <td style={{ textAlign: "center" }}>{index + 1}</td>
-                                    <td style={{ textAlign: "center" }}>{team.clubName}</td>
-                                    <td style={{ textAlign: "center" }}>
-                                        <div className="table-logo-wrapper">
-                                            <img
-                                                src={logoMap[team.clubName] || ''}
-                                                alt={team.clubName}
-                                                height="20px"
-                                                width="20px"
-                                            />
-                                        </div>
-                                    </td>
-
-                                    <td style={{ textAlign: "center" }}>{games}</td>
-                                    <td style={{ textAlign: "center" }}>{team.wins}</td>
-                                    <td style={{ textAlign: "center" }}>{team.losses}</td>
-                                    <td style={{ textAlign: "center" }}>{team.draws}</td>
-                                    <td style={{ textAlign: "center" }}>{points}</td>
-                                </tr>
-                            );
-                        })}
+                                return (
+                                    <tr key={index}>
+                                        <td style={{ textAlign: "center" }}>{index + 1}</td>
+                                        <td style={{ textAlign: "center" }}>{team.clubname}</td>
+                                        <td style={{ textAlign: "center" }}>
+                                            <div className="table-logo-wrapper">
+                                                <img
+                                                    src={logoMap[team.clubname] || ''}
+                                                    alt={team.clubname}
+                                                    height="20px"
+                                                    width="20px"
+                                                />
+                                            </div>
+                                        </td>
+                                        <td style={{ textAlign: "center" }}>{games}</td>
+                                        <td style={{ textAlign: "center" }}>{team.wins}</td>
+                                        <td style={{ textAlign: "center" }}>{team.losses}</td>
+                                        <td style={{ textAlign: "center" }}>{team.draws}</td>
+                                        <td style={{ textAlign: "center" }}>{points}</td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                     </Table>
                 </Col>
