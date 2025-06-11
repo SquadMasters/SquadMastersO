@@ -6,7 +6,7 @@ type ChooseTeamStatsProps = {
     navigation: NavigationProp<any>;
 };
 
-const ChooseTeamStatsScreen: React.FC<ChooseTeamStatsProps> = ({navigation, route}) => {
+const ChooseTeamStatsScreen: React.FC<ChooseTeamStatsProps> = ({navigation, route}:any) => {
     const {team, careername} = route.params;
 
     return (

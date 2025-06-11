@@ -2,12 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import axios from 'axios';
 
-const MidfieldersScreen = ({ route, navigation }) => {
+
+interface IPlayer {
+    playerId: number;
+    firstname: string;
+    lastname: string;
+    position: string;
+    rating: number;
+    value: number;
+    ageNow: number;
+    potential: number;
+    clubname: string;
+}
+
+const MidfieldersScreen = ({ route, navigation }:any) => {
     const { careername, team } = route.params;
     const [midfielders, setMidfielders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const ip = "10.151.6.121";
+    const ip = "10.151.6.205";
 
     const validPositions = [
         'zm', 'ZM',
@@ -20,13 +33,13 @@ const MidfieldersScreen = ({ route, navigation }) => {
         const fetchMidfielders = async () => {
             try {
                 const response = await axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
-                const filteredMidfielders = response.data.filter(player =>
+                const filteredMidfielders = response.data.filter((player:IPlayer) =>
                     player.clubname === team &&
                     validPositions.includes(player.position)
                 );
                 setMidfielders(filteredMidfielders);
                 setLoading(false);
-            } catch (err) {
+            } catch (err:any) {
                 console.error("Error fetching midfielders:", err);
                 setError(err.message);
                 setLoading(false);
@@ -70,7 +83,7 @@ const MidfieldersScreen = ({ route, navigation }) => {
             {midfielders.length > 0 ? (
                 <FlatList
                     data={midfielders}
-                    keyExtractor={(item) => item.playerId.toString()}
+                    keyExtractor={(item:IPlayer) => item.playerId.toString()}
                     contentContainerStyle={styles.listContent}
                     renderItem={({ item }) => (
                         <View style={styles.playerCard}>

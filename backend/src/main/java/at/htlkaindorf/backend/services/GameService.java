@@ -265,7 +265,7 @@ public class GameService {
             case 3 -> 4;
             case 4, 5, 6 -> 5;
             case 7, 8, 9 -> 6;
-            default -> 6;
+            default -> 7;
         };
 
         game.setHomeGoals(random.nextInt(homeBetter ? max + 1 : 3));

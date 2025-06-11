@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class CareerService {
 
-    private final CareerRepository careerRepository;
+    public final CareerRepository careerRepository;
 
     /**
      * Retrieves a list of careers that a user is not yet part of.

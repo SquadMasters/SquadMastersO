@@ -6,7 +6,7 @@ type OverviewScreenProps = {
     navigation: NavigationProp<any>;
 };
 
-const OverviewScreen: React.FC<OverviewScreenProps> = ({navigation, route}) => {
+const OverviewScreen: React.FC<OverviewScreenProps> = ({navigation, route} :any) => {
     const {username, careername} = route.params;
 
     return (

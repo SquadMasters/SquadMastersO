@@ -2,17 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import axios from 'axios';
 
-const BoostPlayerScreen = ({ route }) => {
+interface Player {
+    playerId: number;
+    firstname: string;
+    lastname: string;
+    clubname: string;
+}
+
+
+const BoostPlayerScreen = ({ route }:any) => {
     const { team, careername } = route.params;
-    const [players, setPlayers] = useState([]);
-    const [selectedPlayer, setSelectedPlayer] = useState(null);
+    const [players, setPlayers] = useState<Player[]>([]);
+    const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
     const [ratingNow, setRatingNow] = useState('');
     const [valueNow, setValueNow] = useState('');
     const [loading, setLoading] = useState(true);
-    const ip = "10.151.6.121";
+    const ip = "10.151.6.205";
 
     useEffect(() => {
-        axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`)
+        axios.get<Player[]>(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`)
             .then(res => {
                 const teamPlayers = res.data.filter(p => p.clubname === team);
                 setPlayers(teamPlayers);
@@ -26,7 +34,8 @@ const BoostPlayerScreen = ({ route }) => {
 
     const handleUpdate = async () => {
         if (!selectedPlayer) return;
-        const payload = {};
+        const payload: { ratingNow?: number; valueNow?: number } = {};
+
         if (ratingNow.trim() !== '') payload.ratingNow = parseInt(ratingNow);
         if (valueNow.trim() !== '') payload.valueNow = parseFloat(valueNow);
 

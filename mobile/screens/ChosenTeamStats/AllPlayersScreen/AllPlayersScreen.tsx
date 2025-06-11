@@ -1,28 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import axios from 'axios';
+interface Player {
+    playerId: number;
+    firstname: string;
+    lastname: string;
+    position: string;
+    rating: number;
+    value: number;
+    ageNow: number;
+    potential: number;
+    clubname: string;
+}
 
-const AllPlayersScreen = ({ route, navigation }) => {
+
+const AllPlayersScreen = ({ route, navigation }:any) => {
     const { careername, team } = route.params;
-    const [players, setPlayers] = useState([]);
+    const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>(null);
 
-    const ip = "10.151.6.121";
+
+    const ip = "10.151.6.205";
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
                 const response = await axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
-                const filteredPlayers = response.data.filter(player =>
+                const filteredPlayers = response.data.filter((player:Player) =>
                     player.clubname === team
                 );
                 setPlayers(filteredPlayers);
                 setLoading(false);
-            } catch (err) {
+            } catch (err:any) {
                 console.error("Error fetching players:", err);
                 setError(err.message);
                 setLoading(false);
+
             }
         };
 

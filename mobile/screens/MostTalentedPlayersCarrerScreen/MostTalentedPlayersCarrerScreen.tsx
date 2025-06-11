@@ -13,11 +13,11 @@ interface Player {
     potentialDifference?: number;
 }
 
-const MostTalentPlayersCarrerScreen = ({ route }) => {
+const MostTalentPlayersCarrerScreen = ({ route }:any) => {
     const { careername, username } = route.params;
     const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(true);
-    const ip = "10.151.6.121";
+    const ip = "10.151.6.205";
 
     useEffect(() => {
         const fetchPlayers = async () => {
@@ -25,7 +25,8 @@ const MostTalentPlayersCarrerScreen = ({ route }) => {
                 const response = await fetch(
                     `http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
                 );
-                const data = await response.json();
+                const data: Player[] = await response.json();
+
 
                 const sortedPlayers = data
                     .map(player => ({

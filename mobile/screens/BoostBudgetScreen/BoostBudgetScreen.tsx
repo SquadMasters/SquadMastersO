@@ -2,13 +2,13 @@ import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Text, TextInput, TouchableOpacity, View, StyleSheet} from "react-native";
 import axios from "axios";
 
-const BoostBudgetScreen = ({route}) => {
+const BoostBudgetScreen = ({route}:any) => {
     const {team, careername} = route.params;
     const [budget, setBudget] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [newBudget, setNewBudget] = useState('');
-    const ip = "10.151.6.121";
+    const ip = "10.151.6.205";
 
     useEffect(() => {
         const fetchBudget = async () => {
@@ -18,7 +18,7 @@ const BoostBudgetScreen = ({route}) => {
                 );
                 setBudget(response.data.budget || 0);
                 setLoading(false);
-            } catch (err) {
+            } catch (err:any) {
                 setError(err.message);
                 setLoading(false);
             }

@@ -1,66 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    ActivityIndicator,
+    ScrollView,
+    StyleSheet,
+} from 'react-native';
 
-const API_BASE_URL = 'http://10.151.6.121:8080';
+const API_BASE_URL = 'http://10.151.6.205:8080';
 
+interface Career {
+    careername: string;
+    username: string;
+    clubname: string;
+}
 
-const MainChooseScreen = ({ navigation }) => {
-    const [users, setUsers] = useState([]);
-    const [careers, setCareers] = useState([]);
-    const [selectedUser, setSelectedUser] = useState(null);
+const MainChooseScreen = ({ navigation }: any) => {
+    const [users, setUsers] = useState<string[]>([]);
+    const [careers, setCareers] = useState<Career[]>([]);
+    const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<string | null>("leererError");
 
     useEffect(() => {
         const loadUsers = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${API_BASE_URL}/api/auth/allUsernames`);
-                const data = await response.json();
+                const res = await fetch(`${API_BASE_URL}/api/auth/allUsernames`);
+                const data: string[] = await res.json();
                 setUsers(data);
-            } catch (err) {
+            } catch (e) {
                 setError('Fehler beim Laden der Benutzer');
-                console.error(err);
+                console.error(e);
             } finally {
                 setLoading(false);
             }
         };
-
         loadUsers();
     }, []);
 
-    const loadCareers = async (username) => {
+    const loadCareers = async (username: string) => {
         try {
             setLoading(true);
             setSelectedUser(username);
-            const response = await fetch(`${API_BASE_URL}/trainerCareer/allByUser/${username}`);
-            const data = await response.json();
+            const res = await fetch(`${API_BASE_URL}/trainerCareer/allByUser/${username}`);
+            const data: Career[] = await res.json();
             setCareers(data);
-        } catch (err) {
+        } catch (e) {
             setError('Fehler beim Laden der Karrieren');
-            console.error(err);
+            console.error(e);
         } finally {
             setLoading(false);
         }
     };
 
     if (loading) {
-        return (
-            <View style={styles.container}>
-                <ActivityIndicator size="large" color="#0a84ff" />
-            </View>
-        );
+        return <View style={styles.center}><ActivityIndicator size="large" color="#0a84ff" /></View>;
     }
 
-    if (error) {
+    if (error != null && error !== "null") {
         return (
-            <View style={styles.container}>
+            <View style={styles.center}>
                 <Text style={styles.error}>Fehler: {error}</Text>
-                <TouchableOpacity
-                    style={[styles.button, styles.accentButton, { marginTop: 20 }]}
-                    onPress={() => setError(null)}
-                >
-                    <Text style={[styles.buttonText, styles.accentButtonText]}>Erneut versuchen</Text>
+                <TouchableOpacity style={[styles.button, styles.accent]} onPress={() => setError("null")}>
+                    <Text style={[styles.buttonText, styles.accentText]}>Erneut versuchen</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -68,17 +72,16 @@ const MainChooseScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.headerTitle}>Benutzer auswählen</Text>
-
+            <ScrollView contentContainerStyle={styles.scroll}>
+                <Text style={styles.title}>Benutzer auswählen</Text>
                 <View style={styles.userList}>
                     {users.map(user => (
                         <TouchableOpacity
                             key={user}
                             onPress={() => loadCareers(user)}
                             style={[
-                                styles.userCard,
-                                selectedUser === user && styles.userCardSelected
+                                styles.cardBase,
+                                selectedUser === user && styles.selected
                             ]}
                         >
                             <Text style={styles.userName}>{user}</Text>
@@ -88,29 +91,28 @@ const MainChooseScreen = ({ navigation }) => {
 
                 {selectedUser && (
                     <>
-                        <Text style={styles.sectionTitle}>Karrieren für {selectedUser}</Text>
-
+                        <Text style={styles.section}>Karrieren für {selectedUser}</Text>
                         {careers.length > 0 ? (
-                            <View style={styles.careerList}>
-                                {careers.map((career, index) => (
-                                    <TouchableOpacity
-                                        key={`${career.careerName}-${index}`}
-                                        onPress={() => navigation.navigate('OverviewScreen', {
+                            careers.map((career, i) => (
+                                <TouchableOpacity
+                                    key={`${career.careername}-${i}`}
+                                    onPress={() =>
+                                        navigation.navigate('OverviewScreen', {
                                             username: career.username,
-                                            careername: career.careerName,
-                                        })}
-                                        style={styles.careerCard}
-                                    >
-                                        <Text style={styles.careerName}>{career.careerName}</Text>
-                                        <View style={styles.careerDetailRow}>
-                                            <Text style={styles.careerDetailLabel}>Verein:</Text>
-                                            <Text style={styles.careerDetailValue}>{career.clubName}</Text>
-                                        </View>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                                            careername: career.careername,
+                                        })
+                                    }
+                                    style={styles.cardBase}
+                                >
+                                    <Text style={styles.careerName}>{career.careername}</Text>
+                                    <View style={styles.row}>
+                                        <Text style={styles.detailLabel}>Verein:</Text>
+                                        <Text style={styles.detailValue}>{career.clubname}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            ))
                         ) : (
-                            <View style={styles.noContentContainer}>
+                            <View style={styles.noContent}>
                                 <Text style={styles.noContentText}>Keine Karrieren verfügbar</Text>
                             </View>
                         )}
@@ -122,78 +124,25 @@ const MainChooseScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    // Layout
-    container: {
-        flex: 1,
-        backgroundColor: '#ffffff',
-    },
-    scrollContainer: {
-        padding: 24,
-    },
-    userList: {
-        marginBottom: 24,
-    },
-    careerList: {
-        marginBottom: 24,
-    },
-    noContentContainer: {
-        padding: 16,
-        backgroundColor: '#f5f5f7',
-        borderRadius: 12,
-        alignItems: 'center',
-    },
+    container: { flex: 1, backgroundColor: '#fff' },
+    scroll: { padding: 24 },
+    center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
-    // Typografie
-    headerTitle: {
+    title: {
         fontSize: 24,
         fontWeight: '600',
         color: '#1d1d1f',
-        marginBottom: 24,
         textAlign: 'center',
+        marginBottom: 24,
     },
-    sectionTitle: {
+    section: {
         fontSize: 20,
         fontWeight: '600',
         color: '#1d1d1f',
         marginBottom: 16,
     },
-    userName: {
-        fontSize: 18,
-        fontWeight: '500',
-        color: '#1d1d1f',
-    },
-    careerName: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#0a84ff',
-        marginBottom: 8,
-    },
-    careerDetailRow: {
-        flexDirection: 'row',
-    },
-    careerDetailLabel: {
-        fontSize: 14,
-        color: '#86868b',
-        marginRight: 8,
-    },
-    careerDetailValue: {
-        fontSize: 14,
-        color: '#1d1d1f',
-        fontWeight: '500',
-    },
-    noContentText: {
-        fontSize: 16,
-        color: '#86868b',
-    },
-    error: {
-        color: '#ff3b30',
-        fontSize: 16,
-        textAlign: 'center',
-        marginBottom: 16,
-    },
 
-    // Cards
-    userCard: {
+    cardBase: {
         padding: 16,
         marginBottom: 12,
         backgroundColor: '#f5f5f7',
@@ -201,20 +150,29 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: 'rgba(0,0,0,0.08)',
     },
-    userCardSelected: {
+    selected: {
         backgroundColor: 'rgba(10, 132, 255, 0.1)',
         borderColor: '#0a84ff',
     },
-    careerCard: {
+
+    userList: { marginBottom: 24 },
+    row: { flexDirection: 'row' },
+
+    userName: { fontSize: 18, fontWeight: '500', color: '#1d1d1f' },
+    careerName: { fontSize: 18, fontWeight: '600', color: '#0a84ff', marginBottom: 8 },
+    detailLabel: { fontSize: 14, color: '#86868b', marginRight: 8 },
+    detailValue: { fontSize: 14, fontWeight: '500', color: '#1d1d1f' },
+
+    noContent: {
         padding: 16,
-        marginBottom: 12,
         backgroundColor: '#f5f5f7',
         borderRadius: 12,
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.08)',
+        alignItems: 'center',
     },
+    noContentText: { fontSize: 16, color: '#86868b' },
 
-    // Buttons
+    error: { fontSize: 16, color: '#ff3b30', textAlign: 'center', marginBottom: 16 },
+
     button: {
         width: '100%',
         paddingVertical: 16,
@@ -225,18 +183,12 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(0,0,0,0.08)',
         alignItems: 'center',
     },
-    buttonText: {
-        fontSize: 17,
-        fontWeight: '500',
-        color: '#1d1d1f',
-    },
-    accentButton: {
+    buttonText: { fontSize: 17, fontWeight: '500', color: '#1d1d1f' },
+    accent: {
         backgroundColor: '#0a84ff',
         borderColor: 'rgba(10,132,255,0.24)',
     },
-    accentButtonText: {
-        color: '#ffffff',
-    },
+    accentText: { color: '#fff' },
 });
 
 export default MainChooseScreen;
