@@ -1,5 +1,10 @@
 Squad Master README.md
 
+SquadMasters
+In die Rolle eines Trainers geschlüpft kämpfst du gegen 9 andere Mannschaften um die Meisterschaft. Mache kluge Käufe und Verkäufe und führe dein Team zum Erfolg!
+
+
+
 postgres datenbank auf eigenem laptop erstellen:
 - name: squadmastersdb
 - username: postgres
@@ -13,7 +18,8 @@ ordner mobile rauslöschen
 
 backend starten:
 cd backend 
-./mvnw spring-boot:run oder in BackendApplication ausführen
+./mvnw spring-boot:run 
+oder in BackendApplication ausführen
 
 frontend starten: 
 cd frontend
