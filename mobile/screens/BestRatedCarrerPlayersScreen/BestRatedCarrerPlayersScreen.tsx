@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, Text, ScrollView, StyleSheet, ActivityIndicator} from 'react-native';
+import BACKEND_URL from "../BackendUrl";
 
 interface Player {
     playerId: number;
@@ -12,19 +13,19 @@ interface Player {
     value: number;
 }
 
-const BestRatedCarrerPlayersScreen = ({ route } :any) => {
-    const { careername } = route.params;
+const BestRatedCarrerPlayersScreen = ({route}: any) => {
+    const {careername} = route.params;
     const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(true);
-    const ip = "10.151.6.205";
+
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
                 const response = await fetch(
-                    `http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
+                    `http://${BACKEND_URL}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
                 );
-                const data:Player[] = await response.json();
+                const data: Player[] = await response.json();
 
                 const sortedPlayers = data
                     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
@@ -37,13 +38,13 @@ const BestRatedCarrerPlayersScreen = ({ route } :any) => {
             }
         };
 
-        fetchPlayers();
+        fetchPlayers()
     }, [careername]);
 
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0a84ff" />
+                <ActivityIndicator size="large" color="#0a84ff"/>
             </View>
         );
     }

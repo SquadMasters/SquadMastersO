@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import axios from 'axios';
+import BACKEND_URL from "../../BackendUrl";
 interface Player {
     playerId: number;
     firstname: string;
@@ -21,12 +22,12 @@ const AllPlayersScreen = ({ route, navigation }:any) => {
     const [error, setError] = useState<string | null>(null);
 
 
-    const ip = "10.151.6.205";
+
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
-                const response = await axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
+                const response = await axios.get(`http://${BACKEND_URL}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
                 const filteredPlayers = response.data.filter((player:Player) =>
                     player.clubname === team
                 );

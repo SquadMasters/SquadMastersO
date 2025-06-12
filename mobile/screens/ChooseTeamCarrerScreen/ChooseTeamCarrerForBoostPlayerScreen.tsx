@@ -22,7 +22,7 @@ const teamLogos = [
     { id: 11, name: 'Real Madrid', logo: require('../../assets/reallogo.png') }
 ];
 
-const ChooseTeamCarrerForBoostPlayerScreen: React.FC<ChooseTeamCarrerBoostPlayerProps> = ({ navigation,route }) => {
+const ChooseTeamCarrerForBoostPlayerScreen: React.FC<ChooseTeamCarrerBoostPlayerProps> = ({ navigation,route }:any) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
 

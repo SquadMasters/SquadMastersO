@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import axios from 'axios';
+import BACKEND_URL from "../../BackendUrl";
 
 
 interface IPlayer {
@@ -20,7 +21,7 @@ const MidfieldersScreen = ({ route, navigation }:any) => {
     const [midfielders, setMidfielders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const ip = "10.151.6.205";
+    const ip = "192.168.1.7";
 
     const validPositions = [
         'zm', 'ZM',
@@ -32,7 +33,7 @@ const MidfieldersScreen = ({ route, navigation }:any) => {
     useEffect(() => {
         const fetchMidfielders = async () => {
             try {
-                const response = await axios.get(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
+                const response = await axios.get(`http://${BACKEND_URL}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`);
                 const filteredMidfielders = response.data.filter((player:IPlayer) =>
                     player.clubname === team &&
                     validPositions.includes(player.position)

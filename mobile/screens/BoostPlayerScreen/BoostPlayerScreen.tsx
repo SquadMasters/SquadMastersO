@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Text, View, FlatList, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Dimensions } from 'react-native';
 import axios from 'axios';
+import BACKEND_URL from "../BackendUrl";
 
 interface Player {
     playerId: number;
@@ -17,10 +18,10 @@ const BoostPlayerScreen = ({ route }:any) => {
     const [ratingNow, setRatingNow] = useState('');
     const [valueNow, setValueNow] = useState('');
     const [loading, setLoading] = useState(true);
-    const ip = "10.151.6.205";
+
 
     useEffect(() => {
-        axios.get<Player[]>(`http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`)
+        axios.get<Player[]>(`http://${BACKEND_URL}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`)
             .then(res => {
                 const teamPlayers = res.data.filter(p => p.clubname === team);
                 setPlayers(teamPlayers);
@@ -41,7 +42,7 @@ const BoostPlayerScreen = ({ route }:any) => {
 
         if (Object.keys(payload).length === 0) return;
 
-        await axios.patch(`http://${ip}:8080/trainerCareerPlayer/updateAttributes`, payload, {
+        await axios.patch(`http://${BACKEND_URL}:8080/trainerCareerPlayer/updateAttributes`, payload, {
             params: {
                 careername,
                 playerId: selectedPlayer.playerId,

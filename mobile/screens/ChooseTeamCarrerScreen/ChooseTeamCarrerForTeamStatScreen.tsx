@@ -22,7 +22,7 @@ const teamLogos = [
     { id: 11, name: 'Real Madrid', logo: require('../../assets/reallogo.png') }
 ];
 
-const ChooseTeamCarrerForTeamStatScreen: React.FC<ChooseTeamCarrerStatsProps> = ({ navigation,route }) => {
+const ChooseTeamCarrerForTeamStatScreen: React.FC<ChooseTeamCarrerStatsProps> = ({ navigation,route }:any) => {
 
     const {careername} = route.params;
 

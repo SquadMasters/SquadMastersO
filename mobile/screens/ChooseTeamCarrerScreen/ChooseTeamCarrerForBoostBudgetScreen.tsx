@@ -1,28 +1,28 @@
-import React, { useRef, useState } from 'react';
-import { FlatList, Text, TouchableOpacity, View, Image, StyleSheet, Dimensions } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
+import React, {useRef, useState} from 'react';
+import {FlatList, Text, TouchableOpacity, View, Image, StyleSheet, Dimensions} from "react-native";
+import {NavigationProp} from "@react-navigation/native";
 
 type ChooseTeamCarrerBudgetProps = {
     navigation: NavigationProp<any>;
 };
 
-const { width } = Dimensions.get('window');
+const {width} = Dimensions.get('window');
 
 const teamLogos = [
-    { id: 1, name: 'Arsenal', logo: require('../../assets/arsenalwappen.png') },
-    { id: 2, name: 'Atlético Madrid', logo: require('../../assets/atleticowappen.png') },
-    { id: 3, name: 'FC Barcelona', logo: require('../../assets/barcawappen.png') },
-    { id: 4, name: 'Bayern München', logo: require('../../assets/bayernwappen.png') },
-    { id: 5, name: 'Manchester City', logo: require('../../assets/citywappen.png') },
-    { id: 6, name: 'Inter Mailand', logo: require('../../assets/interwappen.png') },
-    { id: 7, name: 'Juventus Turin', logo: require('../../assets/juve.png') },
-    { id: 8, name: 'Liverpool', logo: require('../../assets/liverpool.png') },
-    { id: 9, name: 'AC Mailand', logo: require('../../assets/milan.png') },
-    { id: 10, name: 'Paris Saint-Germain', logo: require('../../assets/psgwappen.png') },
-    { id: 11, name: 'Real Madrid', logo: require('../../assets/reallogo.png') }
+    {id: 1, name: 'Arsenal', logo: require('../../assets/arsenalwappen.png')},
+    {id: 2, name: 'Atlético Madrid', logo: require('../../assets/atleticowappen.png')},
+    {id: 3, name: 'FC Barcelona', logo: require('../../assets/barcawappen.png')},
+    {id: 4, name: 'Bayern München', logo: require('../../assets/bayernwappen.png')},
+    {id: 5, name: 'Manchester City', logo: require('../../assets/citywappen.png')},
+    {id: 6, name: 'Inter Mailand', logo: require('../../assets/interwappen.png')},
+    {id: 7, name: 'Juventus Turin', logo: require('../../assets/juve.png')},
+    {id: 8, name: 'Liverpool', logo: require('../../assets/liverpool.png')},
+    {id: 9, name: 'AC Mailand', logo: require('../../assets/milan.png')},
+    {id: 10, name: 'Paris Saint-Germain', logo: require('../../assets/psgwappen.png')},
+    {id: 11, name: 'Real Madrid', logo: require('../../assets/reallogo.png')}
 ];
 
-const ChooseTeamCarrerForBoostBudgetScreen: React.FC<ChooseTeamCarrerBudgetProps> = ({ navigation ,route}) => {
+const ChooseTeamCarrerForBoostBudgetScreen: React.FC<ChooseTeamCarrerBudgetProps> = ({navigation, route}: any) => {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const flatListRef = useRef<FlatList>(null);
 
@@ -30,14 +30,14 @@ const ChooseTeamCarrerForBoostBudgetScreen: React.FC<ChooseTeamCarrerBudgetProps
 
     const handleScroll = (event: any) => {
         const contentOffset = event.nativeEvent.contentOffset.x;
-        const index = Math.round(contentOffset / (width - 40)); // Angepasst auf die Slide-Breite
+        const index = Math.round(contentOffset / (width - 40));
         if (index >= 0 && index < teamLogos.length && index !== selectedIndex) {
             setSelectedIndex(index);
         }
     };
 
     const getItemLayout = (data: any, index: number) => ({
-        length: width - 40, // Slide-Breite
+        length: width - 40,
         offset: (width - 40) * index,
         index
     });
@@ -50,7 +50,7 @@ const ChooseTeamCarrerForBoostBudgetScreen: React.FC<ChooseTeamCarrerBudgetProps
                 <FlatList
                     ref={flatListRef}
                     data={teamLogos}
-                    renderItem={({ item }) => (
+                    renderItem={({item}) => (
                         <View style={styles.slide}>
                             <Image
                                 source={item.logo}
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         borderRadius: 18,  // Mehr Rundung
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.08,
         shadowRadius: 10,
         elevation: 6,
@@ -142,14 +142,14 @@ const styles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
         shadowColor: '#0071e3',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 5,
     },
     buttonPressed: {  // Für Press-Effekt
         backgroundColor: '#0062c4',
-        transform: [{ scale: 0.98 }],
+        transform: [{scale: 0.98}],
     },
     buttonText: {
         color: 'white',

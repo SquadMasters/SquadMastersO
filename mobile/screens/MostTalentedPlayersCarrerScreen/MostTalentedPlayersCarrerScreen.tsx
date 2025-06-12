@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import BACKEND_URL from "../BackendUrl";
 
 interface Player {
     playerId: number;
@@ -17,13 +18,13 @@ const MostTalentPlayersCarrerScreen = ({ route }:any) => {
     const { careername, username } = route.params;
     const [players, setPlayers] = useState<Player[]>([]);
     const [loading, setLoading] = useState(true);
-    const ip = "10.151.6.205";
+
 
     useEffect(() => {
         const fetchPlayers = async () => {
             try {
                 const response = await fetch(
-                    `http://${ip}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
+                    `http://${BACKEND_URL}:8080/trainerCareerPlayer/allPlayersFromCareer?careername=${careername}`
                 );
                 const data: Player[] = await response.json();
 

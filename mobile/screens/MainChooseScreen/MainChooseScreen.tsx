@@ -7,8 +7,9 @@ import {
     ScrollView,
     StyleSheet,
 } from 'react-native';
+import BACKEND_URL from "../BackendUrl";
 
-const API_BASE_URL = 'http://10.151.6.205:8080';
+
 
 interface Career {
     careername: string;
@@ -21,13 +22,13 @@ const MainChooseScreen = ({ navigation }: any) => {
     const [careers, setCareers] = useState<Career[]>([]);
     const [selectedUser, setSelectedUser] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>("leererError");
+    const [error, setError] = useState<string | null>("");
 
     useEffect(() => {
         const loadUsers = async () => {
             try {
                 setLoading(true);
-                const res = await fetch(`${API_BASE_URL}/api/auth/allUsernames`);
+                const res = await fetch(`${BACKEND_URL}/api/auth/allUsernames`);
                 const data: string[] = await res.json();
                 setUsers(data);
             } catch (e) {
@@ -44,7 +45,7 @@ const MainChooseScreen = ({ navigation }: any) => {
         try {
             setLoading(true);
             setSelectedUser(username);
-            const res = await fetch(`${API_BASE_URL}/trainerCareer/allByUser/${username}`);
+            const res = await fetch(`${BACKEND_URL}/trainerCareer/allByUser/${username}`);
             const data: Career[] = await res.json();
             setCareers(data);
         } catch (e) {

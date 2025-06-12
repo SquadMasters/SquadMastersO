@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Text, TextInput, TouchableOpacity, View, StyleSheet} from "react-native";
 import axios from "axios";
+import BACKEND_URL from "../BackendUrl";
 
 const BoostBudgetScreen = ({route}:any) => {
     const {team, careername} = route.params;
@@ -8,13 +9,13 @@ const BoostBudgetScreen = ({route}:any) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [newBudget, setNewBudget] = useState('');
-    const ip = "10.151.6.205";
+
 
     useEffect(() => {
         const fetchBudget = async () => {
             try {
                 const response = await axios.get(
-                    `http://${ip}:8080/trainerCareer/budget/${team}/${careername}`
+                    `http://${BACKEND_URL}:8080/trainerCareer/budget/${team}/${careername}`
                 );
                 setBudget(response.data.budget || 0);
                 setLoading(false);
@@ -34,7 +35,7 @@ const BoostBudgetScreen = ({route}:any) => {
             const value = Number(newBudget).toString()+"000000";
             console.log(value)
             await axios.patch(
-                `http://${ip}:8080/trainerCareer/changebudget/${team}/${careername}/${value}`
+                `http://${BACKEND_URL}:8080/trainerCareer/changebudget/${team}/${careername}/${value}`
             );
 
             setBudget(Number(value));
